@@ -1,0 +1,44 @@
+# INSTRUCCIONES PARA SUBIR A GITHUB
+
+## Archivos que necesitas subir:
+1. **index.html** (el archivo principal)
+2. **logo.jpg** (el logo de Family)
+
+## PASOS:
+
+### 1. Subir los archivos a GitHub
+- En la página donde estás (github.com/todoposiblemd-dev/family-comidas-rapidas)
+- Arrastra y suelta los 2 archivos: **index.html** y **logo.jpg**
+- En "Commit changes" pon: "Agregar sistema de inventario"
+- Click en "Commit changes" (botón verde)
+
+### 2. Activar GitHub Pages
+- Ve a **Settings** (Configuración) del repositorio
+- En el menú izquierdo busca **Pages**
+- En "Source" selecciona: **main** (o master)
+- Click en **Save**
+- Espera 1-2 minutos
+
+### 3. Ver tu sitio
+Tu inventario estará en:
+**https://todoposiblemd-dev.github.io/family-comidas-rapidas/**
+
+(O el nombre que tenga tu repositorio)
+
+## IMPORTANTE:
+- Los 2 archivos deben estar en la carpeta raíz (no en subcarpetas)
+- El archivo DEBE llamarse **index.html** (no cambiar el nombre)
+- El logo DEBE llamarse **logo.jpg** (no cambiar el nombre)
+
+## ¿Cómo usar el sistema?
+1. Abre el enlace en el celular o computador
+2. Marca con el ✓ los productos que SÍ maneja el restaurante
+3. Pon las cantidades mínimas y máximas
+4. Click en "💾 Guardar" para no perder los cambios
+5. Click en "📊 Excel" para descargar el inventario
+6. Puedes agregar, editar o eliminar productos
+
+## Notas:
+- Los datos se guardan en el navegador de cada dispositivo
+- Necesita internet solo para exportar a Excel
+- Funciona en celular, tablet y computador

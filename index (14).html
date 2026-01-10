@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Comidas Rápidas - Sistema de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .card h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #333;
+            text-align: center;
+        }
+        
+        .card p {
+            color: #666;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        .card-recetario {
+            background: linear-gradient(135deg, #FFD93D 0%, #FFA500 100%);
+        }
+        
+        .card-recetario h2,
+        .card-recetario p {
+            color: white;
+        }
+        
+        .card-inventario {
+            background: linear-gradient(135deg, #6BCF7F 0%, #2E7D32 100%);
+        }
+        
+        .card-inventario h2,
+        .card-inventario p {
+            color: white;
+        }
+        
+        .info-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+        
+        .info-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        
+        .info-section p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+        
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .info-section li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            color: #666;
+        }
+        
+        .info-section li:last-child {
+            border-bottom: none;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍔 Family Comidas Rápidas</h1>
+            <p>Sistema de Gestión Digital</p>
+        </div>
+        
+        <div class="cards-container">
+            <a href="recetario.html" class="card card-recetario">
+                <div class="card-icon">📖</div>
+                <h2>Recetario Digital</h2>
+                <p>Accede a las 51 recetas estandarizadas con ingredientes, porciones, tiempos de preparación y estándares de calidad</p>
+            </a>
+            
+            <a href="inventario.html" class="card card-inventario">
+                <div class="card-icon">📦</div>
+                <h2>Control de Inventario</h2>
+                <p>Gestiona productos, proveedores, stock y precios. Exporta reportes a Excel</p>
+            </a>
+        </div>
+        
+        <div class="info-section">
+            <h3>📍 Información del Restaurante</h3>
+            <ul>
+                <li><strong>Dirección:</strong> Calle 6 #3_23, Guapi, Cauca</li>
+                <li><strong>Horario:</strong> Lunes a Domingo, 3:00 PM - 12:00 AM</li>
+                <li><strong>Especialidades:</strong> Comidas rápidas, hamburguesas, perros calientes, heladería</li>
+            </ul>
+        </div>
+        
+        <div class="info-section">
+            <h3>ℹ️ Instrucciones de Uso</h3>
+            <ul>
+                <li>🔒 <strong>Recetario:</strong> Contraseña para editar: <code>family2025</code></li>
+                <li>✏️ Puedes agregar, editar y eliminar recetas en modo administrador</li>
+                <li>📸 Sube fotos de los productos desde el modo edición</li>
+                <li>💾 Todo se guarda automáticamente en tu navegador</li>
+                <li>📊 Exporta el inventario a Excel cuando lo necesites</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            <p>© 2026 Family Comidas Rápidas - Guapi, Cauca</p>
+        </div>
+    </div>
+</body>
+</html>

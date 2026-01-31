@@ -1,0 +1,3894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario Completo - Family Comidas Rápidas</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FFC107;
+            --primary-dark: #F9A825;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --info: #17a2b8;
+            --dark: #1a1a1a;
+            --gray: #666;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #2d1810 100%);
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #333;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .tutorial-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tutorial-banner.show {
+            display: flex;
+        }
+
+        .tutorial-content {
+            flex: 1;
+        }
+
+        .tutorial-content h3 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .btn-close-tutorial {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Pestañas */
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 3px solid #dee2e6;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gray);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            background: #e9ecef;
+        }
+
+        .tab.active {
+            background: white;
+            color: #333;
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-icon {
+            font-size: 1.3em;
+        }
+
+        /* Resumen */
+        .summary-cards {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .summary-card.green {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .summary-card.yellow {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #333;
+        }
+
+        .summary-card.red {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .summary-card h3 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .summary-card p {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        /* Controles */
+        .controls {
+            padding: 20px;
+            background: white;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #333;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--info);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Búsqueda */
+        .search-filter {
+            padding: 20px;
+            background: white;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            border: 2px solid #dee2e6;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #333;
+        }
+
+        /* Productos */
+        .products-list {
+            padding: 20px;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-header h2 {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .category-count {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .product-card {
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .product-card.ok {
+            border-left: 5px solid var(--success);
+        }
+
+        .product-card.bajo {
+            border-left: 5px solid var(--warning);
+            background: #fff9e6;
+        }
+
+        .product-card.critico {
+            border-left: 5px solid var(--danger);
+            background: #ffe6e6;
+        }
+
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .product-name {
+            flex: 1;
+        }
+
+        .product-name h3 {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .product-name p {
+            color: var(--gray);
+            font-size: 0.85em;
+        }
+
+        .product-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+
+        .product-status.ok {
+            background: var(--success);
+            color: white;
+        }
+
+        .product-status.bajo {
+            background: var(--warning);
+            color: #333;
+        }
+
+        .product-status.critico {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Control de cantidad */
+        .quantity-control {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .quantity-display {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .quantity-display .label {
+            font-size: 0.85em;
+            color: var(--gray);
+            margin-bottom: 5px;
+        }
+
+        .quantity-display .value {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #333;
+        }
+
+        .quantity-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .qty-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.5em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .qty-btn-minus {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+        .qty-btn-plus {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .qty-btn-set {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            font-size: 1em;
+        }
+
+        .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Barra de progreso */
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-fill.ok {
+            background: linear-gradient(90deg, var(--success) 0%, #20c997 100%);
+        }
+
+        .progress-fill.bajo {
+            background: linear-gradient(90deg, var(--warning) 0%, #ff9800 100%);
+        }
+
+        .progress-fill.critico {
+            background: linear-gradient(90deg, var(--danger) 0%, #c82333 100%);
+        }
+
+        .product-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.75em;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
+
+        /* Shopping list */
+        .shopping-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .shopping-item {
+            background: white;
+            border: 2px solid var(--danger);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shopping-item-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .shopping-item-info p {
+            color: var(--gray);
+            font-size: 0.9em;
+        }
+
+        .shopping-qty {
+            font-size: 1.5em;
+            font-weight: 800;
+            color: var(--danger);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .controls, .search-filter {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .quantity-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab {
+                min-width: 120px;
+                font-size: 12px;
+                padding: 12px 15px;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #dee2e6;
+        }
+
+        .product-actions .btn {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 0.9em;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+        }
+
+    
+    /* Estilos para botones de consolidación */
+    .btn[title] {
+        position: relative;
+    }
+    
+    .btn-consolidar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>📦 Control de Inventario Completo</h1>
+        <p>Family Comidas Rápidas - Guapi, Cauca</p>
+    </div>
+
+    <div class="tutorial-banner" id="tutorialBanner">
+        <div class="tutorial-content">
+            <h3>💡 ¿Primera vez aquí?</h3>
+            <p>Use las pestañas para cambiar entre inventarios. Los botones + y - para actualizar cantidades. Verde=Suficiente, Amarillo=Poco, Rojo=Urgente</p>
+        </div>
+        <button class="btn-close-tutorial" onclick="closeTutorial()">Entendido</button>
+    </div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="cambiarTab('ingredientes')" data-tab="ingredientes">
+            <span class="tab-icon">🥘</span>
+            <span>Ingredientes</span>
+        </button>
+        <button class="tab" onclick="cambiarTab('loza')" data-tab="loza">
+            <span class="tab-icon">🍽️</span>
+            <span>Loza y Utensilios</span>
+        </button>
+        <button class="tab" onclick="cambiarTab('equipos')" data-tab="equipos">
+            <span class="tab-icon">⚙️</span>
+            <span>Equipos</span>
+        </button>
+        <button class="tab" onclick="cambiarTab('limpieza')" data-tab="limpieza">
+            <span class="tab-icon">🧹</span>
+            <span>Limpieza</span>
+        </button>
+    </div>
+
+    <div class="summary-cards" id="summaryCards"></div>
+
+    <div class="controls">
+        <button class="btn btn-success" onclick="openAddProductModal()">➕ Agregar Producto</button>
+        <button class="btn btn-primary" onclick="exportarMiParte()" title="Exporta solo la pestaña actual para enviar a la dueña">📤 Exportar Mi Parte</button>
+        <button class="btn btn-info" onclick="consolidarInventarios()" title="Consolidar archivos recibidos (solo dueña)">📥 Consolidar</button>
+        <button class="btn btn-primary" onclick="showTutorial()">💡 Ayuda</button>
+        <button class="btn btn-info" onclick="showShoppingList()">🛒 Lista de Compras</button>
+        <button class="btn btn-success" onclick="exportToExcel()">📊 Exportar Excel</button>
+        <button class="btn btn-warning" onclick="saveData()">💾 Guardar</button>
+    </div>
+
+    <div class="search-filter">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar producto..." onkeyup="filterProducts()">
+        </div>
+        <div class="filter-buttons">
+            <button class="filter-btn active" onclick="filterByStatus('todos')" data-filter="todos">📋 Todos</button>
+            <button class="filter-btn" onclick="filterByStatus('critico')" data-filter="critico">🔴 Urgente</button>
+            <button class="filter-btn" onclick="filterByStatus('bajo')" data-filter="bajo">🟡 Poco</button>
+            <button class="filter-btn" onclick="filterByStatus('ok')" data-filter="ok">🟢 OK</button>
+        </div>
+    </div>
+
+    <div class="products-list" id="productsList"></div>
+</div>
+
+
+<div class="modal" id="productModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="productModalTitle">Agregar Producto</h2>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Nombre del Producto</label>
+            <input type="text" class="form-input" id="productName" placeholder="Ej: Tomate">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Categoría</label>
+            <input type="text" class="form-input" id="productCategory" placeholder="Ej: Vegetales">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Unidad de Medida</label>
+            <select class="form-input" id="productUnit">
+                <option value="Unidad">Unidad</option>
+                <option value="Kg">Kilogramo (Kg)</option>
+                <option value="g">Gramos (g)</option>
+                <option value="Litro">Litro</option>
+                <option value="ml">Mililitro (ml)</option>
+                <option value="Paquete">Paquete</option>
+                <option value="Caja">Caja</option>
+                <option value="Rollo">Rollo</option>
+                <option value="Libra">Libra</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Cantidad Actual</label>
+            <input type="number" class="form-input" id="productCurrentQty" min="0" value="0">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Cantidad Mínima (Alerta amarilla)</label>
+            <input type="number" class="form-input" id="productMinQty" min="0" value="5">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Cantidad Máxima (Stock completo)</label>
+            <input type="number" class="form-input" id="productMaxQty" min="0" value="50">
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-success" onclick="saveProduct()">✓ Guardar</button>
+            <button class="btn btn-danger" onclick="closeModal()">✕ Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="setQuantityModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Establecer Cantidad</h2>
+        </div>
+        <div class="form-group">
+            <label class="form-label" id="modalProductName"></label>
+            <input type="number" class="form-input" id="exactQuantity" min="0" step="1">
+        </div>
+        <div class="modal-buttons">
+            <button class="btn btn-success" onclick="setExactQuantity()">✓ Guardar</button>
+            <button class="btn btn-danger" onclick="closeModal()">✕ Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="shoppingModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>🛒 Lista de Compras</h2>
+            <p style="color: var(--gray);">Productos que necesita comprar</p>
+        </div>
+        <div class="shopping-list" id="shoppingList"></div>
+        <div class="modal-buttons">
+            <button class="btn btn-primary" onclick="exportShoppingList()">📄 Exportar</button>
+            <button class="btn btn-danger" onclick="closeModal()">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var INVENTARIO = {
+    "ingredientes": [
+        {
+            "id": 1,
+            "nombre": "Carne de Res",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 20,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 2,
+            "nombre": "Carne de Cerdo",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 20,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 3,
+            "nombre": "Pollo",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 30,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 4,
+            "nombre": "Pechuga de Pollo",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 5,
+            "nombre": "Alitas de Pollo",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 6,
+            "nombre": "Camarón",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 7,
+            "nombre": "Costillas de Cerdo",
+            "categoria": "Carnes y Aves",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 8,
+            "nombre": "Salchicha Americana",
+            "categoria": "Embutidos",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 20,
+            "cantidadMaxima": 100,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 9,
+            "nombre": "Chorizo Santarrosano",
+            "categoria": "Embutidos",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 15,
+            "cantidadMaxima": 80,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 10,
+            "nombre": "Jamón",
+            "categoria": "Embutidos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 11,
+            "nombre": "Tocineta",
+            "categoria": "Embutidos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 12,
+            "nombre": "Queso Mozzarella",
+            "categoria": "Lácteos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 13,
+            "nombre": "Queso Doble Crema",
+            "categoria": "Lácteos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 14,
+            "nombre": "Leche",
+            "categoria": "Lácteos",
+            "unidadMedida": "Litro",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 15,
+            "nombre": "Leche Condensada",
+            "categoria": "Lácteos",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 16,
+            "nombre": "Lechuga",
+            "categoria": "Vegetales",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 20,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 17,
+            "nombre": "Tomate",
+            "categoria": "Vegetales",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 18,
+            "nombre": "Cebolla",
+            "categoria": "Vegetales",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 19,
+            "nombre": "Papa para Freír",
+            "categoria": "Papas y Tubérculos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 50,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 20,
+            "nombre": "Papa Criolla",
+            "categoria": "Papas y Tubérculos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 25,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 21,
+            "nombre": "Plátano Verde",
+            "categoria": "Papas y Tubérculos",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 40,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 22,
+            "nombre": "Yuca",
+            "categoria": "Papas y Tubérculos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 23,
+            "nombre": "Pan para Hamburguesa",
+            "categoria": "Panes y Harinas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 20,
+            "cantidadMaxima": 100,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 24,
+            "nombre": "Pan para Perro",
+            "categoria": "Panes y Harinas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 20,
+            "cantidadMaxima": 100,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 25,
+            "nombre": "Tortillas de Trigo",
+            "categoria": "Panes y Harinas",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 26,
+            "nombre": "Harina de Trigo",
+            "categoria": "Panes y Harinas",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 27,
+            "nombre": "Harina para Apanar",
+            "categoria": "Panes y Harinas",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 28,
+            "nombre": "Aceite para Freír",
+            "categoria": "Aceites y Grasas",
+            "unidadMedida": "Litro",
+            "cantidadActual": 0,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 20,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 29,
+            "nombre": "Salsa de la Casa",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Litro",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 30,
+            "nombre": "Salsa BBQ",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Litro",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 31,
+            "nombre": "Salsa Guacamole",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 32,
+            "nombre": "Mayonesa",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 33,
+            "nombre": "Mostaza",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 34,
+            "nombre": "Sal",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 35,
+            "nombre": "Azúcar",
+            "categoria": "Salsas y Condimentos",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 36,
+            "nombre": "Gaseosa 1.5L",
+            "categoria": "Bebidas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 50,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 37,
+            "nombre": "Gaseosa 3.5L",
+            "categoria": "Bebidas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 30,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 38,
+            "nombre": "Agua Embotellada",
+            "categoria": "Bebidas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 20,
+            "cantidadMaxima": 100,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 39,
+            "nombre": "Jugo Hit",
+            "categoria": "Bebidas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 50,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 40,
+            "nombre": "Cerveza",
+            "categoria": "Bebidas",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 0,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 50,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 41,
+            "nombre": "Helado (varios sabores)",
+            "categoria": "Helados y Postres",
+            "unidadMedida": "Litro",
+            "cantidadActual": 0,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 42,
+            "nombre": "Barquillos",
+            "categoria": "Helados y Postres",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 0,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 43,
+            "nombre": "Toppings Variados",
+            "categoria": "Helados y Postres",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        },
+        {
+            "id": 44,
+            "nombre": "Arequipe",
+            "categoria": "Helados y Postres",
+            "unidadMedida": "Kg",
+            "cantidadActual": 0,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "tipoInventario": "ingredientes",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "estado": "",
+            "observaciones": ""
+        }
+    ],
+    "equipos": [
+        {
+            "id": 1,
+            "nombre": "Estufa Industrial",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Regular",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 2,
+            "nombre": "Freidora",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 3,
+            "nombre": "Horno/Microondas",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 4,
+            "nombre": "Nevera",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 5,
+            "nombre": "Congelador",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 3,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 6,
+            "nombre": "Licuadora",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 3,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 7,
+            "nombre": "Balanza",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 8,
+            "nombre": "Extintor",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 9,
+            "nombre": "Vitrina",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 10,
+            "nombre": "Ventiladores",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 4,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 11,
+            "nombre": "Sanduchera",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 12,
+            "nombre": "Picador de Papas",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 13,
+            "nombre": "Pipas de Gas",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 4,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 14,
+            "nombre": "Tanque de Agua 500L",
+            "categoria": "Equipos de Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 1,
+            "estado": "Regular",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 15,
+            "nombre": "Ollas",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 3,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 8,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 16,
+            "nombre": "Sartenes",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 6,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 17,
+            "nombre": "Cucharones",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 4,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 18,
+            "nombre": "Embudos",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 19,
+            "nombre": "Exprimidor Regular",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 3,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 20,
+            "nombre": "Espátulas",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 6,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 21,
+            "nombre": "Pinzas",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 6,
+            "cantidadMinima": 4,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 22,
+            "nombre": "Cuchillos de Cocina",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 3,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 8,
+            "estado": "Regular",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 23,
+            "nombre": "Cuchillos para Pan",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 24,
+            "nombre": "Tablas de Picar",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 6,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 25,
+            "nombre": "Rayadores",
+            "categoria": "Utensilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 26,
+            "nombre": "Contenedores de Acero",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 17,
+            "cantidadMinima": 15,
+            "cantidadMaxima": 30,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 27,
+            "nombre": "Recipientes de Vidrio",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 19,
+            "cantidadMinima": 15,
+            "cantidadMaxima": 30,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 28,
+            "nombre": "Recipientes Pequeños",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 15,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 25,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 29,
+            "nombre": "Bandejas Grandes",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 5,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 30,
+            "nombre": "Bandejas Pequeñas",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 10,
+            "cantidadMinima": 8,
+            "cantidadMaxima": 20,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 31,
+            "nombre": "Salseros Grandes",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 6,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 15,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 32,
+            "nombre": "Paleros",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 4,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 33,
+            "nombre": "Saleros",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 4,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 34,
+            "nombre": "Tibungos",
+            "categoria": "Recipientes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 3,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 6,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 35,
+            "nombre": "Caja para Domicilios",
+            "categoria": "Domicilios",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "equipos",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        }
+    ],
+    "loza": [
+        {
+            "id": 1,
+            "nombre": "Platos de Cerámica",
+            "categoria": "Loza",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 8,
+            "cantidadMinima": 8,
+            "cantidadMaxima": 20,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 2,
+            "nombre": "Platos de Pasta",
+            "categoria": "Loza",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 28,
+            "cantidadMinima": 25,
+            "cantidadMaxima": 50,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 3,
+            "nombre": "Copas en Pasta",
+            "categoria": "Loza",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 5,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 15,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 4,
+            "nombre": "Vasos Grandes de Vidrio",
+            "categoria": "Loza",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 4,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 20,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 5,
+            "nombre": "Copas de Vidrio",
+            "categoria": "Loza",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 10,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 25,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 6,
+            "nombre": "Vasos de Vidrio",
+            "categoria": "Loza",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 7,
+            "cantidadMinima": 10,
+            "cantidadMaxima": 30,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 7,
+            "nombre": "Cubiertos Desechables",
+            "categoria": "Utensilios Mesa",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 3,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 8,
+            "nombre": "Servilletas",
+            "categoria": "Utensilios Mesa",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 5,
+            "cantidadMinima": 3,
+            "cantidadMaxima": 15,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 9,
+            "nombre": "Pitillos/Sorbetes",
+            "categoria": "Utensilios Mesa",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 3,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 10,
+            "nombre": "Mesas de Trabajo",
+            "categoria": "Mobiliario Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 3,
+            "estado": "Regular",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 11,
+            "nombre": "Estanterías",
+            "categoria": "Mobiliario Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 12,
+            "nombre": "Sillas para Clientes",
+            "categoria": "Mobiliario Comedor",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 28,
+            "cantidadMinima": 25,
+            "cantidadMaxima": 40,
+            "estado": "Bueno",
+            "observaciones": "6 sillas largas",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": ""
+        },
+        {
+            "id": 13,
+            "nombre": "Mesas para Clientes",
+            "categoria": "Mobiliario Comedor",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 15,
+            "cantidadMinima": 13,
+            "cantidadMaxima": 20,
+            "estado": "Bueno",
+            "observaciones": "2 no en uso",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": ""
+        },
+        {
+            "id": 14,
+            "nombre": "Mostrador/Caja",
+            "categoria": "Mobiliario Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 1,
+            "estado": "Regular",
+            "tipoInventario": "loza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        }
+    ],
+    "limpieza": [
+        {
+            "id": 1,
+            "nombre": "Jabón Líquido para Loza",
+            "categoria": "Limpieza Cocina",
+            "unidadMedida": "Litro",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 2,
+            "nombre": "Jabón para Manos",
+            "categoria": "Limpieza Baños",
+            "unidadMedida": "Litro",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 3,
+            "nombre": "Papel Higiénico",
+            "categoria": "Limpieza Baños",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 4,
+            "nombre": "Desinfectante",
+            "categoria": "Limpieza General",
+            "unidadMedida": "Litro",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 5,
+            "nombre": "Cloro/Lejía",
+            "categoria": "Limpieza General",
+            "unidadMedida": "Litro",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 6,
+            "nombre": "Trapos de Cocina",
+            "categoria": "Limpieza Cocina",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 10,
+            "cantidadMinima": 8,
+            "cantidadMaxima": 20,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 7,
+            "nombre": "Esponjas",
+            "categoria": "Limpieza Cocina",
+            "unidadMedida": "Paquete",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 8,
+            "nombre": "Bolsas de Basura",
+            "categoria": "Limpieza General",
+            "unidadMedida": "Rollo",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 9,
+            "nombre": "Papel Toalla",
+            "categoria": "Limpieza General",
+            "unidadMedida": "Rollo",
+            "cantidadActual": 3,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 10,
+            "nombre": "Guantes Desechables",
+            "categoria": "Limpieza Cocina",
+            "unidadMedida": "Caja",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 11,
+            "nombre": "Escobas",
+            "categoria": "Limpieza General",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 12,
+            "nombre": "Trapeador",
+            "categoria": "Limpieza General",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 2,
+            "cantidadMinima": 2,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 13,
+            "nombre": "Delantales",
+            "categoria": "Uniformes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 6,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 14,
+            "nombre": "Gorros",
+            "categoria": "Uniformes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 6,
+            "cantidadMinima": 5,
+            "cantidadMaxima": 10,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 15,
+            "nombre": "Camisetas",
+            "categoria": "Uniformes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 8,
+            "cantidadMinima": 6,
+            "cantidadMaxima": 15,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 16,
+            "nombre": "Tapabocas",
+            "categoria": "Uniformes",
+            "unidadMedida": "Caja",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 5,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 17,
+            "nombre": "Traje Antifluido para Domicilio",
+            "categoria": "Uniformes",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 3,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        },
+        {
+            "id": 18,
+            "nombre": "Celular para Pedidos",
+            "categoria": "Tecnología",
+            "unidadMedida": "Unidad",
+            "cantidadActual": 1,
+            "cantidadMinima": 1,
+            "cantidadMaxima": 2,
+            "estado": "Bueno",
+            "tipoInventario": "limpieza",
+            "activo": true,
+            "recetasQueLoUsan": 0,
+            "proveedorNombre": "",
+            "proveedorContacto": "",
+            "precioUnitario": 0,
+            "ultimaCompra": "",
+            "ultimoPrecioPagado": 0,
+            "numeroFactura": "",
+            "observaciones": ""
+        }
+    ]
+};
+
+var tabActual = 'ingredientes';
+var currentFilter = 'todos';
+var selectedProduct = null;
+var selectedProductTab = null;
+
+function init() {
+    loadData();
+    renderSummary();
+    renderProducts();
+    checkFirstVisit();
+}
+
+function checkFirstVisit() {
+    var visited = localStorage.getItem('inventarioVisitedV2');
+    if (!visited) {
+        showTutorial();
+        localStorage.setItem('inventarioVisitedV2', 'true');
+    }
+}
+
+function showTutorial() {
+    document.getElementById('tutorialBanner').classList.add('show');
+}
+
+function closeTutorial() {
+    document.getElementById('tutorialBanner').classList.remove('show');
+}
+
+function loadData() {
+    var saved = localStorage.getItem('familyInventarioCompletoV2');
+    if (saved) {
+        try {
+            INVENTARIO = JSON.parse(saved);
+        } catch(e) {
+            console.error('Error cargando datos:', e);
+        }
+    }
+}
+
+function saveData() {
+    try {
+        localStorage.setItem('familyInventarioCompletoV2', JSON.stringify(INVENTARIO));
+        console.log('Datos guardados automáticamente');
+    } catch(e) {
+        alert('❌ Error al guardar: ' + e.message);
+    }
+}
+
+function cambiarTab(tab) {
+    tabActual = tab;
+    
+    var tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function(t) {
+        t.classList.remove('active');
+        if (t.dataset.tab === tab) {
+            t.classList.add('active');
+        }
+    });
+    
+    renderSummary();
+    renderProducts();
+}
+
+function getProductStatus(producto) {
+    var porcentaje = (producto.cantidadActual / producto.cantidadMaxima) * 100;
+    
+    if (producto.cantidadActual <= producto.cantidadMinima) {
+        return 'critico';
+    } else if (porcentaje < 30) {
+        return 'bajo';
+    } else {
+        return 'ok';
+    }
+}
+
+function renderSummary() {
+    var productos = INVENTARIO[tabActual];
+    var total = productos.length;
+    var criticos = 0;
+    var bajos = 0;
+    var ok = 0;
+    
+    for (var i = 0; i < productos.length; i++) {
+        var estado = getProductStatus(productos[i]);
+        if (estado === 'critico') criticos++;
+        else if (estado === 'bajo') bajos++;
+        else ok++;
+    }
+    
+    var html = '';
+    html += '<div class="summary-card red">';
+    html += '<h3>' + criticos + '</h3>';
+    html += '<p>🔴 Urgente</p>';
+    html += '</div>';
+    html += '<div class="summary-card yellow">';
+    html += '<h3>' + bajos + '</h3>';
+    html += '<p>🟡 Poco</p>';
+    html += '</div>';
+    html += '<div class="summary-card green">';
+    html += '<h3>' + ok + '</h3>';
+    html += '<p>🟢 OK</p>';
+    html += '</div>';
+    html += '<div class="summary-card">';
+    html += '<h3>' + total + '</h3>';
+    html += '<p>📦 Total</p>';
+    html += '</div>';
+    
+    document.getElementById('summaryCards').innerHTML = html;
+}
+
+function renderProducts() {
+    var productos = INVENTARIO[tabActual];
+    var categorias = {};
+    
+    for (var i = 0; i < productos.length; i++) {
+        var cat = productos[i].categoria;
+        if (!categorias[cat]) {
+            categorias[cat] = [];
+        }
+        categorias[cat].push(productos[i]);
+    }
+    
+    var searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    var html = '';
+    var found = false;
+    
+    var cats = Object.keys(categorias).sort();
+    for (var c = 0; c < cats.length; c++) {
+        var categoria = cats[c];
+        var productosCategoria = categorias[categoria];
+        
+        if (searchTerm) {
+            productosCategoria = productosCategoria.filter(function(p) {
+                return p.nombre.toLowerCase().indexOf(searchTerm) !== -1;
+            });
+        }
+        
+        if (currentFilter !== 'todos') {
+            productosCategoria = productosCategoria.filter(function(p) {
+                return getProductStatus(p) === currentFilter;
+            });
+        }
+        
+        if (productosCategoria.length === 0) continue;
+        found = true;
+        
+        html += '<div class="category-section">';
+        html += '<div class="category-header">';
+        html += '<h2>' + categoria + '</h2>';
+        html += '<span class="category-count">' + productosCategoria.length + ' productos</span>';
+        html += '</div>';
+        
+        for (var i = 0; i < productosCategoria.length; i++) {
+            var producto = productosCategoria[i];
+            var estado = getProductStatus(producto);
+            var porcentaje = Math.min(100, (producto.cantidadActual / producto.cantidadMaxima) * 100);
+            
+            var estadoTexto = '';
+            if (estado === 'critico') estadoTexto = '🔴 Urgente';
+            else if (estado === 'bajo') estadoTexto = '🟡 Poco';
+            else estadoTexto = '🟢 OK';
+            
+            var falta = Math.max(0, producto.cantidadMinima - producto.cantidadActual);
+            
+            html += '<div class="product-card ' + estado + '">';
+            html += '<div class="product-header">';
+            html += '<div class="product-name">';
+            html += '<h3>' + producto.nombre + '</h3>';
+            
+            if (producto.recetasQueLoUsan && producto.recetasQueLoUsan > 0) {
+                html += '<p>Usado en ' + producto.recetasQueLoUsan + ' recetas • ' + producto.unidadMedida + '</p>';
+            } else {
+                html += '<p>' + producto.unidadMedida + '</p>';
+            }
+            
+            html += '</div>';
+            html += '<span class="product-status ' + estado + '">' + estadoTexto + '</span>';
+            html += '</div>';
+            
+            html += '<div class="progress-bar">';
+            html += '<div class="progress-fill ' + estado + '" style="width: ' + porcentaje + '%"></div>';
+            html += '</div>';
+            
+            html += '<div class="quantity-control">';
+            html += '<div class="quantity-display">';
+            html += '<div class="label">Cantidad Actual</div>';
+            html += '<div class="value">' + producto.cantidadActual + '</div>';
+            html += '</div>';
+            html += '<div class="quantity-buttons">';
+            html += '<button class="qty-btn qty-btn-minus" onclick="changeQuantity(' + producto.id + ', -1)">- 1</button>';
+            html += '<button class="qty-btn qty-btn-set" onclick="openSetQuantity(' + producto.id + ')">Establecer</button>';
+            html += '<button class="qty-btn qty-btn-plus" onclick="changeQuantity(' + producto.id + ', 1)">+ 1</button>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div class="product-info">';
+            html += '<div class="info-item">';
+            html += '<div class="info-label">Mínimo</div>';
+            html += '<div class="info-value">' + producto.cantidadMinima + '</div>';
+            html += '</div>';
+            html += '<div class="info-item">';
+            html += '<div class="info-label">Máximo</div>';
+            html += '<div class="info-value">' + producto.cantidadMaxima + '</div>';
+            html += '</div>';
+            html += '<div class="info-item">';
+            html += '<div class="info-label">Falta</div>';
+            var pulseClass = estado === 'critico' ? ' pulse' : '';
+            html += '<div class="info-value' + pulseClass + '" style="color: var(--danger)">' + falta + '</div>';
+            html += '</div>';
+            html += '</div>';
+            
+            html += '<div class="product-actions">';
+            html += '<button class="btn btn-edit" onclick="editProduct(' + producto.id + ')">✏️ Editar</button>';
+            html += '<button class="btn btn-delete" onclick="deleteProduct(' + producto.id + ')">🗑️ Eliminar</button>';
+            html += '</div>';
+            
+            html += '</div>';
+        }
+        
+        html += '</div>';
+    }
+    
+    if (!found) {
+        html = '<div style="text-align: center; padding: 60px 20px; color: var(--gray);">';
+        html += '<div style="font-size: 4em; margin-bottom: 20px;">🔍</div>';
+        html += '<h3 style="font-size: 1.5em; margin-bottom: 10px;">No se encontraron productos</h3>';
+        html += '<p>Intenta con otros filtros</p>';
+        html += '</div>';
+    }
+    
+    document.getElementById('productsList').innerHTML = html;
+}
+
+function changeQuantity(id, cambio) {
+    var productos = INVENTARIO[tabActual];
+    var producto = null;
+    
+    for (var i = 0; i < productos.length; i++) {
+        if (productos[i].id === id) {
+            producto = productos[i];
+            break;
+        }
+    }
+    
+    if (!producto) return;
+    
+    producto.cantidadActual = Math.max(0, producto.cantidadActual + cambio);
+    
+    saveData();
+    renderSummary();
+    renderProducts();
+}
+
+function openSetQuantity(id) {
+    var productos = INVENTARIO[tabActual];
+    selectedProduct = null;
+    
+    for (var i = 0; i < productos.length; i++) {
+        if (productos[i].id === id) {
+            selectedProduct = productos[i];
+            break;
+        }
+    }
+    
+    if (!selectedProduct) return;
+    
+    selectedProductTab = tabActual;
+    document.getElementById('modalProductName').textContent = selectedProduct.nombre;
+    document.getElementById('exactQuantity').value = selectedProduct.cantidadActual;
+    document.getElementById('setQuantityModal').classList.add('show');
+    
+    setTimeout(function() {
+        document.getElementById('exactQuantity').select();
+    }, 100);
+}
+
+function setExactQuantity() {
+    if (!selectedProduct) return;
+    
+    var cantidad = parseInt(document.getElementById('exactQuantity').value) || 0;
+    selectedProduct.cantidadActual = Math.max(0, cantidad);
+    
+    saveData();
+    renderSummary();
+    renderProducts();
+    closeModal();
+}
+
+function closeModal() {
+    var modals = document.querySelectorAll('.modal');
+    for (var i = 0; i < modals.length; i++) {
+        modals[i].classList.remove('show');
+    }
+    selectedProduct = null;
+    selectedProductTab = null;
+}
+
+function filterByStatus(status) {
+    currentFilter = status;
+    
+    var buttons = document.querySelectorAll('.filter-btn');
+    for (var i = 0; i < buttons.length; i++) {
+        buttons[i].classList.remove('active');
+        if (buttons[i].dataset.filter === status) {
+            buttons[i].classList.add('active');
+        }
+    }
+    
+    renderProducts();
+}
+
+function filterProducts() {
+    renderProducts();
+}
+
+function showShoppingList() {
+    var todosCriticos = [];
+    
+    var tabs = ['ingredientes', 'loza', 'equipos', 'limpieza'];
+    for (var t = 0; t < tabs.length; t++) {
+        var tab = tabs[t];
+        var productos = INVENTARIO[tab];
+        
+        for (var i = 0; i < productos.length; i++) {
+            var p = productos[i];
+            var estado = getProductStatus(p);
+            if (estado === 'critico' || estado === 'bajo') {
+                todosCriticos.push({
+                    producto: p,
+                    tab: tab,
+                    estado: estado
+                });
+            }
+        }
+    }
+    
+    todosCriticos.sort(function(a, b) {
+        if (a.estado === 'critico' && b.estado !== 'critico') return -1;
+        if (a.estado !== 'critico' && b.estado === 'critico') return 1;
+        return 0;
+    });
+    
+    var html = '';
+    
+    if (todosCriticos.length === 0) {
+        html = '<div style="text-align: center; padding: 40px; color: var(--success);">';
+        html += '<div style="font-size: 4em; margin-bottom: 20px;">✅</div>';
+        html += '<h3>¡Todo en orden!</h3>';
+        html += '<p>No hay productos urgentes</p>';
+        html += '</div>';
+    } else {
+        for (var i = 0; i < todosCriticos.length; i++) {
+            var item = todosCriticos[i];
+            var p = item.producto;
+            var falta = Math.max(0, p.cantidadMinima - p.cantidadActual);
+            var sugerido = p.cantidadMaxima - p.cantidadActual;
+            
+            var tabNombre = '';
+            if (item.tab === 'ingredientes') tabNombre = '🥘';
+            else if (item.tab === 'loza') tabNombre = '🍽️';
+            else if (item.tab === 'equipos') tabNombre = '⚙️';
+            else tabNombre = '🧹';
+            
+            html += '<div class="shopping-item">';
+            html += '<div class="shopping-item-info">';
+            html += '<h4>' + tabNombre + ' ' + p.nombre + '</h4>';
+            html += '<p>Mínimo: ' + falta + ' | Sugerido: ' + sugerido + ' ' + p.unidadMedida + '</p>';
+            html += '</div>';
+            html += '<div class="shopping-qty">' + sugerido + '</div>';
+            html += '</div>';
+        }
+    }
+    
+    document.getElementById('shoppingList').innerHTML = html;
+    document.getElementById('shoppingModal').classList.add('show');
+}
+
+function exportShoppingList() {
+    var todosCriticos = [];
+    
+    var tabs = ['ingredientes', 'loza', 'equipos', 'limpieza'];
+    for (var t = 0; t < tabs.length; t++) {
+        var tab = tabs[t];
+        var productos = INVENTARIO[tab];
+        
+        for (var i = 0; i < productos.length; i++) {
+            var p = productos[i];
+            var estado = getProductStatus(p);
+            if (estado === 'critico' || estado === 'bajo') {
+                todosCriticos.push({
+                    producto: p,
+                    tab: tab,
+                    estado: estado
+                });
+            }
+        }
+    }
+    
+    var texto = 'LISTA DE COMPRAS - Family Comidas Rápidas\n';
+    texto += 'Fecha: ' + new Date().toLocaleDateString('es-CO') + '\n';
+    texto += '='.repeat(50) + '\n\n';
+    
+    if (todosCriticos.length === 0) {
+        texto += 'No hay productos urgentes\n';
+    } else {
+        for (var i = 0; i < todosCriticos.length; i++) {
+            var item = todosCriticos[i];
+            var p = item.producto;
+            var sugerido = p.cantidadMaxima - p.cantidadActual;
+            var estado = item.estado === 'critico' ? 'URGENTE' : 'POCO STOCK';
+            
+            texto += estado + '\n';
+            texto += 'Producto: ' + p.nombre + '\n';
+            texto += 'Cantidad: ' + sugerido + ' ' + p.unidadMedida + '\n';
+            texto += 'Tipo: ' + item.tab + '\n';
+            texto += '-'.repeat(50) + '\n\n';
+        }
+    }
+    
+    var blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Lista_Compras_' + new Date().toISOString().split('T')[0] + '.txt';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    alert('📄 Lista exportada');
+}
+
+function exportToExcel() {
+    if (typeof XLSX === 'undefined') {
+        alert('Error: No se puede exportar');
+        return;
+    }
+    
+    var data = [['Tipo', 'Categoría', 'Producto', 'Actual', 'Mínimo', 'Máximo', 'Estado', 'Falta']];
+    
+    var tabs = ['ingredientes', 'loza', 'equipos', 'limpieza'];
+    for (var t = 0; t < tabs.length; t++) {
+        var tab = tabs[t];
+        var productos = INVENTARIO[tab];
+        
+        for (var i = 0; i < productos.length; i++) {
+            var p = productos[i];
+            var estado = getProductStatus(p);
+            var estadoTexto = estado === 'critico' ? 'URGENTE' : estado === 'bajo' ? 'POCO' : 'OK';
+            var falta = Math.max(0, p.cantidadMinima - p.cantidadActual);
+            
+            data.push([
+                tab,
+                p.categoria,
+                p.nombre,
+                p.cantidadActual,
+                p.cantidadMinima,
+                p.cantidadMaxima,
+                estadoTexto,
+                falta
+            ]);
+        }
+    }
+    
+    var ws = XLSX.utils.aoa_to_sheet(data);
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Inventario');
+    
+    var fecha = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, 'Inventario_Family_' + fecha + '.xlsx');
+    
+    alert('📊 Excel exportado');
+}
+
+
+var editingProductId = null;
+
+function openAddProductModal() {
+    editingProductId = null;
+    document.getElementById('productModalTitle').textContent = 'Agregar Producto';
+    document.getElementById('productName').value = '';
+    document.getElementById('productCategory').value = '';
+    document.getElementById('productUnit').value = 'Unidad';
+    document.getElementById('productCurrentQty').value = '0';
+    document.getElementById('productMinQty').value = '5';
+    document.getElementById('productMaxQty').value = '50';
+    document.getElementById('productModal').classList.add('show');
+}
+
+function editProduct(id) {
+    var productos = INVENTARIO[tabActual];
+    var producto = null;
+    
+    for (var i = 0; i < productos.length; i++) {
+        if (productos[i].id === id) {
+            producto = productos[i];
+            break;
+        }
+    }
+    
+    if (!producto) {
+        alert('Producto no encontrado');
+        return;
+    }
+    
+    editingProductId = id;
+    document.getElementById('productModalTitle').textContent = 'Editar Producto';
+    document.getElementById('productName').value = producto.nombre;
+    document.getElementById('productCategory').value = producto.categoria;
+    document.getElementById('productUnit').value = producto.unidadMedida;
+    document.getElementById('productCurrentQty').value = producto.cantidadActual;
+    document.getElementById('productMinQty').value = producto.cantidadMinima;
+    document.getElementById('productMaxQty').value = producto.cantidadMaxima;
+    document.getElementById('productModal').classList.add('show');
+}
+
+function saveProduct() {
+    var nombre = document.getElementById('productName').value.trim();
+    var categoria = document.getElementById('productCategory').value.trim();
+    var unidad = document.getElementById('productUnit').value;
+    var actual = parseInt(document.getElementById('productCurrentQty').value) || 0;
+    var minima = parseInt(document.getElementById('productMinQty').value) || 0;
+    var maxima = parseInt(document.getElementById('productMaxQty').value) || 0;
+    
+    if (!nombre || !categoria) {
+        alert('Por favor complete el nombre y la categoría');
+        return;
+    }
+    
+    if (maxima < minima) {
+        alert('La cantidad máxima debe ser mayor o igual a la mínima');
+        return;
+    }
+    
+    var productos = INVENTARIO[tabActual];
+    
+    if (editingProductId !== null) {
+        // Editar producto existente
+        for (var i = 0; i < productos.length; i++) {
+            if (productos[i].id === editingProductId) {
+                productos[i].nombre = nombre;
+                productos[i].categoria = categoria;
+                productos[i].unidadMedida = unidad;
+                productos[i].cantidadActual = actual;
+                productos[i].cantidadMinima = minima;
+                productos[i].cantidadMaxima = maxima;
+                break;
+            }
+        }
+        alert('✅ Producto actualizado');
+    } else {
+        // Agregar nuevo producto
+        var nuevoId = 1;
+        for (var i = 0; i < productos.length; i++) {
+            if (productos[i].id >= nuevoId) {
+                nuevoId = productos[i].id + 1;
+            }
+        }
+        
+        var nuevoProducto = {
+            id: nuevoId,
+            nombre: nombre,
+            categoria: categoria,
+            unidadMedida: unidad,
+            cantidadActual: actual,
+            cantidadMinima: minima,
+            cantidadMaxima: maxima,
+            activo: true,
+            tipoInventario: tabActual,
+            recetasQueLoUsan: 0
+        };
+        
+        productos.push(nuevoProducto);
+        alert('✅ Producto agregado');
+    }
+    
+    saveData();
+    renderSummary();
+    renderProducts();
+    closeModal();
+}
+
+function deleteProduct(id) {
+    var productos = INVENTARIO[tabActual];
+    var producto = null;
+    var index = -1;
+    
+    for (var i = 0; i < productos.length; i++) {
+        if (productos[i].id === id) {
+            producto = productos[i];
+            index = i;
+            break;
+        }
+    }
+    
+    if (!producto) {
+        alert('Producto no encontrado');
+        return;
+    }
+    
+    if (confirm('¿Está seguro de eliminar "' + producto.nombre + '"? Esta acción no se puede deshacer.')) {
+        productos.splice(index, 1);
+        alert('✅ Producto eliminado');
+        saveData();
+        renderSummary();
+        renderProducts();
+    }
+}
+
+
+window.addEventListener('load', init);
+setInterval(saveData, 30000);
+
+
+// ==================== SISTEMA DE CONSOLIDACIÓN ====================
+
+function exportarMiParte() {
+    var fecha = new Date().toISOString().split('T')[0];
+    var hora = new Date().toTimeString().split(' ')[0].substring(0,5);
+    
+    // Obtener nombre de la pestaña actual
+    var nombrePestana = '';
+    if (tabActual === 'ingredientes') nombrePestana = 'Ingredientes';
+    else if (tabActual === 'loza') nombrePestana = 'Loza';
+    else if (tabActual === 'equipos') nombrePestana = 'Equipos';
+    else if (tabActual === 'limpieza') nombrePestana = 'Limpieza';
+    
+    // Crear objeto de exportación parcial
+    var exportParcial = {
+        version: 'v1',
+        fecha: fecha,
+        hora: hora,
+        pestana: tabActual,
+        nombrePestana: nombrePestana,
+        productos: INVENTARIO[tabActual],
+        exportadoPor: 'colaborador'
+    };
+    
+    // Descargar como JSON
+    var dataStr = JSON.stringify(exportParcial, null, 2);
+    var blob = new Blob([dataStr], {type: 'application/json'});
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = nombrePestana + '_' + fecha + '_' + hora.replace(':', '-') + '.json';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    // Mostrar mensaje de éxito
+    var mensaje = '✅ Archivo exportado!\n\n';
+    mensaje += '📁 Nombre: ' + a.download + '\n';
+    mensaje += '📤 SIGUIENTE PASO:\n';
+    mensaje += '1. Buscar el archivo en Descargas\n';
+    mensaje += '2. Enviarlo por WhatsApp a la dueña\n\n';
+    mensaje += '💡 La dueña lo consolidará con los demás';
+    
+    alert(mensaje);
+}
+
+function consolidarInventarios() {
+    // Crear input para seleccionar múltiples archivos
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.multiple = true;
+    
+    input.onchange = function(e) {
+        var archivos = e.target.files;
+        if (archivos.length === 0) {
+            alert('No se seleccionaron archivos');
+            return;
+        }
+        
+        var mensaje = '📥 CONSOLIDANDO INVENTARIOS\n\n';
+        mensaje += 'Archivos seleccionados: ' + archivos.length + '\n\n';
+        mensaje += 'Procesando...';
+        
+        // Mostrar progreso
+        var processing = true;
+        
+        // Leer todos los archivos
+        var archivosLeidos = 0;
+        var datosConsolidados = {};
+        var errores = [];
+        
+        for (var i = 0; i < archivos.length; i++) {
+            var archivo = archivos[i];
+            var reader = new FileReader();
+            
+            reader.onload = function(event) {
+                try {
+                    var data = JSON.parse(event.target.result);
+                    
+                    // Validar que sea un archivo de exportación válido
+                    if (!data.version || !data.pestana || !data.productos) {
+                        errores.push('Archivo inválido: ' + archivo.name);
+                        archivosLeidos++;
+                        return;
+                    }
+                    
+                    // Consolidar los productos
+                    var pestana = data.pestana;
+                    
+                    if (!datosConsolidados[pestana]) {
+                        datosConsolidados[pestana] = {
+                            nombrePestana: data.nombrePestana,
+                            productos: []
+                        };
+                    }
+                    
+                    // Agregar productos
+                    datosConsolidados[pestana].productos = data.productos;
+                    
+                    archivosLeidos++;
+                    
+                    // Si terminamos de leer todos
+                    if (archivosLeidos === archivos.length) {
+                        finalizarConsolidacion(datosConsolidados, errores);
+                    }
+                    
+                } catch(error) {
+                    errores.push('Error leyendo archivo: ' + error.message);
+                    archivosLeidos++;
+                    
+                    if (archivosLeidos === archivos.length) {
+                        finalizarConsolidacion(datosConsolidados, errores);
+                    }
+                }
+            };
+            
+            reader.readAsText(archivo);
+        }
+    };
+    
+    input.click();
+}
+
+function finalizarConsolidacion(datosConsolidados, errores) {
+    if (errores.length > 0) {
+        var msg = '⚠️ Errores encontrados:\n\n';
+        msg += errores.join('\n');
+        alert(msg);
+    }
+    
+    // Actualizar el inventario con los datos consolidados
+    var cambios = [];
+    
+    for (var pestana in datosConsolidados) {
+        var datos = datosConsolidados[pestana];
+        
+        // Reemplazar los productos de esa pestaña
+        INVENTARIO[pestana] = datos.productos;
+        
+        cambios.push('✅ ' + datos.nombrePestana + ': ' + datos.productos.length + ' productos actualizados');
+    }
+    
+    // Guardar todo
+    saveData();
+    
+    // Actualizar la vista
+    renderSummary();
+    renderProducts();
+    
+    // Mostrar resumen
+    var resumen = '✅ CONSOLIDACIÓN COMPLETADA\n\n';
+    resumen += 'Pestañas actualizadas:\n';
+    resumen += cambios.join('\n');
+    resumen += '\n\n💾 Datos guardados automáticamente';
+    resumen += '\n🛒 Ahora puede ver la Lista de Compras actualizada';
+    
+    alert(resumen);
+}
+
+function exportarTodoJSON() {
+    // Exportación completa del inventario (para respaldo)
+    var fecha = new Date().toISOString().split('T')[0];
+    
+    var exportCompleto = {
+        version: 'v1',
+        fecha: fecha,
+        tipo: 'completo',
+        inventario: INVENTARIO,
+        historial: HISTORIAL_COMPRAS || []
+    };
+    
+    var dataStr = JSON.stringify(exportCompleto, null, 2);
+    var blob = new Blob([dataStr], {type: 'application/json'});
+    var url = window.URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'Inventario_Completo_' + fecha + '.json';
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    alert('✅ Inventario completo exportado\n\nUse este archivo como respaldo de seguridad');
+}
+
+function importarInventarioCompleto() {
+    if (!confirm('⚠️ ADVERTENCIA\n\nEsto reemplazará TODO el inventario actual.\n¿Está segura de continuar?')) {
+        return;
+    }
+    
+    var input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    
+    input.onchange = function(e) {
+        var archivo = e.target.files[0];
+        if (!archivo) return;
+        
+        var reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                var data = JSON.parse(event.target.result);
+                
+                if (!data.version || !data.inventario) {
+                    alert('❌ Archivo inválido');
+                    return;
+                }
+                
+                // Reemplazar todo el inventario
+                INVENTARIO = data.inventario;
+                
+                if (data.historial) {
+                    HISTORIAL_COMPRAS = data.historial;
+                }
+                
+                saveData();
+                renderSummary();
+                renderProducts();
+                
+                alert('✅ Inventario importado correctamente');
+                
+            } catch(error) {
+                alert('❌ Error leyendo archivo: ' + error.message);
+            }
+        };
+        
+        reader.readAsText(archivo);
+    };
+    
+    input.click();
+}
+
+</script>
+
+</body>
+</html>

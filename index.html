@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Comidas Rápidas - Sistema de Gestión</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f9fafb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--dark);
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.2em;
+        }
+
+        /* Systems Grid */
+        .systems {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .system-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .system-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .system-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .system-card h2 {
+            color: var(--dark);
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .system-card p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .features li {
+            padding: 8px 0;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+        }
+
+        .features li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Stats */
+        .stats {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stats h3 {
+            color: var(--dark);
+            font-size: 1.8em;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 15px;
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 1em;
+        }
+
+        /* Footer */
+        .footer {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .footer p {
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .badge-new {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-updated {
+            background: var(--warning);
+            color: white;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .subtitle {
+                font-size: 1em;
+            }
+
+            .system-card {
+                padding: 25px;
+            }
+
+            .header {
+                padding: 25px;
+            }
+
+            .stats {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🍔</div>
+            <h1>Family Comidas Rápidas</h1>
+            <p class="subtitle">Sistema Completo de Gestión - Guapi, Cauca</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <h3>📊 Resumen del Sistema</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">51</div>
+                    <div class="stat-label">Recetas Validadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">75</div>
+                    <div class="stat-label">Productos en Inventario</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Inventarios Organizados</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Mobile Friendly</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Systems -->
+        <div class="systems">
+            <!-- Recetario -->
+            <div class="system-card">
+                <div class="system-icon">📖</div>
+                <h2>Recetario Digital</h2>
+                <span class="badge badge-updated">Actualizado</span>
+                <p>Sistema completo de recetas con validación de la dueña, ingredientes detallados y fotos integradas.</p>
+                
+                <ul class="features">
+                    <li>51 recetas validadas por la señora Miryam</li>
+                    <li>Badge "Validada por la dueña"</li>
+                    <li>Ingredientes detallados con cantidades</li>
+                    <li>Preparación paso a paso</li>
+                    <li>Fotos embebidas en cada receta</li>
+                    <li>Filtros: Todas, Validadas, Pendientes</li>
+                    <li>Modo Admin y Modo Vista</li>
+                    <li>Exportar/Importar JSON</li>
+                    <li>Búsqueda por nombre</li>
+                    <li>Funciona offline</li>
+                </ul>
+
+                <a href="recetario.html" class="btn btn-primary">Abrir Recetario</a>
+            </div>
+
+            <!-- Inventario -->
+            <div class="system-card">
+                <div class="system-icon">📦</div>
+                <h2>Control de Inventario</h2>
+                <span class="badge badge-new">Nuevo</span>
+                <span class="badge badge-updated">Mejorado</span>
+                <p>Sistema inteligente de inventario con 4 categorías, alertas automáticas y consolidación por WhatsApp.</p>
+                
+                <ul class="features">
+                    <li>4 Inventarios: Ingredientes, Loza, Equipos, Limpieza</li>
+                    <li>Sistema de colores (Rojo/Amarillo/Verde)</li>
+                    <li>Alertas automáticas de stock bajo</li>
+                    <li>Lista de compras automática</li>
+                    <li>Botones simples +/- para actualizar</li>
+                    <li>Agregar/Editar/Eliminar productos</li>
+                    <li>Búsqueda y filtros avanzados</li>
+                    <li>Exportar a Excel</li>
+                    <li>Consolidación por WhatsApp (equipo)</li>
+                    <li>Sincronizar celular ↔ computador</li>
+                    <li>Guardado automático silencioso</li>
+                    <li>75 productos pre-cargados</li>
+                </ul>
+
+                <a href="inventario.html" class="btn btn-primary">Abrir Inventario</a>
+            </div>
+        </div>
+
+        <!-- New Features Section -->
+        <div class="stats">
+            <h3>✨ Características Principales</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 30px;">
+                
+                <div>
+                    <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1.3em;">📱 Mobile First</h4>
+                    <p style="color: #6b7280; line-height: 1.6;">
+                        Optimizado para celular y tablet. Úselo desde cualquier dispositivo sin problemas.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--success); margin-bottom: 15px; font-size: 1.3em;">🔄 Sincronización</h4>
+                    <p style="color: #6b7280; line-height: 1.6;">
+                        Exportar/Importar datos entre dispositivos. Trabaje en celular y computador sin problema.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--warning); margin-bottom: 15px; font-size: 1.3em;">👥 Trabajo en Equipo</h4>
+                    <p style="color: #6b7280; line-height: 1.6;">
+                        Sistema de consolidación por WhatsApp. Cada colaborador su parte, la dueña consolida todo.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--danger); margin-bottom: 15px; font-size: 1.3em;">🚨 Alertas Inteligentes</h4>
+                    <p style="color: #6b7280; line-height: 1.6;">
+                        Colores automáticos (semáforo) que le avisan cuando algo se está acabando.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--secondary); margin-bottom: 15px; font-size: 1.3em;">💾 Respaldos</h4>
+                    <p style="color: #6b7280; line-height: 1.6;">
+                        Exportar a Excel o JSON. Guardar respaldos semanales en Google Drive o email.
+                    </p>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1.3em;">🔍 Búsqueda Rápida</h4>
+                    <p style="color: #6b7280; line-height: 1.6;">
+                        Encuentre productos o recetas al instante escribiendo el nombre.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Guides Section -->
+        <div class="stats">
+            <h3>📚 Guías y Documentación</h3>
+            <div style="margin-top: 25px;">
+                <p style="color: #6b7280; margin-bottom: 20px; text-align: center;">
+                    Guías completas paso a paso para usar cada sistema
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div style="background: var(--light); padding: 20px; border-radius: 15px; text-align: center;">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">📖</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 5px;">Guía del Recetario</strong>
+                        <small style="color: #6b7280;">Cómo usar el sistema de recetas</small>
+                    </div>
+                    <div style="background: var(--light); padding: 20px; border-radius: 15px; text-align: center;">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">📦</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 5px;">Guía del Inventario</strong>
+                        <small style="color: #6b7280;">Tutorial completo de inventario</small>
+                    </div>
+                    <div style="background: var(--light); padding: 20px; border-radius: 15px; text-align: center;">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">👥</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 5px;">Consolidación WhatsApp</strong>
+                        <small style="color: #6b7280;">Trabajo en equipo paso a paso</small>
+                    </div>
+                    <div style="background: var(--light); padding: 20px; border-radius: 15px; text-align: center;">
+                        <div style="font-size: 2.5em; margin-bottom: 10px;">🔄</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 5px;">Sincronización</strong>
+                        <small style="color: #6b7280;">Celular ↔ Computador</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Requirements -->
+        <div class="stats">
+            <h3>💻 Requisitos del Sistema</h3>
+            <div style="margin-top: 25px; text-align: center;">
+                <div style="display: inline-block; text-align: left; max-width: 600px;">
+                    <p style="color: #6b7280; margin-bottom: 15px; line-height: 1.8;">
+                        <strong style="color: var(--dark);">✓ Navegador:</strong> Chrome, Firefox, Safari, Edge (cualquiera moderno)<br>
+                        <strong style="color: var(--dark);">✓ Dispositivo:</strong> Celular, Tablet, Computador<br>
+                        <strong style="color: var(--dark);">✓ Internet:</strong> Solo para cargar la primera vez<br>
+                        <strong style="color: var(--dark);">✓ Instalación:</strong> No requiere instalación<br>
+                        <strong style="color: var(--dark);">✓ Costo:</strong> Gratis
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Start -->
+        <div class="stats">
+            <h3>🚀 Inicio Rápido</h3>
+            <div style="margin-top: 25px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: var(--primary); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; margin: 0 auto 15px;">1</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 10px;">Abrir en Celular</strong>
+                        <p style="color: #6b7280; font-size: 0.95em;">Guardar este link en favoritos para acceso rápido</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: var(--success); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; margin: 0 auto 15px;">2</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 10px;">Elegir Sistema</strong>
+                        <p style="color: #6b7280; font-size: 0.95em;">Click en Recetario o Inventario según necesite</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: var(--warning); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; margin: 0 auto 15px;">3</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 10px;">Ver Tutorial</strong>
+                        <p style="color: #6b7280; font-size: 0.95em;">Primera vez muestra tutorial automático</p>
+                    </div>
+                    <div style="text-align: center; padding: 20px;">
+                        <div style="background: var(--danger); color: white; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: bold; margin: 0 auto 15px;">4</div>
+                        <strong style="display: block; color: var(--dark); margin-bottom: 10px;">¡Usar!</strong>
+                        <p style="color: #6b7280; font-size: 0.95em;">Ya está listo para gestionar su restaurante</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Family Comidas Rápidas</strong></p>
+            <p>Sistema de Gestión Completo</p>
+            <p>Guapi, Cauca - Colombia</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">
+                Desarrollado con ❤️ para optimizar las operaciones de su restaurante
+            </p>
+            <p style="margin-top: 10px; color: #9ca3af; font-size: 0.85em;">
+                Versión 2.0 - Enero 2026
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Agregar animaciones suaves
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.system-card, .stats, .header, .footer');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,3148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recetario Digital - Family Comidas Rápidas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #FFC107;
+            --primary-dark: #F9A825;
+            --primary-light: #FFD54F;
+            --dark-bg: #1a1a1a;
+            --dark-surface: #2d2d2d;
+            --gray: #666;
+            --light-gray: #f5f5f5;
+            --border: #ddd;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #2d1810 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .main-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #333;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(255, 193, 7, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -5%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .main-header h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            position: relative;
+        }
+
+        .main-header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-weight: 500;
+            position: relative;
+        }
+
+        /* Mode Switcher */
+        .mode-switch {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .mode-btn {
+            background: rgba(0,0,0,0.2);
+            border: 2px solid rgba(0,0,0,0.3);
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .mode-btn:hover {
+            background: rgba(0,0,0,0.3);
+            transform: translateY(-2px);
+        }
+
+        .mode-btn.active {
+            background: white;
+            color: var(--primary-dark);
+            border-color: white;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.8);
+            border: 2px solid rgba(220, 53, 69, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+            display: none;
+        }
+
+        .logout-btn.show {
+            display: inline-block;
+        }
+
+        .logout-btn:hover {
+            background: rgba(220, 53, 69, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Password Modal */
+        .password-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .password-modal.show {
+            display: flex;
+        }
+
+        .password-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        .password-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .password-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .password-header h2 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .password-header p {
+            color: var(--gray);
+            font-size: 0.9em;
+        }
+
+        .password-input-group {
+            margin-bottom: 25px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Rubik', sans-serif;
+            text-align: center;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .password-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+        }
+
+        .password-error {
+            color: var(--danger);
+            font-size: 0.9em;
+            margin-top: 10px;
+            display: none;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .password-error.show {
+            display: block;
+        }
+
+        .password-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .password-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .btn-password-cancel {
+            background: var(--light-gray);
+            color: #333;
+        }
+
+        .btn-password-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-password-submit {
+            background: var(--primary);
+            color: #333;
+        }
+
+        .btn-password-submit:hover {
+            background: var(--primary-dark);
+        }
+
+        .password-hint {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            font-size: 0.85em;
+            color: #856404;
+        }
+
+        .password-hint strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Search Bar */
+        .search-container {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 18px 50px 18px 20px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.3em;
+            color: var(--gray);
+        }
+
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .category-tag {
+            padding: 8px 16px;
+            background: var(--light-gray);
+            border: 2px solid transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .category-tag:hover {
+            background: #e0e0e0;
+        }
+
+        .category-tag.active {
+            background: var(--primary);
+            color: #333;
+            border-color: var(--primary);
+        }
+
+        /* Admin Controls */
+        .admin-controls {
+            display: none;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .admin-controls.show {
+            display: block;
+        }
+
+        .admin-controls button {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .admin-controls button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Recipes Grid */
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .recipe-card.validada {
+            border-left: 5px solid #28a745;
+        }
+
+        .recipe-card.pendiente {
+            border-left: 5px solid #ffc107;
+        }
+
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .recipe-header {
+            position: relative;
+            height: 220px;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .recipe-placeholder {
+            font-size: 4em;
+            color: rgba(0,0,0,0.2);
+        }
+
+        .recipe-category {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: white;
+            color: #333;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .recipe-body {
+            padding: 20px;
+        }
+
+        .recipe-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #222;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+            color: var(--gray);
+        }
+
+        .meta-icon {
+            font-size: 1.1em;
+        }
+
+        .recipe-price {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .recipe-details {
+            border-top: 2px solid var(--light-gray);
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+
+        .details-section {
+            margin-bottom: 15px;
+        }
+
+        .details-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .ingredients-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .ingredients-list li {
+            padding: 5px 0;
+            color: var(--gray);
+            font-size: 0.9em;
+            display: flex;
+            gap: 8px;
+        }
+
+        .ingredients-list li:before {
+            content: "•";
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .steps-list {
+            list-style: none;
+            padding: 0;
+            counter-reset: step;
+        }
+
+        .steps-list li {
+            padding: 8px 0;
+            color: var(--gray);
+            font-size: 0.9em;
+            counter-increment: step;
+            display: flex;
+            gap: 10px;
+        }
+
+        .steps-list li:before {
+            content: counter(step);
+            background: var(--primary);
+            color: #333;
+            font-weight: 700;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85em;
+            flex-shrink: 0;
+        }
+
+        .admin-actions {
+            display: none;
+            padding: 15px 20px;
+            background: var(--light-gray);
+            border-top: 2px solid var(--border);
+            gap: 10px;
+        }
+
+        .admin-actions.show {
+            display: flex;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .btn-edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #0056b3;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #333;
+            padding: 25px 30px;
+            border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.6em;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(0,0,0,0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: rgba(0,0,0,0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-family: 'Rubik', sans-serif;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Photo Upload Section */
+        .photo-upload-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: var(--light-gray);
+            border-radius: 12px;
+            border: 2px dashed var(--border);
+        }
+
+        .photo-preview-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+        }
+
+        .photo-placeholder-icon {
+            font-size: 4em;
+            margin-bottom: 10px;
+            opacity: 0.5;
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .photo-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .photo-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .photo-btn-primary {
+            background: var(--primary);
+            color: #333;
+        }
+
+        .photo-btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .photo-btn-danger {
+            background: var(--danger);
+            color: white;
+            display: none;
+        }
+
+        .photo-btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Ingredients Editor */
+        .ingredients-editor {
+            margin-bottom: 20px;
+        }
+
+        .ingredient-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .ingredient-row input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .ingredient-row input:first-child {
+            flex: 2;
+        }
+
+        .btn-remove {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+        }
+
+        .btn-add-ingredient {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        .btn-add-ingredient:hover {
+            background: #218838;
+        }
+
+        /* Modal Footer */
+        .modal-footer {
+            padding: 20px 30px;
+            background: var(--light-gray);
+            border-radius: 0 0 20px 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+        }
+
+        .btn-cancel {
+            background: var(--light-gray);
+            color: #333;
+            border: 2px solid var(--border);
+        }
+
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-save {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #218838;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-header h1 {
+                font-size: 1.8em;
+            }
+
+            .mode-switch {
+                position: static;
+                margin-top: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: rgba(255,255,255,0.7);
+        }
+    
+        /* Badge de validación */
+        .badge-validada {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .badge-pendiente {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: #333;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            margin-left: 10px;
+            box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+        }
+
+        .card.validada {
+            border-left: 4px solid #28a745;
+        }
+
+        .card.pendiente {
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Filtro de validación */
+        .filter-validacion {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-validacion button {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-validacion button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .filter-validacion button.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #333;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="main-header">
+            <div class="mode-switch">
+                <a href="#" class="home-btn" onclick="location.reload(); return false;">🏠 Inicio</a>
+                <button class="mode-btn active" onclick="setMode('view')">👁️ Vista</button>
+                <button class="mode-btn" onclick="requestAdminAccess()">⚙️ Admin</button>
+                <button class="logout-btn" id="logoutBtn" onclick="logout()">🚪 Cerrar Sesión</button>
+            </div>
+            <h1>🍔 Recetario Digital</h1>
+            <p class="subtitle">Family Comidas Rápidas - Guapi, Cauca</p>
+        </div>
+
+        <!-- Search -->
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Buscar recetas..." oninput="filterRecipes()">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="category-filter">
+                <div class="category-tag active" data-category="Todos" onclick="filterByCategory(this)">Todos</div>
+                <div class="category-tag" data-category="Entradas" onclick="filterByCategory(this)">Entradas</div>
+                <div class="category-tag" data-category="Hamburguesas" onclick="filterByCategory(this)">Hamburguesas</div>
+                <div class="category-tag" data-category="Perros Calientes" onclick="filterByCategory(this)">Perros Calientes</div>
+                <div class="category-tag" data-category="Sándwiches" onclick="filterByCategory(this)">Sándwiches</div>
+                <div class="category-tag" data-category="Salchipapas" onclick="filterByCategory(this)">Salchipapas</div>
+                <div class="category-tag" data-category="Carnes" onclick="filterByCategory(this)">Carnes</div>
+                <div class="category-tag" data-category="Pollo" onclick="filterByCategory(this)">Pollo</div>
+                <div class="category-tag" data-category="Combo Infantil" onclick="filterByCategory(this)">Combo Infantil</div>
+                <div class="category-tag" data-category="Heladería" onclick="filterByCategory(this)">Heladería</div>
+                <div class="category-tag" data-category="Bebidas" onclick="filterByCategory(this)">Bebidas</div>
+            </div>
+
+            <!-- Filtros de Validación -->
+            <div class="filter-validacion">
+                <button onclick="filterByValidacion('todas')" class="active" id="filter-todas">
+                    📋 Todas las Recetas
+                </button>
+                <button onclick="filterByValidacion('validadas')" id="filter-validadas">
+                    ✓ Solo Validadas
+                </button>
+                <button onclick="filterByValidacion('pendientes')" id="filter-pendientes">
+                    ⏳ Pendientes
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Controls -->
+        <div class="admin-controls" id="adminControls">
+            <button onclick="openAddModal()">➕ Agregar Nueva Receta</button>
+        </div>
+
+        <!-- Recipes Grid -->
+        <div class="recipes-grid" id="recipesGrid"></div>
+    </div>
+
+    <!-- Modal Agregar/Editar -->
+    <div class="modal" id="recipeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Agregar Nueva Receta</h2>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <form id="recipeForm" onsubmit="event.preventDefault(); saveRecipe();">
+                <div class="modal-body">
+                    <!-- Photo Upload -->
+                    <div class="photo-upload-section">
+                        <label class="form-label">📸 Foto del Producto</label>
+                        <div class="photo-preview-container">
+                            <div class="photo-placeholder" id="photoPlaceholder">
+                                <div class="photo-placeholder-icon">🍔</div>
+                                <p>Sin foto</p>
+                            </div>
+                            <img class="photo-preview" id="photoPreview" alt="Vista previa">
+                        </div>
+                        <div class="photo-buttons">
+                            <label for="photoInput" class="photo-btn photo-btn-primary">
+                                <span id="photoButtonText">📷 Subir Foto</span>
+                            </label>
+                            <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="handlePhotoUpload(event)">
+                            <button type="button" class="photo-btn photo-btn-danger" id="removePhotoBtn" onclick="removePhoto()">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+
+                    <!-- Basic Info -->
+                    <div class="form-group">
+                        <label class="form-label">Nombre del Producto</label>
+                        <input type="text" id="recipeName" class="form-input" placeholder="Ej: Hamburguesa Clásica" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Categoría</label>
+                            <select id="recipeCategory" class="form-select" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Entradas">Entradas</option>
+                                <option value="Hamburguesas">Hamburguesas</option>
+                                <option value="Perros Calientes">Perros Calientes</option>
+                                <option value="Sándwiches">Sándwiches</option>
+                                <option value="Salchipapas">Salchipapas</option>
+                                <option value="Carnes">Carnes</option>
+                                <option value="Pollo">Pollo</option>
+                                <option value="Combo Infantil">Combo Infantil</option>
+                                <option value="Heladería">Heladería</option>
+                                <option value="Bebidas">Bebidas</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Precio de Venta</label>
+                            <input type="text" id="recipePrice" class="form-input" placeholder="$15.000">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Tiempo de Preparación</label>
+                            <input type="text" id="recipeTime" class="form-input" placeholder="15 minutos">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Peso/Porción</label>
+                            <input type="text" id="recipePortion" class="form-input" placeholder="250g">
+                        </div>
+                    </div>
+
+                    <!-- Ingredients -->
+                    <div class="form-group">
+                        <label class="form-label">Ingredientes</label>
+                        <div class="ingredients-editor" id="ingredientsEditor"></div>
+                        <button type="button" class="btn-add-ingredient" onclick="addIngredientRow()">➕ Agregar Ingrediente</button>
+                    </div>
+
+                    <!-- Preparation Steps -->
+                    <div class="form-group">
+                        <label class="form-label">Pasos de Preparación (uno por línea)</label>
+                        <textarea id="recipeSteps" class="form-textarea" placeholder="1. Precalentar la plancha&#10;2. Preparar los ingredientes&#10;3. ..."></textarea>
+                    </div>
+
+                    <!-- Standards -->
+                    <div class="form-group">
+                        <label class="form-label">Estándares de Calidad (uno por línea)</label>
+                        <textarea id="recipeStandards" class="form-textarea" placeholder="- Temperatura adecuada&#10;- Presentación impecable&#10;- ..."></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modal-btn btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="modal-btn btn-save">💾 Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Contraseña -->
+    <div class="password-modal" id="passwordModal">
+        <div class="password-content">
+            <div class="password-header">
+                <div class="password-icon">🔐</div>
+                <h2>Acceso Administrador</h2>
+                <p>Ingresa la contraseña para continuar</p>
+            </div>
+            <form id="passwordForm" onsubmit="event.preventDefault(); checkPassword();">
+                <div class="password-input-group">
+                    <input 
+                        type="password" 
+                        id="passwordInput" 
+                        class="password-input" 
+                        placeholder="••••••••"
+                        autocomplete="off"
+                        required
+                    >
+                    <div class="password-error" id="passwordError">❌ Contraseña incorrecta</div>
+                </div>
+                <div class="password-buttons">
+                    <button type="button" class="password-btn btn-password-cancel" onclick="closePasswordModal()">Cancelar</button>
+                    <button type="submit" class="password-btn btn-password-submit">Ingresar</button>
+                </div>
+                <div class="password-hint">
+                    <strong>⚠️ NOTA IMPORTANTE:</strong>
+                    Para cambiar la contraseña, busca en el código HTML la línea: <code>const ADMIN_PASSWORD = "family2025";</code> y cámbiala por tu contraseña deseada.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============ CONFIGURACIÓN DE SEGURIDAD ============
+        // 🔐 CAMBIAR ESTA CONTRASEÑA SEGÚN TUS NECESIDADES
+        const ADMIN_PASSWORD = "family2025";
+        
+        // Variables de sesión
+        let isAdminAuthenticated = false;
+
+        // ============ DATOS INICIALES ============
+        let recipes = [
+            {
+                id: 1,
+                nombre: "Chori Papas - Entradas",
+                categoria: "Entradas",
+                precio: "$15.000",
+                tiempo: "10 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Salchicha americana  o chorizo santarrosano", cantidad: "1 unidad" },
+                    { nombre: "Papa a la Francesa", cantidad: "100g" },
+                    { nombre: "Papa Criolla", cantidad: "50g" },
+                    { nombre: "Queso Fundido", cantidad: "2 lonjas" },
+                    { nombre: "Salsas", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Freír las papas hasta dorar",
+                    "Cocinar la salchicha y el chorizo a la plancha",
+                    "Cortar en rodajas",
+                    "Servir sobre las papas",
+                    "Agregar queso fundido",
+                    "Añadir salsas al gusto"
+                ],
+                estandares: [
+                    "Papas bien doradas y crocantes",
+                    "Carnes bien cocidas",
+                    "Temperatura de servicio: caliente",
+                    "Presentación ordenada"
+                ]
+            },
+            {
+                id: 2,
+                nombre: "Colitas Cubanas",
+                categoria: "Entradas",
+                precio: "$15.000",
+                tiempo: "8 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Jamon", cantidad: "1 lonja" },
+                    { nombre: "Queso Doble Crema", cantidad: "50g o 2 lonjas" },
+                    { nombre: "Vegetales mixtos", cantidad: "30g" },
+                    { nombre: "Salsa especial", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "1. Abrir el pan por la mitad",
+                    "2.Untar con la salsa",
+                    "3. Agregar  queso y el jamon",
+                    "4. Adicionar la lechuga",
+                    "5. Añadir salsa al gusto",
+                    "6. Cerrar el pan e introducirlo en la sanduchera."
+                ],
+                estandares: [
+                    "- Pan bien dorado",
+                    "- Servir a temperatura caliente",
+                    "- Presentación ordenada"
+                ]
+            },
+            {
+                id: 3,
+                nombre: "Tortillas Rellenas",
+                categoria: "Entradas",
+                precio: "$15.000",
+                tiempo: "12 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Papas a la Francesa", cantidad: "150g" },
+                    { nombre: "Tortillas de Trigo", cantidad: "2 unidades" },
+                    { nombre: "Jamón", cantidad: "50g" },
+                    { nombre: "Queso", cantidad: "50g" },
+                    { nombre: "Carne", cantidad: "80g" },
+                    { nombre: "Pollo Quisado", cantidad: "80g" },
+                    { nombre: "Lechuga", cantidad: "20g" },
+                    { nombre: "Tomate", cantidad: "20g" }
+                ],
+                pasos: [
+                    "Freír las papas",
+                    "calentar la tortilla untamos de salsa al gusto",
+                    "Agregar el jamon y el queso",
+                    "Calentar el pollo y la carne desmechado  en un sartén",
+                    "Añadir el pollo, carne sobre el jamón y el queso",
+                    "Picar el tomate y la lechuga en julianas e incorporar con los otros ingredientes.",
+                    "Finalmente cerrar la tortilla.",
+                    "F"
+                ],
+                estandares: [
+                    "1 Tortilla bien dorada",
+                    "2 Ingredientes fresco",
+                    "3 Temperatura adecuada",
+                    "4 Buena presentación"
+                ]
+            },
+            {
+                id: 4,
+                nombre: "Patacón con Todo",
+                categoria: "Entradas",
+                precio: "$15.000",
+                tiempo: "20 Mn",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Plátano Frito", cantidad: "1 unidades" },
+                    { nombre: "Carne", cantidad: "25g" },
+                    { nombre: "Pollo Quisado", cantidad: "25g" },
+                    { nombre: "Salchichas", cantidad: "30g" },
+                    { nombre: "Queso Fundido", cantidad: "2 lonjas" }
+                ],
+                pasos: [
+                    "1 Freír y aplastar el plátano",
+                    "2 Freír la salchicha en rodajas",
+                    "3 Extender el patacon  en una bandeja",
+                    "4 Agregar salsa",
+                    "5 Añadir la salchicha",
+                    "6 Adicionar el pollo y la carne",
+                    "7 Extender el queso sobre los ingredientes anteriores",
+                    "8 Llevar al microondas por un minuto.",
+                    "9 Finalmente agregamos salsas al gusto."
+                ],
+                estandares: [
+                    "1 Freír bien el plátano",
+                    "2 ingredientes frescos",
+                    "3 Temperatura adecuada",
+                    "4 Presentación impecable"
+                ]
+            },
+            {
+                id: 5,
+                nombre: "Hamburguesa Clásica",
+                categoria: "Hamburguesas",
+                precio: "$18.000",
+                tiempo: "10 min",
+                porcion: "1 hamburguesa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Carne a la parrilla", cantidad: "100g" },
+                    { nombre: "Pan de hamburguesa", cantidad: "1 unidad" },
+                    { nombre: "Lechuga", cantidad: "20g" },
+                    { nombre: "Tomate", cantidad: "1 rodajas" },
+                    { nombre: "Cebolla", cantidad: "15g" },
+                    { nombre: "Salsa de la casa y  algusto", cantidad: "Al gusto" },
+                    { nombre: "jomon y queso", cantidad: "1 lonja" }
+                ],
+                pasos: [
+                    "Cocinar la carne a la parrilla",
+                    "2 Caramelizar la cebolla y calentar",
+                    "3 Partir por la mitad el pan y calentar",
+                    "4 Agregar salsa al gusto",
+                    "5 adicionar la carne, los vegetales  y el jamón y el queso",
+                    "6 cerrar el pan e introducir un palillo por el centro para fijar mejor"
+                ],
+                estandares: [
+                    "Carne jugosa y bien cocida",
+                    "2 Pan fresco y bien dorado",
+                    "3 Ingredientes frescos",
+                    "4 Presentación impecable"
+                ]
+            },
+            {
+                id: 6,
+                nombre: "Hamburguesa con Tocineta",
+                categoria: "Hamburguesas",
+                precio: "$20.000",
+                tiempo: "12 min",
+                porcion: "1 hamburguesa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Carne a la parrilla", cantidad: "100g" },
+                    { nombre: "Tocineta crujiente", cantidad: "2 tiras" },
+                    { nombre: "Queso", cantidad: "1 tajada" },
+                    { nombre: "Lechuga", cantidad: "20g" },
+                    { nombre: "Tomate", cantidad: "1 rodajas" },
+                    { nombre: "Cebolla", cantidad: "15g" },
+                    { nombre: "Jamon", cantidad: "1 lonja" },
+                    { nombre: "Queso", cantidad: "1 lonja" },
+                    { nombre: "papitas ripios", cantidad: "1 cucharada" },
+                    { nombre: "Salsas", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Asar la carne y la tocineta",
+                    "2 Cortar en rodajas la cebolla y caramelizar",
+                    "3 calentar la cebolla",
+                    "4 Partir el pan por la mitad y calentar",
+                    "5 Agregar salsa al pan",
+                    "6 Adicionar la carne, los vegetales,el jamón y el queso, tocineta",
+                    "7 Agregamos papitas ripio,sellamos el pan."
+                ],
+                estandares: [
+                    "Tocineta bien crocante",
+                    "2  Carne bien asada",
+                    "3 Pan fresco y bien tostado",
+                    "4  Ingredientes bien frescos",
+                    "5 Presentación impecable."
+                ]
+            },
+            {
+                id: 7,
+                nombre: "Hamburguesa Doble Carne",
+                categoria: "Hamburguesas",
+                precio: "$25.000",
+                tiempo: "15 min",
+                porcion: "1 hamburguesa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Carne a la parrilla", cantidad: "200g (2 porciones)" },
+                    { nombre: "Queso", cantidad: "1 tajadas" },
+                    { nombre: "Lechuga", cantidad: "30g" },
+                    { nombre: "Tomate", cantidad: "1rodajas" },
+                    { nombre: "Cebolla", cantidad: "20g" },
+                    { nombre: "Papas a la francesa", cantidad: "Acompañamiento" },
+                    { nombre: "Jamon", cantidad: "1 tajada" },
+                    { nombre: "Salsas", cantidad: "Al gusto" },
+                    { nombre: "Papitas ripio", cantidad: "1 cucharada" }
+                ],
+                pasos: [
+                    "Asar las dos porciones de carne",
+                    "Cortar la cebolla en rodajas y caramelizarla",
+                    "Cortar el pan por la mitad y calentar",
+                    "Agregar salsas",
+                    "Adicionar  carne, vegetales, pan y queso",
+                    "Agregar papita ripio y sellar"
+                ],
+                estandares: [
+                    "Doble porción bien proporcionada y visible",
+                    "Pan fresco y bien tostado (no quemado)",
+                    "Carne caliente y jugosa",
+                    "Queso bien fundido",
+                    "Jamón caliente y bien distribuido",
+                    "Lechuga y tomate frescos y  limpios",
+                    "Salsa bien aplicada sin excesos",
+                    "Producto bien armado y presentación limpia",
+                    "Temperatura adecuada al momento de servir."
+                ]
+            },
+            {
+                id: 8,
+                nombre: "Hamburguesa de Camarón",
+                categoria: "Hamburguesas",
+                precio: "$32.000",
+                tiempo: "12 min",
+                porcion: "1 hamburguesa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Carne de Camarón", cantidad: "2 unidades" },
+                    { nombre: "Jamón", cantidad: "1 tajada" },
+                    { nombre: "Queso", cantidad: "1 tajada" },
+                    { nombre: "Tocineta", cantidad: "2 tiras" },
+                    { nombre: "Vegetales", cantidad: "Al gusto" },
+                    { nombre: "Salsas de la casa", cantidad: "Al gusto" },
+                    { nombre: "Papas a la francesa", cantidad: "Acompañamiento" }
+                ],
+                pasos: [
+                    "Pelar, limpiar y abrir el camarón",
+                    "Sazonar ( Adobos de la casa) reservar",
+                    "Cocinar a la plancha.",
+                    "Cortar la cebolla en rodajas y caramelizar",
+                    "Partir el pan por la mitad y calentar",
+                    "Agregar salsas",
+                    "Adicionar el camarón, los vegetales , el jamón y el queso",
+                    "Sellar el pan",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Camarón fresco, limpio y bien cocido, jugoso y no reseco",
+                    "Pan fresco y bien tostado",
+                    "Queso bien fundido",
+                    "Vegetales frescos y bien lavados",
+                    "Salsa bien equilibrada y no en exceso",
+                    "Producto bien armado y con buena presentación",
+                    "Olor y sabor característicos , sin olor extraño.",
+                    "servir caliente"
+                ]
+            },
+            {
+                id: 9,
+                nombre: "Perro Caliente Sencillo",
+                categoria: "Perros Calientes",
+                precio: "$15.000",
+                tiempo: "8 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pan Artesanal", cantidad: "1 unidad" },
+                    { nombre: "Salchicha", cantidad: "1 unidad" },
+                    { nombre: "Queso Mozzarella", cantidad: "30g" },
+                    { nombre: "Papitas Ripio", cantidad: "20g" },
+                    { nombre: "Salsa de su preferencia", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Cocinar la salchicha en agua",
+                    "Abril el pan por la mitad sin separar completamente",
+                    "Colocar la salchicha dentro del pan",
+                    "Agregar queso",
+                    "Adicionar papitas ripio",
+                    "Calentar el pan",
+                    "Finalmente agregar salsa",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Salchicha bien caliente y bien cocida",
+                    "Pan bien caliente y ligeramente tostado",
+                    "Salsa bien distribuida y sin exceso",
+                    "Papas ripio crocantes",
+                    "Producto bien armado y limpio",
+                    "Servir caliente y recién preparado",
+                    "Presentación impecable"
+                ]
+            },
+            {
+                id: 10,
+                nombre: "Perro Caliente Americano",
+                categoria: "Perros Calientes",
+                precio: "$20.000",
+                tiempo: "10 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pan Artesanal", cantidad: "1 unidad" },
+                    { nombre: "Tocineta", cantidad: "2 tiras" },
+                    { nombre: "Queso Mozzarella", cantidad: "40g" },
+                    { nombre: "Maíz Tierno", cantidad: "30g" },
+                    { nombre: "Papitas Ripio", cantidad: "25g" },
+                    { nombre: "Salsa de la casa", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Preparar tocineta crujiente",
+                    "Calentar la salchicha hasta que esté bien caliente",
+                    "Abrir ligeramente el pan",
+                    "Colocar la salchicha dentro del pan",
+                    "Agregar cebolla ( si aplica)",
+                    "Adicionar el queso",
+                    "Agregar papitas ripio",
+                    "finalmente echar salsa al gusto.",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Salchicha bien cocida y caliente",
+                    "Pan fresco y ligeramente tostado",
+                    "Queso bien fundido",
+                    "Salsas bien distribuida y sin exceso",
+                    "Producto bien armado",
+                    "Presentación limpia y ordenada",
+                    "Servir caliente y recién hecho"
+                ]
+            },
+            {
+                id: 11,
+                nombre: "Perro Caliente Family",
+                categoria: "Perros Calientes",
+                precio: "$25.000",
+                tiempo: "12 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Papas a la francesa", cantidad: "Porción" },
+                    { nombre: "Pan artesanal", cantidad: "1 unidad" },
+                    { nombre: "Salchicha Americana", cantidad: "1 unidad" },
+                    { nombre: "Vegetales", cantidad: "Al gusto" },
+                    { nombre: "Pollo desmechado", cantidad: "50g" },
+                    { nombre: "Carne desmechada", cantidad: "50g" },
+                    { nombre: "Queso fundido", cantidad: "40g" },
+                    { nombre: "Maíz dulce", cantidad: "30g" },
+                    { nombre: "Tocineta", cantidad: "2 tiras" },
+                    { nombre: "Salsas al gusto", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Sazonar el pollo y la carne",
+                    "picar  vegetales",
+                    "Freír la tocineta",
+                    "Revolver los el pollo y los vegetales",
+                    "Agregar el maíz",
+                    "Calentar la salchicha",
+                    "Abrir  el pan",
+                    "Colocar la salchicha pan",
+                    "Agregar  de los vegetales y la proteína",
+                    "Adicionar el queso",
+                    "Agregar papitas ripio",
+                    "Finalmente aplicar salsa al gusto"
+                ],
+                estandares: [
+                    "Salchicha caliente y bien cocida",
+                    "Proteína bien sazonada y sin exceso",
+                    "Queso bien fundido",
+                    "Papas ripio crujientes",
+                    "Salsas equilibradas",
+                    "Producto bien armado sin derrames",
+                    "Presentación abundante y atractiva",
+                    "Papas francesas bien crujiente y calientes",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 12,
+                nombre: "Sándwich Sencillo",
+                categoria: "Sándwiches",
+                precio: "$13.000",
+                tiempo: "8 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pan Artesanal", cantidad: "4 rebanadas" },
+                    { nombre: "Queso Crema", cantidad: "30g" },
+                    { nombre: "Jamón", cantidad: "1 tajadas" },
+                    { nombre: "Vegetales", cantidad: "Al gusto" },
+                    { nombre: "Salsa de la casa", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Calentar el pan",
+                    "Agregar salsa",
+                    "Colocar el jamón y el queso",
+                    "Adicionar el vegetal",
+                    "Cerrar el sandwich",
+                    "Llevar a la sanduchera",
+                    "Dorar por ambos lados hasta fundir el queso",
+                    "Retirar y cortar en diagonal (si aplica)"
+                ],
+                estandares: [
+                    "Pan bien dorado, no quemado",
+                    "Queso bien fundido",
+                    "Jamón caliente y bien distribuido",
+                    "Sándwich bien sellado",
+                    "Textura crocante por fuera y suave por dentro",
+                    "Presentación limpia y ordenada",
+                    "Servir caliente y recién preparado."
+                ]
+            },
+            {
+                id: 13,
+                nombre: "Sándwich de Pollo",
+                categoria: "Sándwiches",
+                precio: "$15.000",
+                tiempo: "10 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pan Artesanal", cantidad: "2 rebanadas" },
+                    { nombre: "Vegetales", cantidad: "Al gusto" },
+                    { nombre: "Queso Crema", cantidad: "30g" },
+                    { nombre: "Pollo Apanado", cantidad: "100g" },
+                    { nombre: "Salsa de la Casa", cantidad: "Al gusto" },
+                    { nombre: "Papas a la francesa", cantidad: "Acompañamiento" }
+                ],
+                pasos: [
+                    "Apanar y cocinar el pollo",
+                    "Calentar el pollo",
+                    "Colocar el pollo y el queso sobre el pan",
+                    "}Llevar a la sandwichera hasta fundir el queso",
+                    "Retirar y agregar lechuga y tomate",
+                    "Aplicar salsa",
+                    "Cerrar y cortar en diagonal ( si aplica)"
+                ],
+                estandares: [
+                    "Pollo bien apanado,jugoso y caliente",
+                    "Queso bien fundido",
+                    "Pan dorado no quemado",
+                    "Vegetales frescos y limpios",
+                    "Salsas bien distribuidas",
+                    "Sandwich bien armado y firme",
+                    "Presentación limpia, fresca y atractiva",
+                    "servir caliente"
+                ]
+            },
+            {
+                id: 14,
+                nombre: "Sándwich Tipo Cubano",
+                categoria: "Sándwiches",
+                precio: "$25.000",
+                tiempo: "12 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pan Francés", cantidad: "1 unidad" },
+                    { nombre: "Vegetales", cantidad: "Al gusto" },
+                    { nombre: "Carne", cantidad: "80g" },
+                    { nombre: "Queso Crema", cantidad: "40g" },
+                    { nombre: "Pepinillos", cantidad: "3 unidades" },
+                    { nombre: "Tocineta", cantidad: "2 tiras" },
+                    { nombre: "Jamón", cantidad: "2 tajadas" },
+                    { nombre: "Salsa de la Casa", cantidad: "Al gusto" },
+                    { nombre: "Papas a la francesa", cantidad: "Acompañamiento" }
+                ],
+                pasos: [
+                    "Aliñar la carne",
+                    "Calentar  el jamón la carne y el queso",
+                    "Agregar pepinillos y mostaza",
+                    "Cerrar el sandwich",
+                    "Llevar a la sandwichera",
+                    "dorar hasta fundir el queso"
+                ],
+                estandares: [
+                    "Pan bien dorado y prensado ( no quemado)",
+                    "Queso completamente fundido",
+                    "Carnes caliente y bien distribuida",
+                    "Pepinillos visibles y bien separados",
+                    "Sabor equilibrado",
+                    "Sandwich firme y bien sellado",
+                    "Presentación limpia y ordenada",
+                    "Servir caliente"
+                ]
+            },
+            {
+                id: 15,
+                nombre: "Salchipapa Personal",
+                categoria: "Salchipapas",
+                precio: "$15.000",
+                tiempo: "10 min",
+                porcion: "Personal",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Papas francesas", cantidad: "200g" },
+                    { nombre: "Salchicha", cantidad: "30 g" },
+                    { nombre: "Queso", cantidad: "2ctajadas" },
+                    { nombre: "Pollo desmechado", cantidad: "30 g" },
+                    { nombre: "Salsas a elección", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Freír las papas y salchichas",
+                    "Escurrir el exceso de grasa",
+                    "Servir la papa como base",
+                    "Agregar salchicha",
+                    "Aplicar salsa",
+                    "Adicionar otra dase de papas",
+                    "Adicionar salsa",
+                    "agregar pollo",
+                    "Finalmente adicionar el queso",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Papas crocantes por fura y suaves por dentro",
+                    "Salchicha bien cocidas y calientes",
+                    "Queso bien fundido",
+                    "Salsa bien distribuida",
+                    "Porción personal y bien proporcionada",
+                    "Presentación limpia y ordenada",
+                    "servir caliente y recien preparado.",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 16,
+                nombre: "Salchicostilla",
+                categoria: "Salchipapas",
+                precio: "$28000",
+                tiempo: "15 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Salchichas", cantidad: "3 unidades" },
+                    { nombre: "Costilla de cerdo", cantidad: "100g" },
+                    { nombre: "Pollo desmechado", cantidad: "50g" },
+                    { nombre: "Papas fritas", cantidad: "200g" },
+                    { nombre: "Queso", cantidad: "4 taladas" },
+                    { nombre: "Salsas", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Freír las papas hasta dorar",
+                    "Freír o saltear las salchichas",
+                    "Calentar costilla previamente preparada",
+                    "Servir papa como base",
+                    "Agregar salchicha y salsas",
+                    "Adicionar otra capa de papas",
+                    "Incorporar queso",
+                    "Finalmente adicionar costillas en trozos"
+                ],
+                estandares: [
+                    "Papas crocantes",
+                    "Costilla suave y jugosa",
+                    "Salchicha bien cocida",
+                    "Queso bien fundido",
+                    "Producto abundante",
+                    "Presentación llamativa y ordenada",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 17,
+                nombre: "Salchiburguer",
+                categoria: "Salchipapas",
+                precio: "$30.000",
+                tiempo: "15 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Papas a la Francesa", cantidad: "200g" },
+                    { nombre: "Salchicha Queso Mozzarella", cantidad: "2 unidades" },
+                    { nombre: "Carne Desmechada", cantidad: "80g" },
+                    { nombre: "Pollo", cantidad: "50g" },
+                    { nombre: "Tocineta", cantidad: "3 tiras" },
+                    { nombre: "Guacamole", cantidad: "30g" },
+                    { nombre: "Salsas", cantidad: "Al gusto" },
+                    { nombre: "Maiz duce", cantidad: "1 cucharada" }
+                ],
+                pasos: [
+                    "Freír las papas",
+                    "Freír salchicha",
+                    "Freir las tocinetas",
+                    "Calentar la carne y el pollo",
+                    "Agregar el queso y el maiz",
+                    "Adicionar salchichas",
+                    "Salsa al guso"
+                ],
+                estandares: [
+                    "Carne jugosa",
+                    "Salchicha caliente y bien dorada",
+                    "Queso bien fundido",
+                    "Producto abundante y bien armado",
+                    "Papas crocantes",
+                    "Salsas bien distribuidas y sin excesos",
+                    "Presentacion atractiva y limpia",
+                    "Servir caliente y recien preparado"
+                ]
+            },
+            {
+                id: 18,
+                nombre: "Salchipapa Familiar",
+                categoria: "Salchipapas",
+                precio: "$40.000",
+                tiempo: "20 min",
+                porcion: "Familiar",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Salchichas", cantidad: "60 gramos" },
+                    { nombre: "Pollo", cantidad: "50 gramos" },
+                    { nombre: "papitas ripio", cantidad: "3 cucharadas" },
+                    { nombre: "Más papas fritas", cantidad: "800 g" },
+                    { nombre: "Más queso", cantidad: "6 tajadasg" },
+                    { nombre: "Salsas", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Freir las papas hasta que estén doradas",
+                    "Escurrir el exceso de grasa",
+                    "Freír salchichas",
+                    "Servir papas en bandeja grande",
+                    "Agregar salchichas",
+                    "Incorporar el queso",
+                    "Aplicar salsas al gusto"
+                ],
+                estandares: [
+                    "Papas crocantes y bien doradas",
+                    "Salchicha caliente y bien cocida",
+                    "Queso bien fundido",
+                    "Porción abundante y bien distribuida",
+                    "Presentación limpia  y familiar",
+                    "Servir caliente y recién preparada",
+                    "C"
+                ]
+            },
+            {
+                id: 19,
+                nombre: "Carne Asada (Res o Cerdo)",
+                categoria: "Carnes",
+                precio: "$20.000",
+                tiempo: "15 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Carne (Res o Cerdo)", cantidad: "200g" },
+                    { nombre: "Papas a La Francesa o yuca", cantidad: "Acompañamiento" },
+                    { nombre: "Ensalada", cantidad: "Guarnición" },
+                    { nombre: "Salsa chimichurri o guacamole", cantidad: "1 copa pequeña" }
+                ],
+                pasos: [
+                    "Sazonar la carne",
+                    "Asar a la parrilla",
+                    "Sellar por ambos lados por 6 minutos",
+                    "Retirar y reposar brevemente",
+                    "Servir con el acompañamiento"
+                ],
+                estandares: [
+                    "Carne jugosa y bien cocida",
+                    "Sabor equilibrado",
+                    "Corte limpio y uniforme",
+                    "Acompañamiento calientes",
+                    "Presentación ordenada y atractiva",
+                    "Servir caliente y recién preparada"
+                ]
+            },
+            {
+                id: 20,
+                nombre: "Picada",
+                categoria: "Carnes",
+                precio: "Desde $20.000",
+                tiempo: "20 min",
+                porcion: "Variable",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Carne De Res", cantidad: "100 g" },
+                    { nombre: "Carne De Cerdo", cantidad: "100g" },
+                    { nombre: "Costilla", cantidad: "Variable" },
+                    { nombre: "Chorizo", cantidad: "Variable" },
+                    { nombre: "Porción de Papas a La Francesa", cantidad: "Variable" },
+                    { nombre: "Ensalada", cantidad: "Guarnición" },
+                    { nombre: "Salsas de la casa", cantidad: "Al gusto" },
+                    { nombre: "Pollo", cantidad: "Variable" }
+                ],
+                pasos: [
+                    "Asar las carnes y el pollo",
+                    "Asar el chorizo",
+                    "Freir papas",
+                    "Picar la carne en trozos medianos",
+                    "Servir todo integrado",
+                    "Agregar salsas"
+                ],
+                estandares: [
+                    "Carnes bien cocidas y jugosas",
+                    "Papas crocantes",
+                    "Porción variable y equilibrada",
+                    "Ingredientes bien distribuidos",
+                    "Presentacion abundante y bien atractiva",
+                    "Servir caliente y recién preparada"
+                ]
+            },
+            {
+                id: 21,
+                nombre: "Costillas de Cerdo a la BBQ",
+                categoria: "Carnes",
+                precio: "$25.000",
+                tiempo: "25 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Costillas de cerdo", cantidad: "300g" },
+                    { nombre: "Salsa BBQ", cantidad: "Al gusto" },
+                    { nombre: "Papa a la Francesa", cantidad: "Acompañamiento" },
+                    { nombre: "Ensalada", cantidad: "Guarnición" }
+                ],
+                pasos: [
+                    "Marinar la costillas con  adobos de la",
+                    "casa",
+                    "Reservar",
+                    "Sellar la costilla por ambos lados",
+                    "Cocinar hasta que cestec suave",
+                    "Calentar salsa BBQ",
+                    "Bañar la costillas con la salsa",
+                    "Caramelizar en la plancha o parrilla",
+                    "Retirar y servir con acompañamientos",
+                    "Cocinar a la parrilla",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Carne  suave y jugosa",
+                    "Salsa BBQ bien adhería",
+                    "Color brillan teapetitosa",
+                    "Porción bien presentada",
+                    "Plato limpio y ordenado",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 22,
+                nombre: "Carnes al Barril",
+                categoria: "Carnes",
+                precio: "Desde $20.000",
+                tiempo: "Variable",
+                porcion: "Variable",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Punta de Anca De Cerdo", cantidad: "Variable" },
+                    { nombre: "Bondiola", cantidad: "Variable" },
+                    { nombre: "Carne De Búfalo", cantidad: "Variable" },
+                    { nombre: "Porción Papa Al Vapor", cantidad: "Acompañamiento" },
+                    { nombre: "Chimichurri", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Sazonar la carne",
+                    "Cocinar lentamente para mayor suavidad",
+                    "Sellar para dar color",
+                    "Verificar cocción",
+                    "Retirar y servir con acompañamiento"
+                ],
+                estandares: [
+                    "Carne muy suave y jugosa",
+                    "Sabor ahumado o especial",
+                    "Corte uniforme",
+                    "Acompañamientos calientes",
+                    "Presentación llamativa y limpia",
+                    "Servir caliente y recién preparada"
+                ]
+            },
+            {
+                id: 23,
+                nombre: "Pollo Broaster",
+                categoria: "Pollo",
+                precio: "$12000 variable",
+                tiempo: "20 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pollo", cantidad: "250g" },
+                    { nombre: "Papas A la Francesa", cantidad: "Acompañamiento" }
+                ],
+                pasos: [
+                    "Marinar el pollo con condimentos de la casa",
+                    "Pasar el pollo por la harina broaster",
+                    "Freír en aceite caliente hasta dorar",
+                    "Escurrir el exceso de grasa",
+                    "Servir con acompañamiento",
+                    "Freír hasta dorar",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Pollo crujiente por fuera, jugoso por dentro",
+                    "Color dorado uniforme",
+                    "Sin exceso de grasa",
+                    "Presas completas y bien formadas",
+                    "Presentación atractiva y ordenada",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 24,
+                nombre: "Pechuga a la Plancha",
+                categoria: "Pollo",
+                precio: "$20.000",
+                tiempo: "15 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Pechuga de pollo", cantidad: "200g" },
+                    { nombre: "Papas Criollas o francesas", cantidad: "Acompañamiento" },
+                    { nombre: "Ensalada", cantidad: "Guarnición" }
+                ],
+                pasos: [
+                    "Sazonar la pechuga",
+                    "Cocinar a la plancha",
+                    "Sellar ambos lados",
+                    "Verificar cocción interna",
+                    "Servir con acompañamiento"
+                ],
+                estandares: [
+                    "Pechuga jugosa y bien cocida",
+                    "Superficie dorada",
+                    "Porción completa y uniforme",
+                    "Acompañamientos calientes",
+                    "Servir, caliente y recién preparada"
+                ]
+            },
+            {
+                id: 25,
+                nombre: "Alitas de Pollo a la BBQ (x4)",
+                categoria: "Pollo",
+                precio: "$20000",
+                tiempo: "20 min",
+                porcion: "4 unidades",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Alitas de pollo", cantidad: "4 unidades o 6" },
+                    { nombre: "Salsa BBQ", cantidad: "Al gusto" },
+                    { nombre: "Papas Criollas o francesas", cantidad: "Acompañamiento" },
+                    { nombre: "Ensalada", cantidad: "Guarnición" }
+                ],
+                pasos: [
+                    "Marinar las alitas",
+                    "Cocinar a la parrilla o freír",
+                    "Calentar la salsa BBQ",
+                    "Bañar las alitas con la salsa",
+                    "Servir en bandeja",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Alitas bien cocidas y jugosas",
+                    "Salsa BBQ bien adherida",
+                    "Porción visible según unidas",
+                    "Porción visible según las unidades",
+                    "Color brillante y apetecible",
+                    "Presentación limpia y llamativa",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 26,
+                nombre: "Alitas de Pollo a la BBQ (x6)",
+                categoria: "Pollo",
+                precio: "$26. 000",
+                tiempo: "25 min",
+                porcion: "6 unidades",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Alitas de pollo", cantidad: "6 unidades" },
+                    { nombre: "Salsa BBQ", cantidad: "Al gusto" },
+                    { nombre: "Papas Criollas o BBQ", cantidad: "Acompañamiento" },
+                    { nombre: "Ensalada", cantidad: "Guarnición" }
+                ],
+                pasos: [
+                    "Marinar las alitas",
+                    "Freír o asar a la parrilla",
+                    "Calentar la salsa BBQ",
+                    "Bañar lasa alitas en la salsa",
+                    "Servir en bandeja",
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "Alitas bien cocidas y jugosas",
+                    "Salsa BBQ bien adherida",
+                    "Porción visible según unidades",
+                    "Color brillante y apetecible",
+                    "Presentación limpia y llamativa",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 27,
+                nombre: "Combo Infantil",
+                categoria: "Combo Infantil",
+                precio: "$22.000",
+                tiempo: "15 min",
+                porcion: "1 combo",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Producto a elección (Mini Salchipapa, Hamburguesa, Perro Caliente, Sándwich, Colita Cunana, Jugo En Cajita, Galletas Oreo, Juguetitos)", cantidad: "1 unidad" },
+                    { nombre: "Mini Pizza", cantidad: "Opcional" }
+                ],
+                pasos: [
+                    "Preparar el producto seleccionado",
+                    "Freir papas",
+                    "Servir en bandeja infantil",
+                    "Agregar bebida"
+                ],
+                estandares: [
+                    "Porción adecuada para niños",
+                    "Presentación atractiva",
+                    "Bandeja limpia y ordenada",
+                    "Servir caliente y recién preparado"
+                ]
+            },
+            {
+                id: 28,
+                nombre: "Cono",
+                categoria: "Heladería",
+                precio: "$3.000",
+                tiempo: "2 min",
+                porcion: "1 cono",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Galletas wafer", cantidad: "1 unidad" },
+                    { nombre: "Bola de helado", cantidad: "1 bola" },
+                    { nombre: "Salsa dulce", cantidad: "Al gusto" },
+                    { nombre: "Grageas", cantidad: "Decoración" }
+                ],
+                pasos: [
+                    "Servir el helado en el cono",
+                    "Decorar con salsa y grageas"
+                ],
+                estandares: [
+                    "Servir inmediatamente",
+                    "Presentación atractiva"
+                ]
+            },
+            {
+                id: 29,
+                nombre: "Brownie con Helado",
+                categoria: "Heladería",
+                precio: "$8.000",
+                tiempo: "5 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Brownie", cantidad: "1 porción (3 bolas de helados)" },
+                    { nombre: "Helado", cantidad: "3 bolas" },
+                    { nombre: "Glaseado Arequipe", cantidad: "Al gusto" },
+                    { nombre: "Leche condensada", cantidad: "Al gusto" },
+                    { nombre: "Barquillo", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Calentar el brownie",
+                    "Agregar helado",
+                    "Decorar con salsas"
+                ],
+                estandares: [
+                    "Brownie tibio, helado frío",
+                    "Buena presentación"
+                ]
+            },
+            {
+                id: 30,
+                nombre: "Salpihelado",
+                categoria: "Heladería",
+                precio: "$9.000",
+                tiempo: "5 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Helado", cantidad: "Variable" },
+                    { nombre: "Salsa dulce", cantidad: "Al gusto" },
+                    { nombre: "Barquillo", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "COMPLETAR ESTÁNDARES DE CALIDAD"
+                ]
+            },
+            {
+                id: 31,
+                nombre: "Copa Helado Sencilla",
+                categoria: "Heladería",
+                precio: "$9.000",
+                tiempo: "3 min",
+                porcion: "1 copa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Helado", cantidad: "3 bolas" },
+                    { nombre: "Salsa dulce", cantidad: "Al gusto" },
+                    { nombre: "Barquillo", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Servir helado en copa",
+                    "Decorar"
+                ],
+                estandares: [
+                    "Presentación elegante"
+                ]
+            },
+            {
+                id: 32,
+                nombre: "Estrella",
+                categoria: "Heladería",
+                precio: "$10.000",
+                tiempo: "4 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Helado", cantidad: "Variable" }
+                ],
+                pasos: [
+                    "COMPLETAR PASOS DE PREPARACIÓN"
+                ],
+                estandares: [
+                    "COMPLETAR ESTÁNDARES DE CALIDAD"
+                ]
+            },
+            {
+                id: 33,
+                nombre: "Ensalada de Frutas Sencilla",
+                categoria: "Heladería",
+                precio: "$12.000",
+                tiempo: "5 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Frutas frescas mixtas", cantidad: "200g" }
+                ],
+                pasos: [
+                    "Cortar frutas",
+                    "Servir fresco"
+                ],
+                estandares: [
+                    "Frutas frescas y limpias"
+                ]
+            },
+            {
+                id: 34,
+                nombre: "Ensalada de Frutas con Queso",
+                categoria: "Heladería",
+                precio: "$13.000",
+                tiempo: "5 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Frutas frescas mixtas", cantidad: "200g" },
+                    { nombre: "Queso", cantidad: "50g" }
+                ],
+                pasos: [
+                    "Cortar frutas",
+                    "Agregar queso",
+                    "Servir fresco"
+                ],
+                estandares: [
+                    "Frutas frescas y limpias"
+                ]
+            },
+            {
+                id: 35,
+                nombre: "Ensalada de Frutas con Helado",
+                categoria: "Heladería",
+                precio: "$15.000",
+                tiempo: "5 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Frutas frescas mixtas", cantidad: "200g" },
+                    { nombre: "Helado", cantidad: "2 bolas" }
+                ],
+                pasos: [
+                    "Preparar frutas",
+                    "Agregar helado",
+                    "Servir inmediatamente"
+                ],
+                estandares: [
+                    "Frutas frescas, helado consistente"
+                ]
+            },
+            {
+                id: 36,
+                nombre: "Copa Helado Tropical",
+                categoria: "Heladería",
+                precio: "$12.000",
+                tiempo: "5 min",
+                porcion: "1 copa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Mermelada de fruta natural", cantidad: "30g" },
+                    { nombre: "Helado", cantidad: "3 bolas" },
+                    { nombre: "Barquillo", cantidad: "1 unidad" },
+                    { nombre: "Salsas", cantidad: "Al gusto" },
+                    { nombre: "Frutas cristalizada", cantidad: "Decoración" }
+                ],
+                pasos: [
+                    "Servir mermelada en base",
+                    "Agregar helado",
+                    "Decorar"
+                ],
+                estandares: [
+                    "Presentación tropical atractiva"
+                ]
+            },
+            {
+                id: 37,
+                nombre: "Copa Cookies y Cream",
+                categoria: "Heladería",
+                precio: "$12.000",
+                tiempo: "5 min",
+                porcion: "1 copa",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Helado vainilla", cantidad: "3 bolas" },
+                    { nombre: "Topping galletas oreo trituradas", cantidad: "30g" },
+                    { nombre: "Trozos salsa de chocolate", cantidad: "Al gusto" },
+                    { nombre: "Chips chocolate", cantidad: "Decoración" },
+                    { nombre: "Barquillo", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Servir helado",
+                    "Agregar toppings",
+                    "Decorar con chips de chocolate"
+                ],
+                estandares: [
+                    "Mezcla equilibrada de sabores"
+                ]
+            },
+            {
+                id: 38,
+                nombre: "Banana Split",
+                categoria: "Heladería",
+                precio: "$15.000",
+                tiempo: "8 min",
+                porcion: "1 porción",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Banano", cantidad: "1 unidad (3 bolas de helados)" },
+                    { nombre: "Helado", cantidad: "3 bolas" },
+                    { nombre: "Glaseado Arequipe", cantidad: "Al gusto" },
+                    { nombre: "Leche condensada", cantidad: "Al gusto" },
+                    { nombre: "Barquillo", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Cortar el banano por la mitad",
+                    "Colocar helado entre las mitades",
+                    "Decorar con salsas y barquillo"
+                ],
+                estandares: [
+                    "Banano fresco",
+                    "Presentación clásica"
+                ]
+            },
+            {
+                id: 39,
+                nombre: "Frappette",
+                categoria: "Bebidas",
+                precio: "$15.000",
+                tiempo: "3 min",
+                porcion: "1 vaso",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Frappette (bebida mixta)", cantidad: "400ml" }
+                ],
+                pasos: [
+                    "Preparar según receta"
+                ],
+                estandares: [
+                    "Servir bien frío"
+                ]
+            },
+            {
+                id: 40,
+                nombre: "Gaseosas x 400ml",
+                categoria: "Bebidas",
+                precio: "$4.000",
+                tiempo: "1 min",
+                porcion: "400ml",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Gaseosa", cantidad: "400ml" }
+                ],
+                pasos: [
+                    "Servir fría"
+                ],
+                estandares: [
+                    "Temperatura adecuada"
+                ]
+            },
+            {
+                id: 41,
+                nombre: "Jugos Hit",
+                categoria: "Bebidas",
+                precio: "$4.000",
+                tiempo: "1 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Jugo Hit", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Servir frío"
+                ],
+                estandares: [
+                    "Temperatura adecuada"
+                ]
+            },
+            {
+                id: 42,
+                nombre: "Cervezas",
+                categoria: "Bebidas",
+                precio: "$5.000",
+                tiempo: "1 min",
+                porcion: "1 botella",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Cerveza", cantidad: "1 botella" }
+                ],
+                pasos: [
+                    "Servir bien fría"
+                ],
+                estandares: [
+                    "Temperatura: 2-4°C"
+                ]
+            },
+            {
+                id: 43,
+                nombre: "Malteadas",
+                categoria: "Bebidas",
+                precio: "$15.000",
+                tiempo: "5 min",
+                porcion: "1 vaso",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Leche", cantidad: "200ml" },
+                    { nombre: "Helado", cantidad: "2 bolas" },
+                    { nombre: "Saborizante", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Licuar todos los ingredientes",
+                    "Servir con decoración"
+                ],
+                estandares: [
+                    "Consistencia cremosa",
+                    "Servir inmediatamente"
+                ]
+            },
+            {
+                id: 44,
+                nombre: "Agua",
+                categoria: "Bebidas",
+                precio: "$2.000",
+                tiempo: "1 min",
+                porcion: "1 botella",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Agua embotellada", cantidad: "500ml" }
+                ],
+                pasos: [
+                    "Servir fría"
+                ],
+                estandares: [
+                    "Botella sellada"
+                ]
+            },
+            {
+                id: 45,
+                nombre: "Gaseosas 1.5",
+                categoria: "Bebidas",
+                precio: "$7.000",
+                tiempo: "1 min",
+                porcion: "1.5L",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Gaseosa", cantidad: "1.5L" }
+                ],
+                pasos: [
+                    "Servir fría"
+                ],
+                estandares: [
+                    "Temperatura adecuada"
+                ]
+            },
+            {
+                id: 46,
+                nombre: "Gaseosas 3.5",
+                categoria: "Bebidas",
+                precio: "$11.000",
+                tiempo: "1 min",
+                porcion: "3.5L",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Gaseosa", cantidad: "3.5L" }
+                ],
+                pasos: [
+                    "Servir fría"
+                ],
+                estandares: [
+                    "Ideal para compartir"
+                ]
+            },
+            {
+                id: 47,
+                nombre: "Squash",
+                categoria: "Bebidas",
+                precio: "$4.000",
+                tiempo: "1 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Squash", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Servir frío"
+                ],
+                estandares: [
+                    "Temperatura adecuada"
+                ]
+            },
+            {
+                id: 48,
+                nombre: "Daviloe",
+                categoria: "Bebidas",
+                precio: "$4.000",
+                tiempo: "1 min",
+                porcion: "1 unidad",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Daviloe", cantidad: "1 unidad" }
+                ],
+                pasos: [
+                    "Servir frío"
+                ],
+                estandares: [
+                    "Temperatura adecuada"
+                ]
+            },
+            {
+                id: 49,
+                nombre: "Soda",
+                categoria: "Bebidas",
+                precio: "$4.000",
+                tiempo: "1 min",
+                porcion: "1 vaso",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Soda", cantidad: "1 vaso" }
+                ],
+                pasos: [
+                    "Servir con hielo"
+                ],
+                estandares: [
+                    "Bien fría"
+                ]
+            },
+            {
+                id: 50,
+                nombre: "Jugos Naturales en Leche",
+                categoria: "Bebidas",
+                precio: "$10.000",
+                tiempo: "5 min",
+                porcion: "1 vaso",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Fruta natural", cantidad: "150g" },
+                    { nombre: "Leche", cantidad: "250ml" },
+                    { nombre: "Azúcar", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Licuar fruta con leche",
+                    "Endulzar al gusto",
+                    "Servir frío"
+                ],
+                estandares: [
+                    "Fruta fresca",
+                    "Consistencia homogénea"
+                ]
+            },
+            {
+                id: 51,
+                nombre: "Jugos Naturales en Agua",
+                categoria: "Bebidas",
+                precio: "$8.000",
+                tiempo: "5 min",
+                porcion: "1 vaso",
+                validada: true,
+                validadaPor: "Miryam (Dueña)",
+                fechaValidacion: "2026-01-27",
+                ingredientes: [
+                    { nombre: "Fruta natural", cantidad: "150g" },
+                    { nombre: "Agua", cantidad: "250ml" },
+                    { nombre: "Azúcar", cantidad: "Al gusto" }
+                ],
+                pasos: [
+                    "Licuar fruta con agua",
+                    "Endulzar al gusto",
+                    "Servir frío"
+                ],
+                estandares: [
+                    "Fruta fresca",
+                    "Bien refrigerado"
+                ]
+            }
+        ];
+
+        let currentMode = 'view';
+        let editingRecipeId = null;
+        let currentCategory = 'Todos';
+        let currentFilter = 'Todas';
+        let currentSearch = '';
+        let filtroValidacionActual = 'todas';
+
+        // ============ FUNCIONES DE AUTENTICACIÓN ============
+
+        // Solicitar acceso admin
+        function requestAdminAccess() {
+            if (isAdminAuthenticated) {
+                setMode('admin');
+            } else {
+                document.getElementById('passwordModal').classList.add('show');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordError').classList.remove('show');
+                setTimeout(() => document.getElementById('passwordInput').focus(), 100);
+            }
+        }
+
+        // Verificar contraseña
+        function checkPassword() {
+            const inputPassword = document.getElementById('passwordInput').value;
+            
+            if (inputPassword === ADMIN_PASSWORD) {
+                // Contraseña correcta
+                isAdminAuthenticated = true;
+                closePasswordModal();
+                setMode('admin');
+            } else {
+                // Contraseña incorrecta
+                document.getElementById('passwordError').classList.add('show');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+                
+                // Vibrar input (efecto visual)
+                const input = document.getElementById('passwordInput');
+                input.style.animation = 'shake 0.5s';
+                setTimeout(() => input.style.animation = '', 500);
+            }
+        }
+
+        // Cerrar modal de contraseña
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('show');
+        }
+
+        // Cerrar sesión
+        function logout() {
+            if (confirm('¿Cerrar sesión de administrador?')) {
+                isAdminAuthenticated = false;
+                setMode('view');
+            }
+        }
+
+        // ============ FUNCIONES PRINCIPALES ============
+
+        // Cambiar modo
+        function setMode(mode) {
+            // Si intenta entrar a admin sin autenticación, denegar
+            if (mode === 'admin' && !isAdminAuthenticated) {
+                requestAdminAccess();
+                return;
+            }
+
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Activar el botón correcto
+            if (mode === 'view') {
+                document.querySelector('.mode-btn:first-child').classList.add('active');
+            } else {
+                document.querySelector('.mode-btn:nth-child(2)').classList.add('active');
+            }
+
+            if (mode === 'admin') {
+                document.getElementById('adminControls').classList.add('show');
+                document.querySelectorAll('.admin-actions').forEach(el => el.classList.add('show'));
+                document.getElementById('logoutBtn').classList.add('show');
+            } else {
+                document.getElementById('adminControls').classList.remove('show');
+                document.querySelectorAll('.admin-actions').forEach(el => el.classList.remove('show'));
+                document.getElementById('logoutBtn').classList.remove('show');
+            }
+        }
+
+        // Filtrar por categoría
+        function filterByCategory(element) {
+            document.querySelectorAll('.category-tag').forEach(tag => tag.classList.remove('active'));
+            element.classList.add('active');
+            currentCategory = element.dataset.category;
+            renderRecipes();
+        }
+
+        // Filtrar por validación
+        function filterByValidacion(tipo) {
+            filtroValidacionActual = tipo;
+            
+            // Actualizar botones activos
+            document.querySelectorAll('.filter-validacion button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('filter-' + tipo).classList.add('active');
+            
+            // Renderizar con el nuevo filtro
+            renderRecipes();
+        }
+
+                // Renderizar recetas
+        function renderRecipes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('recipesGrid');
+
+            let filtered = recipes.filter(recipe => {
+                const matchesSearch = recipe.nombre.toLowerCase().includes(searchTerm);
+                const matchesCategory = currentCategory === 'Todos' || recipe.categoria === currentCategory;
+                
+                // Filtro de validación
+                let matchesValidacion = true;
+                if (filtroValidacionActual === 'validadas') {
+                    matchesValidacion = recipe.validada === true;
+                } else if (filtroValidacionActual === 'pendientes') {
+                    matchesValidacion = !recipe.validada || recipe.validada === false;
+                }
+                
+                return matchesSearch && matchesCategory && matchesValidacion;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="empty-state-icon">🔍</div>
+                        <h3>No se encontraron recetas</h3>
+                        <p>Intenta con otros términos de búsqueda</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(recipe => {
+                // Crear badge de validación
+                const badgeValidacion = recipe.validada 
+                    ? '<span class="badge-validada">✓ Validada por la dueña</span>'
+                    : '<span class="badge-pendiente">⏳ Pendiente de validación</span>';
+                
+                const cardClass = recipe.validada ? 'recipe-card validada' : 'recipe-card pendiente';
+                
+                return `
+                <div class="${cardClass}">
+                    <div class="recipe-header">
+                        ${recipe.imagen ? 
+                            `<img src="${recipe.imagen}" alt="${recipe.nombre}" class="recipe-image">` :
+                            `<div class="recipe-placeholder">🍽️</div>`
+                        }
+                        <div class="recipe-category">${recipe.categoria}</div>
+                    </div>
+                    <div class="recipe-body">
+                        <h3 class="recipe-title">${recipe.nombre} ${badgeValidacion}</h3>
+                        
+                        <div class="recipe-meta">
+                            ${recipe.tiempo ? `<div class="meta-item"><span class="meta-icon">⏱️</span>${recipe.tiempo}</div>` : ''}
+                            ${recipe.porcion ? `<div class="meta-item"><span class="meta-icon">🍽️</span>${recipe.porcion}</div>` : ''}
+                        </div>
+
+                        ${recipe.precio ? `<div class="recipe-price">${recipe.precio}</div>` : ''}
+
+                        <div class="recipe-details">
+                            ${recipe.ingredientes && recipe.ingredientes.length > 0 ? `
+                                <div class="details-section">
+                                    <div class="details-title">📋 Ingredientes</div>
+                                    <ul class="ingredients-list">
+                                        ${recipe.ingredientes.map(ing => `<li>${ing.nombre}: ${ing.cantidad}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+
+                            ${recipe.pasos && recipe.pasos.length > 0 ? `
+                                <div class="details-section">
+                                    <div class="details-title">👨‍🍳 Preparación</div>
+                                    <ol class="steps-list">
+                                        ${recipe.pasos.map(paso => `<li>${paso}</li>`).join('')}
+                                    </ol>
+                                </div>
+                            ` : ''}
+
+                            ${recipe.estandares && recipe.estandares.length > 0 ? `
+                                <div class="details-section">
+                                    <div class="details-title">✅ Estándares</div>
+                                    <ul class="ingredients-list">
+                                        ${recipe.estandares.map(est => `<li>${est}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    <div class="admin-actions ${currentMode === 'admin' ? 'show' : ''}">
+                        <button class="action-btn btn-edit" onclick="editRecipe(${recipe.id})">✏️ Editar</button>
+                        <button class="action-btn btn-delete" onclick="deleteRecipe(${recipe.id})">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        // Guardar en localStorage
+        function saveToStorage() {
+            localStorage.setItem('familyRecipes', JSON.stringify(recipes));
+        }
+
+        // Cargar desde localStorage
+        function loadRecipes() {
+            const saved = localStorage.getItem('familyRecipes');
+            if (saved) {
+                recipes = JSON.parse(saved);
+            }
+            renderRecipes();
+        }
+
+        // Filtrar recetas (búsqueda)
+        function filterRecipes() {
+            renderRecipes();
+        }
+
+        // Abrir modal agregar
+        function openAddModal() {
+            editingRecipeId = null;
+            document.getElementById('modalTitle').textContent = 'Agregar Nueva Receta';
+            document.getElementById('recipeForm').reset();
+            document.getElementById('ingredientsEditor').innerHTML = '';
+            addIngredientRow();
+            resetPhotoSection();
+            document.getElementById('recipeModal').classList.add('show');
+        }
+
+        // Abrir modal editar
+        function editRecipe(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) return;
+
+            editingRecipeId = id;
+            document.getElementById('modalTitle').textContent = 'Editar Receta';
+            document.getElementById('recipeName').value = recipe.nombre;
+            document.getElementById('recipeCategory').value = recipe.categoria;
+            document.getElementById('recipeTime').value = recipe.tiempo || '';
+            document.getElementById('recipePrice').value = recipe.precio || '';
+            document.getElementById('recipePortion').value = recipe.porcion || '';
+            document.getElementById('recipeSteps').value = (recipe.pasos || []).join('\n');
+            document.getElementById('recipeStandards').value = (recipe.estandares || []).join('\n');
+
+            // Cargar ingredientes
+            document.getElementById('ingredientsEditor').innerHTML = '';
+            if (recipe.ingredientes && recipe.ingredientes.length > 0) {
+                recipe.ingredientes.forEach(ing => {
+                    addIngredientRow(ing.nombre, ing.cantidad);
+                });
+            } else {
+                addIngredientRow();
+            }
+
+            // Cargar foto existente
+            loadExistingPhoto(recipe.imagen);
+
+            document.getElementById('recipeModal').classList.add('show');
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('recipeModal').classList.remove('show');
+        }
+
+        // Agregar fila de ingrediente
+        function addIngredientRow(nombre = '', cantidad = '') {
+            const editor = document.getElementById('ingredientsEditor');
+            const row = document.createElement('div');
+            row.className = 'ingredient-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Nombre ingrediente" value="${nombre}">
+                <input type="text" placeholder="Cantidad" value="${cantidad}">
+                <button type="button" class="btn-remove" onclick="this.parentElement.remove()">❌</button>
+            `;
+            editor.appendChild(row);
+        }
+
+        // ============ GESTIÓN DE FOTOS ============
+        let currentPhotoData = null;
+
+        // Manejar subida de foto
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validar tipo
+            if (!file.type.match('image.*')) {
+                alert('Por favor selecciona una imagen válida (JPG, PNG, WEBP)');
+                return;
+            }
+
+            // Validar tamaño (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                alert('La imagen es muy grande. Máximo 2MB');
+                return;
+            }
+
+            // Leer y convertir a Base64
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentPhotoData = e.target.result;
+                
+                // Mostrar preview
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                document.getElementById('photoPreview').src = currentPhotoData;
+                document.getElementById('photoPreview').style.display = 'block';
+                document.getElementById('removePhotoBtn').style.display = 'inline-block';
+                document.getElementById('photoButtonText').textContent = 'Cambiar Foto';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Eliminar foto
+        function removePhoto() {
+            if (!confirm('¿Eliminar la foto de esta receta?')) return;
+            
+            currentPhotoData = null;
+            document.getElementById('photoPlaceholder').style.display = 'flex';
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('photoPreview').src = '';
+            document.getElementById('removePhotoBtn').style.display = 'none';
+            document.getElementById('photoButtonText').textContent = 'Subir Foto';
+            document.getElementById('photoInput').value = '';
+        }
+
+        // Resetear foto al abrir modal
+        function resetPhotoSection() {
+            currentPhotoData = null;
+            document.getElementById('photoPlaceholder').style.display = 'flex';
+            document.getElementById('photoPreview').style.display = 'none';
+            document.getElementById('photoPreview').src = '';
+            document.getElementById('removePhotoBtn').style.display = 'none';
+            document.getElementById('photoButtonText').textContent = 'Subir Foto';
+            document.getElementById('photoInput').value = '';
+        }
+
+        // Cargar foto existente
+        function loadExistingPhoto(imagenUrl) {
+            if (!imagenUrl) {
+                resetPhotoSection();
+                return;
+            }
+
+            // Si es Base64
+            if (imagenUrl.startsWith('data:image')) {
+                document.getElementById('photoPlaceholder').style.display = 'none';
+                document.getElementById('photoPreview').src = imagenUrl;
+                document.getElementById('photoPreview').style.display = 'block';
+                document.getElementById('removePhotoBtn').style.display = 'inline-block';
+                document.getElementById('photoButtonText').textContent = 'Cambiar Foto';
+                currentPhotoData = imagenUrl;
+            } else {
+                resetPhotoSection();
+            }
+        }
+
+        // Guardar receta
+        function saveRecipe() {
+            const nombre = document.getElementById('recipeName').value.trim();
+            const categoria = document.getElementById('recipeCategory').value;
+
+            if (!nombre || !categoria) {
+                alert('Por favor completa al menos el nombre y categoría');
+                return;
+            }
+
+            const ingredientes = [];
+            document.querySelectorAll('#ingredientsEditor .ingredient-row').forEach(row => {
+                const inputs = row.querySelectorAll('input');
+                const nombre = inputs[0].value.trim();
+                const cantidad = inputs[1].value.trim();
+                if (nombre && cantidad) {
+                    ingredientes.push({ nombre, cantidad });
+                }
+            });
+
+            const pasos = document.getElementById('recipeSteps').value.trim()
+                .split('\n')
+                .filter(p => p.trim())
+                .map(p => p.trim());
+
+            const estandares = document.getElementById('recipeStandards').value.trim()
+                .split('\n')
+                .filter(e => e.trim())
+                .map(e => e.trim());
+
+            const recipeData = {
+                nombre,
+                categoria,
+                tiempo: document.getElementById('recipeTime').value.trim(),
+                precio: document.getElementById('recipePrice').value.trim(),
+                porcion: document.getElementById('recipePortion').value.trim(),
+                ingredientes,
+                pasos,
+                estandares
+            };
+
+            // Agregar foto si existe
+            if (currentPhotoData) {
+                recipeData.imagen = currentPhotoData;
+            }
+
+            if (editingRecipeId) {
+                // Editar existente
+                const index = recipes.findIndex(r => r.id === editingRecipeId);
+                recipes[index] = { ...recipes[index], ...recipeData };
+            } else {
+                // Agregar nueva
+                const newId = Math.max(...recipes.map(r => r.id), 0) + 1;
+                recipes.push({ id: newId, ...recipeData });
+            }
+
+            saveToStorage();
+            renderRecipes();
+            closeModal();
+        }
+
+        // Eliminar receta
+        function deleteRecipe(id) {
+            if (!confirm('¿Estás seguro de eliminar esta receta?')) return;
+            recipes = recipes.filter(r => r.id !== id);
+            saveToStorage();
+            renderRecipes();
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            loadRecipes();
+        });
+    </script>
+</body>
+</html>

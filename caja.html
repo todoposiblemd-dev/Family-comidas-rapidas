@@ -1,0 +1,3309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caja Registradora - Family Comidas Rápidas</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --dark: #1f2937;
+            --gray: #6b7280;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+            padding: 10px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header-logo {
+            max-width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .header .date {
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+
+        .header .total-day {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: 700;
+        }
+
+        .header .total-day .amount {
+            font-size: 2em;
+            font-weight: 900;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .btn-home {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* Navegación Principal */
+        .main-nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        .nav-btn {
+            background: white;
+            border: 3px solid #e5e7eb;
+            padding: 25px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 1em;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .nav-btn .icon {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Secciones */
+        .section {
+            display: none;
+            padding: 25px;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        /* Productos Rápidos */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .product-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 20px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9em;
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .product-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(16,185,129,0.4);
+        }
+
+        .product-btn .icon {
+            font-size: 2em;
+        }
+
+        .product-btn .price {
+            font-size: 1.1em;
+            font-weight: 900;
+        }
+
+        .product-btn.custom {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+        }
+
+        /* Formularios */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1em;
+            font-family: 'Rubik', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group input[type="number"] {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            padding: 15px;
+            border: 3px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: var(--primary);
+        }
+
+        .payment-method.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .payment-method .icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        /* Calculadora de Cambio */
+        .change-calculator {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .change-calculator.hidden {
+            display: none;
+        }
+
+        .change-calculator .amount {
+            font-size: 2.5em;
+            font-weight: 900;
+            margin: 10px 0;
+        }
+
+        /* Resumen de Venta */
+        .sale-summary {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sale-summary .row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 1.1em;
+        }
+
+        .sale-summary .row.total {
+            border-top: 3px solid var(--primary);
+            margin-top: 10px;
+            padding-top: 15px;
+            font-weight: 800;
+            font-size: 1.5em;
+            color: var(--primary);
+        }
+
+        /* Botones */
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Rubik', sans-serif;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16,185,129,0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: var(--dark);
+        }
+
+        .btn-block {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* Tablas y Listas */
+        .items-list {
+            margin-top: 25px;
+        }
+
+        .item-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .item-card .info {
+            flex: 1;
+        }
+
+        .item-card .info .title {
+            font-weight: 700;
+            color: var(--dark);
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .item-card .info .details {
+            color: var(--gray);
+            font-size: 0.9em;
+        }
+
+        .item-card .amount {
+            font-size: 1.4em;
+            font-weight: 800;
+            color: var(--primary);
+            margin: 0 15px;
+        }
+
+        .item-card .amount.expense {
+            color: var(--danger);
+        }
+
+        .item-card .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .item-card .actions button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Estados */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Estadísticas */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .stat-card .label {
+            color: var(--gray);
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .value {
+            font-size: 2em;
+            font-weight: 900;
+            color: var(--dark);
+        }
+
+        .stat-card.primary .value {
+            color: var(--primary);
+        }
+
+        .stat-card.danger .value {
+            color: var(--danger);
+        }
+
+        .stat-card.warning .value {
+            color: var(--warning);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            font-size: 1.6em;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .btn-close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #e5e7eb;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--dark);
+        }
+
+        /* Cierre de Caja */
+        .arqueo-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .arqueo-section h3 {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .arqueo-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 1.05em;
+        }
+
+        .arqueo-row:last-child {
+            border-bottom: none;
+        }
+
+        .arqueo-row .label {
+            font-weight: 600;
+            color: var(--gray);
+        }
+
+        .arqueo-row .value {
+            font-weight: 800;
+            color: var(--dark);
+        }
+
+        .arqueo-row.total {
+            border-top: 3px solid var(--primary);
+            padding-top: 15px;
+            margin-top: 10px;
+            font-size: 1.3em;
+        }
+
+        .arqueo-row.total .value {
+            color: var(--primary);
+        }
+
+        .arqueo-row.difference {
+            background: #fee2e2;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .arqueo-row.difference.positive {
+            background: #d1fae5;
+        }
+
+        .arqueo-row.difference .value {
+            font-size: 1.4em;
+        }
+
+        /* Créditos */
+        .credit-card {
+            background: white;
+            border-left: 5px solid var(--warning);
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .credit-card.old {
+            border-left-color: var(--danger);
+        }
+
+        .credit-card .client-name {
+            font-weight: 800;
+            font-size: 1.2em;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .credit-card .credit-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .credit-card .credit-amount {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: var(--danger);
+        }
+
+        .credit-card .credit-date {
+            color: var(--gray);
+            font-size: 0.9em;
+        }
+
+        .credit-card .actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Configuración */
+        .config-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .config-section h3 {
+            font-size: 1.2em;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .product-config-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .product-config-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .product-config-item .info {
+            flex: 1;
+        }
+
+        .product-config-item .name {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 5px;
+        }
+
+        .product-config-item .price {
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 1.1em;
+        }
+
+        /* Alertas */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+
+        .alert .icon {
+            font-size: 1.5em;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state .icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .empty-state p {
+            font-size: 1em;
+            margin-bottom: 25px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.4em;
+            }
+
+            .header .total-day .amount {
+                font-size: 1.6em;
+            }
+
+            .btn-home {
+                top: 15px;
+                left: 15px;
+                padding: 8px 12px;
+                font-size: 1em;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 10px;
+            }
+
+            .product-btn {
+                padding: 15px 8px;
+                font-size: 0.85em;
+            }
+
+            .product-btn .icon {
+                font-size: 1.8em;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-nav {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            /* Carrito en móvil */
+            #ventas > div[style*="grid-template-columns"] {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Animaciones */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section.active {
+            animation: slideIn 0.4s ease;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .loading .spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .data-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .data-actions .btn {
+            flex: 1;
+            min-width: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="index.html" class="btn-home" title="Volver al Menú Principal">🏠</a>
+            <img src="logo.jpg" alt="Family Comidas Rápidas" class="header-logo">
+            <h1>💰 Caja Registradora</h1>
+            <div class="date" id="currentDate"></div>
+            <div class="total-day">
+                <div>Total del Día</div>
+                <span class="amount" id="totalDay">$0</span>
+            </div>
+        </div>
+
+        <!-- Navegación Principal -->
+        <div class="main-nav">
+            <button class="nav-btn active" onclick="showSection('ventas')">
+                <span class="icon">💵</span>
+                Ventas
+            </button>
+            <button class="nav-btn" onclick="showSection('gastos')">
+                <span class="icon">📤</span>
+                Gastos
+            </button>
+            <button class="nav-btn" onclick="showSection('creditos')">
+                <span class="icon">💳</span>
+                Créditos
+            </button>
+            <button class="nav-btn" onclick="showSection('cierre')">
+                <span class="icon">🔒</span>
+                Cierre
+            </button>
+            <button class="nav-btn" onclick="showSection('reportes')">
+                <span class="icon">📊</span>
+                Reportes
+            </button>
+            <button class="nav-btn" onclick="showSection('config')">
+                <span class="icon">⚙️</span>
+                Config
+            </button>
+        </div>
+
+        <!-- SECCIÓN: VENTAS -->
+        <div id="ventas" class="section active">
+            <h2 class="section-title">💵 Nueva Venta</h2>
+
+            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 20px; margin-bottom: 25px;">
+                <!-- Columna Izquierda: Productos -->
+                <div>
+                    <!-- Productos Rápidos -->
+                    <div class="products-grid" id="productsGrid"></div>
+
+                    <!-- Botón Producto Personalizado -->
+                    <button class="btn btn-secondary btn-block" onclick="openCustomProductModal()">
+                        ➕ Producto Personalizado
+                    </button>
+                </div>
+
+                <!-- Columna Derecha: Carrito -->
+                <div>
+                    <div style="background: #f9fafb; border: 2px solid var(--primary); border-radius: 15px; padding: 20px; position: sticky; top: 20px;">
+                        <h3 style="font-size: 1.4em; font-weight: 800; color: var(--dark); margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                            🛒 Carrito
+                            <span id="cartCount" style="background: var(--primary); color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.8em;">0</span>
+                        </h3>
+                        
+                        <div id="cartItems" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                            <div class="empty-state" style="padding: 40px 20px; text-align: center;">
+                                <div style="font-size: 3em; opacity: 0.3;">🛒</div>
+                                <p style="color: var(--gray); margin-top: 10px;">Carrito vacío</p>
+                                <p style="color: var(--gray); font-size: 0.9em;">Agrega productos</p>
+                            </div>
+                        </div>
+                        
+                        <div style="border-top: 3px solid var(--primary); padding-top: 15px; margin-top: 15px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 1.5em; font-weight: 900; color: var(--primary); margin-bottom: 15px;">
+                                <span>TOTAL:</span>
+                                <span id="cartTotal">$0</span>
+                            </div>
+                            
+                            <button class="btn btn-primary btn-block" id="btnCheckout" onclick="openCheckoutModal()" disabled style="font-size: 1.1em; padding: 18px;">
+                                💵 Cobrar
+                            </button>
+                            
+                            <button class="btn btn-danger btn-block" id="btnClearCart" onclick="clearCart()" disabled style="margin-top: 10px; opacity: 0.7;">
+                                🗑️ Vaciar Carrito
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Ventas del Día -->
+            <div class="items-list">
+                <h3 style="font-size: 1.3em; font-weight: 800; color: var(--dark); margin-bottom: 15px;">
+                    Ventas de Hoy
+                </h3>
+                <div id="salesList"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: GASTOS -->
+        <div id="gastos" class="section">
+            <h2 class="section-title">📤 Gastos y Egresos</h2>
+
+            <button class="btn btn-primary btn-block" onclick="openExpenseModal()">
+                ➕ Registrar Gasto
+            </button>
+
+            <!-- Estadísticas de Gastos -->
+            <div class="stats-grid" style="margin-top: 25px;">
+                <div class="stat-card danger">
+                    <div class="label">Total Gastos Hoy</div>
+                    <div class="value" id="totalExpensesToday">$0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="label">Gastos Esta Semana</div>
+                    <div class="value" id="totalExpensesWeek">$0</div>
+                </div>
+            </div>
+
+            <!-- Lista de Gastos -->
+            <div class="items-list">
+                <h3 style="font-size: 1.3em; font-weight: 800; color: var(--dark); margin-bottom: 15px;">
+                    Gastos de Hoy
+                </h3>
+                <div id="expensesList"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: CRÉDITOS -->
+        <div id="creditos" class="section">
+            <h2 class="section-title">💳 Control de Créditos</h2>
+
+            <button class="btn btn-primary btn-block" onclick="openCreditModal()">
+                ➕ Nuevo Crédito
+            </button>
+
+            <!-- Estadísticas de Créditos -->
+            <div class="stats-grid" style="margin-top: 25px;">
+                <div class="stat-card warning">
+                    <div class="label">Créditos Pendientes</div>
+                    <div class="value" id="totalCreditsCount">0</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="label">Total a Cobrar</div>
+                    <div class="value" id="totalCreditsAmount">$0</div>
+                </div>
+            </div>
+
+            <!-- Lista de Créditos -->
+            <div class="items-list">
+                <h3 style="font-size: 1.3em; font-weight: 800; color: var(--dark); margin-bottom: 15px;">
+                    Créditos Activos
+                </h3>
+                <div id="creditsList"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: CIERRE DE CAJA -->
+        <div id="cierre" class="section">
+            <h2 class="section-title">🔒 Cierre de Caja</h2>
+
+            <!-- Resumen del Día -->
+            <div class="arqueo-section">
+                <h3>💰 VENTAS DEL DÍA</h3>
+                <div class="arqueo-row">
+                    <span class="label">💵 Efectivo</span>
+                    <span class="value" id="closeSalesCash">$0</span>
+                </div>
+                <div class="arqueo-row">
+                    <span class="label">📱 Nequi</span>
+                    <span class="value" id="closeSalesNequi">$0</span>
+                </div>
+                <div class="arqueo-row">
+                    <span class="label">🏦 Transferencia</span>
+                    <span class="value" id="closeSalesTransfer">$0</span>
+                </div>
+                <div class="arqueo-row">
+                    <span class="label">💳 Crédito</span>
+                    <span class="value" id="closeSalesCredit">$0</span>
+                </div>
+                <div class="arqueo-row total">
+                    <span class="label">TOTAL VENTAS</span>
+                    <span class="value" id="closeTotalSales">$0</span>
+                </div>
+            </div>
+
+            <!-- Gastos del Día -->
+            <div class="arqueo-section">
+                <h3>📤 GASTOS DEL DÍA</h3>
+                <div id="closeExpensesByCategory"></div>
+                <div class="arqueo-row total">
+                    <span class="label">TOTAL GASTOS</span>
+                    <span class="value" id="closeTotalExpenses">$0</span>
+                </div>
+            </div>
+
+            <!-- Arqueo de Efectivo -->
+            <div class="arqueo-section">
+                <h3>💵 ARQUEO DE EFECTIVO</h3>
+                <div class="arqueo-row">
+                    <span class="label">Efectivo en Ventas</span>
+                    <span class="value" id="closeExpectedCash">$0</span>
+                </div>
+                <div class="arqueo-row">
+                    <span class="label">Gastos en Efectivo</span>
+                    <span class="value" id="closeCashExpenses">$0</span>
+                </div>
+                <div class="arqueo-row total">
+                    <span class="label">DEBERÍA HABER</span>
+                    <span class="value" id="closeNetCash">$0</span>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>💰 ¿Cuánto hay REALMENTE en efectivo?</label>
+                    <input type="number" id="realCashInput" placeholder="Ej: 450000" 
+                           style="font-size: 1.5em; text-align: center;">
+                </div>
+
+                <div id="cashDifferenceDisplay"></div>
+            </div>
+
+            <!-- Utilidad del Día -->
+            <div class="arqueo-section" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
+                <h3 style="color: white;">💎 UTILIDAD DEL DÍA</h3>
+                <div class="arqueo-row" style="border-bottom-color: rgba(255,255,255,0.3);">
+                    <span class="label" style="color: rgba(255,255,255,0.9);">Total Ventas</span>
+                    <span class="value" style="color: white;" id="closeUtilSales">$0</span>
+                </div>
+                <div class="arqueo-row" style="border-bottom-color: rgba(255,255,255,0.3);">
+                    <span class="label" style="color: rgba(255,255,255,0.9);">Total Gastos</span>
+                    <span class="value" style="color: white;" id="closeUtilExpenses">$0</span>
+                </div>
+                <div class="arqueo-row total" style="border-top-color: white;">
+                    <span class="label" style="color: white;">UTILIDAD NETA</span>
+                    <span class="value" style="color: white; font-size: 1.5em;" id="closeNetProfit">$0</span>
+                </div>
+            </div>
+
+            <!-- Acciones de Cierre -->
+            <div class="btn-group">
+                <button class="btn btn-secondary" onclick="exportCloseSummary()">
+                    📄 Exportar Resumen
+                </button>
+                <button class="btn btn-primary" onclick="sendCloseToWhatsApp()">
+                    📱 Enviar por WhatsApp
+                </button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: REPORTES -->
+        <div id="reportes" class="section">
+            <h2 class="section-title">📊 Reportes y Análisis</h2>
+
+            <!-- Periodo de Consulta -->
+            <div class="form-group">
+                <label>📅 Seleccionar Período</label>
+                <select id="reportPeriod" onchange="updateReports()">
+                    <option value="today">Hoy</option>
+                    <option value="week">Esta Semana</option>
+                    <option value="month">Este Mes</option>
+                    <option value="all">Todo el Tiempo</option>
+                </select>
+            </div>
+
+            <!-- Estadísticas Generales -->
+            <div class="stats-grid">
+                <div class="stat-card primary">
+                    <div class="label">Total Ventas</div>
+                    <div class="value" id="reportTotalSales">$0</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="label">Total Gastos</div>
+                    <div class="value" id="reportTotalExpenses">$0</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="label">Utilidad</div>
+                    <div class="value" id="reportProfit">$0</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="label">Promedio Venta</div>
+                    <div class="value" id="reportAvgSale">$0</div>
+                </div>
+            </div>
+
+            <!-- Top Productos -->
+            <div class="config-section">
+                <h3>🏆 Productos Más Vendidos</h3>
+                <div id="topProductsList"></div>
+            </div>
+
+            <!-- Exportar Datos -->
+            <div class="data-actions">
+                <button class="btn btn-primary" onclick="exportToExcel()">
+                    📊 Exportar Excel
+                </button>
+                <button class="btn btn-secondary" onclick="exportJSON()">
+                    💾 Exportar JSON
+                </button>
+                <button class="btn btn-secondary" onclick="importJSON()">
+                    📂 Importar JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- SECCIÓN: CONFIGURACIÓN -->
+        <div id="config" class="section">
+            <h2 class="section-title">⚙️ Configuración</h2>
+
+            <!-- Gestión de Productos -->
+            <div class="config-section">
+                <h3>🍔 Gestión de Productos Rápidos</h3>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn btn-primary" onclick="openProductConfigModal()">
+                        ➕ Agregar Producto
+                    </button>
+                    <button class="btn btn-warning" onclick="resetProductsToDefault()">
+                        🔄 Actualizar Precios del Recetario
+                    </button>
+                </div>
+
+                <div class="alert" style="background: #fef3c7; border: 2px solid #f59e0b; margin-bottom: 15px;">
+                    <span class="icon">💡</span>
+                    <div>
+                        <strong>¿Precios desactualizados?</strong> Usa el botón "Actualizar Precios del Recetario" para cargar los 50 productos con los precios correctos.
+                    </div>
+                </div>
+
+                <div class="product-config-list" id="productConfigList" style="margin-top: 15px;"></div>
+            </div>
+
+            <!-- Categorías de Gastos -->
+            <div class="config-section">
+                <h3>📁 Categorías de Gastos</h3>
+                <div class="alert alert-warning">
+                    <span class="icon">💡</span>
+                    <div>
+                        Las categorías predeterminadas son: Proveedores, Personal, Servicios, Mantenimiento, Otros.
+                        Puedes personalizarlas editando el código.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos y Respaldos -->
+            <div class="config-section">
+                <h3>💾 Datos y Respaldos</h3>
+                
+                <div class="data-actions">
+                    <button class="btn btn-primary" onclick="exportJSON()">
+                        💾 Respaldar Datos (JSON)
+                    </button>
+                    <button class="btn btn-secondary" onclick="importJSON()">
+                        📂 Restaurar Datos (JSON)
+                    </button>
+                </div>
+
+                <div class="alert alert-warning" style="margin-top: 15px;">
+                    <span class="icon">⚠️</span>
+                    <div>
+                        <strong>Importante:</strong> Exporta tus datos semanalmente. Guarda el archivo JSON en un lugar seguro (Google Drive, email, etc.).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reiniciar Sistema -->
+            <div class="config-section">
+                <h3>🔄 Reiniciar Sistema</h3>
+                
+                <button class="btn btn-danger btn-block" onclick="confirmResetData()">
+                    🗑️ Borrar Todos los Datos
+                </button>
+
+                <div class="alert alert-danger" style="margin-top: 15px;">
+                    <span class="icon">⚠️</span>
+                    <div>
+                        <strong>¡CUIDADO!</strong> Esta acción eliminará todas las ventas, gastos y créditos. Asegúrate de tener un respaldo antes.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Nueva Venta -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closeSaleModal()">✕</button>
+            <h2 class="modal-header">💵 Nueva Venta</h2>
+
+            <form id="saleForm" onsubmit="saveSale(event)">
+                <div class="form-group">
+                    <label>Producto/Descripción</label>
+                    <input type="text" id="saleProduct" required placeholder="Ej: Hamburguesa">
+                </div>
+
+                <div class="form-group">
+                    <label>Cantidad</label>
+                    <input type="number" id="saleQuantity" required placeholder="Ej: 1" min="1" value="1" step="1" oninput="updateSaleSummary(); calculateChange();">
+                </div>
+
+                <div class="form-group">
+                    <label>Precio Unitario</label>
+                    <input type="number" id="salePrice" required placeholder="Ej: 8000" min="0" step="100" oninput="updateSaleSummary(); calculateChange();">
+                </div>
+
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <div class="payment-methods">
+                        <div class="payment-method active" data-method="efectivo" onclick="selectPaymentMethod('efectivo')">
+                            <span class="icon">💵</span>
+                            <div>Efectivo</div>
+                        </div>
+                        <div class="payment-method" data-method="nequi" onclick="selectPaymentMethod('nequi')">
+                            <span class="icon">📱</span>
+                            <div>Nequi</div>
+                        </div>
+                        <div class="payment-method" data-method="transferencia" onclick="selectPaymentMethod('transferencia')">
+                            <span class="icon">🏦</span>
+                            <div>Transferencia</div>
+                        </div>
+                        <div class="payment-method" data-method="credito" onclick="selectPaymentMethod('credito')">
+                            <span class="icon">💳</span>
+                            <div>Crédito</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="salePaymentMethod" value="efectivo">
+                </div>
+
+                <!-- Calculadora de Cambio (solo para efectivo) -->
+                <div id="changeCalculatorDiv" class="change-calculator">
+                    <div style="font-size: 1.1em; font-weight: 600;">Calculadora de Cambio</div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label style="color: white;">Cliente pagó con:</label>
+                        <input type="number" id="receivedAmount" placeholder="Ej: 10000" min="0" step="100"
+                               oninput="calculateChange()" style="font-size: 1.3em; text-align: center;">
+                    </div>
+                    <div style="font-size: 1em; margin-top: 10px;">Cambio a devolver:</div>
+                    <div class="amount" id="changeAmount">$0</div>
+                </div>
+
+                <!-- Nombre del Cliente (solo para crédito) -->
+                <div id="clientNameDiv" class="form-group" style="display: none;">
+                    <label>Nombre del Cliente</label>
+                    <input type="text" id="saleClientName" placeholder="Ej: Juan Pérez">
+                </div>
+
+                <!-- Nota Opcional -->
+                <div class="form-group">
+                    <label>Nota (Opcional)</label>
+                    <textarea id="saleNote" rows="2" placeholder="Detalles adicionales..."></textarea>
+                </div>
+
+                <!-- Resumen -->
+                <div class="sale-summary">
+                    <div class="row">
+                        <span>Precio Unitario:</span>
+                        <span id="saleSummarySubtotal">$0</span>
+                    </div>
+                    <div class="row">
+                        <span>Cantidad:</span>
+                        <span id="saleSummaryQuantity">1</span>
+                    </div>
+                    <div class="row total">
+                        <span>TOTAL A PAGAR:</span>
+                        <span id="saleSummaryTotal">$0</span>
+                    </div>
+                </div>
+
+                <input type="hidden" id="editSaleId" value="">
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeSaleModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="saleBtnText">💵 Registrar Venta</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Agregar al Carrito -->
+    <div id="addToCartModal" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <button class="btn-close-modal" onclick="closeAddToCartModal()">✕</button>
+            <h2 class="modal-header">🛒 Agregar al Carrito</h2>
+
+            <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                <div style="font-size: 2.5em; margin-bottom: 10px;">🍔</div>
+                <div style="font-size: 1.3em; font-weight: 800; color: var(--dark); margin-bottom: 8px;" id="addToCartProduct">Producto</div>
+                <div style="font-size: 1.1em; color: var(--primary); font-weight: 700;" id="addToCartPrice">$0</div>
+            </div>
+
+            <div class="form-group">
+                <label>Cantidad</label>
+                <input type="number" id="addToCartQuantity" required placeholder="Ej: 1" min="1" value="1" step="1" 
+                       oninput="updateAddToCartTotal()" 
+                       style="font-size: 1.5em; text-align: center; font-weight: 800;">
+            </div>
+
+            <div style="background: #f9fafb; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 1.2em; font-weight: 700;">Total:</span>
+                    <span style="font-size: 1.8em; font-weight: 900; color: var(--primary);" id="addToCartTotal">$0</span>
+                </div>
+            </div>
+
+            <input type="hidden" id="addToCartProductId" value="">
+
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary" onclick="closeAddToCartModal()">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="addToCart()">
+                    🛒 Agregar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: Checkout (Cobrar) -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closeCheckoutModal()">✕</button>
+            <h2 class="modal-header">💵 Cobrar Venta</h2>
+
+            <form id="checkoutForm" onsubmit="saveCheckout(event)">
+                <!-- Resumen del Carrito -->
+                <div style="background: #f9fafb; padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <h3 style="font-weight: 800; margin-bottom: 15px; color: var(--dark);">Resumen de Compra:</h3>
+                    <div id="checkoutSummary" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Se llenará dinámicamente con los items del carrito -->
+                    </div>
+                    <div style="border-top: 3px solid var(--primary); margin-top: 15px; padding-top: 15px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 1.5em; font-weight: 900; color: var(--primary);">
+                            <span>TOTAL:</span>
+                            <span id="checkoutTotal">$0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <div class="payment-methods">
+                        <div class="payment-method active" data-method="efectivo" onclick="selectCheckoutPaymentMethod('efectivo')">
+                            <span class="icon">💵</span>
+                            <div>Efectivo</div>
+                        </div>
+                        <div class="payment-method" data-method="nequi" onclick="selectCheckoutPaymentMethod('nequi')">
+                            <span class="icon">📱</span>
+                            <div>Nequi</div>
+                        </div>
+                        <div class="payment-method" data-method="transferencia" onclick="selectCheckoutPaymentMethod('transferencia')">
+                            <span class="icon">🏦</span>
+                            <div>Transferencia</div>
+                        </div>
+                        <div class="payment-method" data-method="credito" onclick="selectCheckoutPaymentMethod('credito')">
+                            <span class="icon">💳</span>
+                            <div>Crédito</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="checkoutPaymentMethod" value="efectivo">
+                </div>
+
+                <!-- Calculadora de Cambio (solo para efectivo) -->
+                <div id="checkoutChangeCalculator" class="change-calculator">
+                    <div style="font-size: 1.1em; font-weight: 600;">Calculadora de Cambio</div>
+                    <div class="form-group" style="margin-top: 15px;">
+                        <label style="color: white;">Cliente pagó con:</label>
+                        <input type="number" id="checkoutReceivedAmount" placeholder="Ej: 50000" min="0" step="100"
+                               oninput="calculateCheckoutChange()" style="font-size: 1.3em; text-align: center;">
+                    </div>
+                    <div style="font-size: 1em; margin-top: 10px;">Cambio a devolver:</div>
+                    <div class="amount" id="checkoutChangeAmount">$0</div>
+                </div>
+
+                <!-- Nombre del Cliente (solo para crédito) -->
+                <div id="checkoutClientNameDiv" class="form-group" style="display: none;">
+                    <label>Nombre del Cliente</label>
+                    <input type="text" id="checkoutClientName" placeholder="Ej: Juan Pérez">
+                </div>
+
+                <!-- Nota Opcional -->
+                <div class="form-group">
+                    <label>Nota (Opcional)</label>
+                    <textarea id="checkoutNote" rows="2" placeholder="Detalles adicionales..."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeCheckoutModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        💵 Confirmar Venta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Nuevo Gasto -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closeExpenseModal()">✕</button>
+            <h2 class="modal-header">📤 Registrar Gasto</h2>
+
+            <form id="expenseForm" onsubmit="saveExpense(event)">
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="expenseCategory" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="Proveedores">Proveedores</option>
+                        <option value="Personal">Personal (Salarios/Adelantos)</option>
+                        <option value="Servicios">Servicios (Luz, Agua, Gas, Internet)</option>
+                        <option value="Mantenimiento">Mantenimiento y Reparaciones</option>
+                        <option value="Arriendo">Arriendo/Alquiler</option>
+                        <option value="Transporte">Transporte</option>
+                        <option value="Otros">Otros</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <input type="text" id="expenseDescription" required placeholder="Ej: Pago de luz">
+                </div>
+
+                <div class="form-group">
+                    <label>Monto</label>
+                    <input type="number" id="expenseAmount" required placeholder="Ej: 85000" min="0" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <select id="expensePaymentMethod" required>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="nequi">Nequi</option>
+                        <option value="transferencia">Transferencia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Nota (Opcional)</label>
+                    <textarea id="expenseNote" rows="2" placeholder="Detalles adicionales..."></textarea>
+                </div>
+
+                <input type="hidden" id="editExpenseId" value="">
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeExpenseModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="expenseBtnText">📤 Registrar Gasto</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Nuevo Crédito -->
+    <div id="creditModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closeCreditModal()">✕</button>
+            <h2 class="modal-header">💳 Nuevo Crédito</h2>
+
+            <form id="creditForm" onsubmit="saveCredit(event)">
+                <div class="form-group">
+                    <label>Nombre del Cliente</label>
+                    <input type="text" id="creditClientName" required placeholder="Ej: María González">
+                </div>
+
+                <div class="form-group">
+                    <label>Teléfono (Opcional)</label>
+                    <input type="tel" id="creditPhone" placeholder="Ej: 3001234567">
+                </div>
+
+                <div class="form-group">
+                    <label>Monto del Crédito</label>
+                    <input type="number" id="creditAmount" required placeholder="Ej: 25000" min="0" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="creditDescription" rows="2" placeholder="Ej: 2 Hamburguesas y 1 Gaseosa"></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeCreditModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💳 Registrar Crédito</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Abonar Crédito -->
+    <div id="paymentCreditModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closePaymentCreditModal()">✕</button>
+            <h2 class="modal-header">💰 Abonar a Crédito</h2>
+
+            <div id="creditPaymentInfo"></div>
+
+            <form id="paymentCreditForm" onsubmit="savePaymentCredit(event)">
+                <div class="form-group">
+                    <label>Monto a Abonar</label>
+                    <input type="number" id="paymentAmount" required placeholder="Ej: 10000" min="0" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Método de Pago</label>
+                    <select id="paymentMethod" required>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="nequi">Nequi</option>
+                        <option value="transferencia">Transferencia</option>
+                    </select>
+                </div>
+
+                <input type="hidden" id="paymentCreditId" value="">
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closePaymentCreditModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">💰 Registrar Abono</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Configurar Producto -->
+    <div id="productConfigModal" class="modal">
+        <div class="modal-content">
+            <button class="btn-close-modal" onclick="closeProductConfigModal()">✕</button>
+            <h2 class="modal-header">🍔 Configurar Producto</h2>
+
+            <form id="productConfigForm" onsubmit="saveProductConfig(event)">
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="productName" required placeholder="Ej: Hamburguesa">
+                </div>
+
+                <div class="form-group">
+                    <label>Precio</label>
+                    <input type="number" id="productPrice" required placeholder="Ej: 8000" min="0" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Emoji/Ícono</label>
+                    <select id="productIcon">
+                        <option value="🍔">🍔 Hamburguesa</option>
+                        <option value="🍕">🍕 Pizza</option>
+                        <option value="🌭">🌭 Perro/Hot Dog</option>
+                        <option value="🍟">🍟 Papas Fritas</option>
+                        <option value="🥤">🥤 Gaseosa</option>
+                        <option value="🍺">🍺 Cerveza</option>
+                        <option value="🧃">🧃 Jugo</option>
+                        <option value="☕">☕ Café</option>
+                        <option value="🥗">🥗 Ensalada</option>
+                        <option value="🍗">🍗 Pollo</option>
+                        <option value="🍖">🍖 Carne</option>
+                        <option value="🌮">🌮 Taco</option>
+                        <option value="🌯">🌯 Burrito</option>
+                        <option value="🥙">🥙 Wrap</option>
+                        <option value="🍱">🍱 Combo</option>
+                        <option value="🍰">🍰 Postre</option>
+                    </select>
+                </div>
+
+                <input type="hidden" id="editProductId" value="">
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary" onclick="closeProductConfigModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="productConfigBtnText">💾 Guardar Producto</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <input type="file" id="jsonFileInput" accept=".json" style="display: none;" onchange="handleJSONImport(event)">
+
+    <script>
+        // ==================== DATOS Y ESTADO ====================
+        let currentPaymentMethod = 'efectivo';
+        let currentPaymentCreditId = null;
+        let cart = []; // Carrito de compras
+        let products = [];
+        let sales = [];
+        let expenses = [];
+        let credits = [];
+
+        // ==================== INICIALIZACIÓN ====================
+        function init() {
+            loadData();
+            renderProductsGrid();
+            renderSalesList();
+            renderExpensesList();
+            renderCreditsList();
+            renderProductConfigList();
+            updateTotalDay();
+            updateDate();
+            updateCloseData();
+            updateReports();
+            
+            // Productos por defecto - Menú completo Family Comidas Rápidas
+            // ORGANIZADOS POR LO MÁS VENDIDO según indicación de Miryam
+            if (products.length === 0) {
+                products = [
+                    // 🍟 SALCHIPAPAS (LO MÁS VENDIDO #1)
+                    { id: Date.now() + 1, name: 'Salchipapa Personal', price: 15000, icon: '🍟' },
+                    { id: Date.now() + 2, name: 'Salchipapa', price: 20000, icon: '🍟' },
+                    { id: Date.now() + 3, name: 'Salchicostilla', price: 28000, icon: '🍟' },
+                    { id: Date.now() + 4, name: 'Salchiburguer', price: 30000, icon: '🍟' },
+                    { id: Date.now() + 5, name: 'Salchipapa Familiar', price: 40000, icon: '🍟' },
+                    
+                    // 🌭 PERROS CALIENTES (LO MÁS VENDIDO #2)
+                    { id: Date.now() + 5, name: 'Perro Sencillo', price: 15000, icon: '🌭' },
+                    { id: Date.now() + 6, name: 'Perro Americano', price: 20000, icon: '🌭' },
+                    { id: Date.now() + 7, name: 'Perro Family', price: 25000, icon: '🌭' },
+                    
+                    // 🍔 HAMBURGUESAS (LO MÁS VENDIDO #3)
+                    { id: Date.now() + 8, name: 'Hamburguesa Clásica', price: 18000, icon: '🍔' },
+                    { id: Date.now() + 9, name: 'Hamburguesa con Tocineta', price: 20000, icon: '🍔' },
+                    { id: Date.now() + 10, name: 'Hamburguesa Doble Carne', price: 25000, icon: '🍔' },
+                    { id: Date.now() + 11, name: 'Hamburguesa de Camarón', price: 32000, icon: '🍔' },
+                    
+                    // 🍖 CARNES (LO MÁS VENDIDO #4)
+                    { id: Date.now() + 12, name: 'Carne Asada', price: 20000, icon: '🍖' },
+                    { id: Date.now() + 13, name: 'Picada', price: 20000, icon: '🍖' },
+                    { id: Date.now() + 14, name: 'Carnes al Barril', price: 20000, icon: '🍖' },
+                    { id: Date.now() + 15, name: 'Costillas BBQ', price: 25000, icon: '🍖' },
+                    
+                    // 🥤 GASEOSAS Y BEBIDAS (LO MÁS VENDIDO #5)
+                    { id: Date.now() + 16, name: 'Agua', price: 2000, icon: '💧' },
+                    { id: Date.now() + 17, name: 'Gaseosa 400ml', price: 4000, icon: '🥤' },
+                    { id: Date.now() + 18, name: 'Jugo Hit', price: 4000, icon: '🧃' },
+                    { id: Date.now() + 19, name: 'Squash', price: 4000, icon: '🥤' },
+                    { id: Date.now() + 20, name: 'Daviloe', price: 4000, icon: '🥤' },
+                    { id: Date.now() + 21, name: 'Soda', price: 4000, icon: '🥤' },
+                    { id: Date.now() + 22, name: 'Cerveza', price: 5000, icon: '🍺' },
+                    { id: Date.now() + 23, name: 'Gaseosa 1.5L', price: 7000, icon: '🥤' },
+                    { id: Date.now() + 24, name: 'Jugo Natural Agua', price: 8000, icon: '🥤' },
+                    { id: Date.now() + 25, name: 'Jugo Natural Leche', price: 10000, icon: '🥤' },
+                    { id: Date.now() + 26, name: 'Gaseosa 3.5L', price: 11000, icon: '🥤' },
+                    { id: Date.now() + 27, name: 'Frappé', price: 15000, icon: '☕' },
+                    { id: Date.now() + 28, name: 'Malteada', price: 15000, icon: '🥤' },
+                    
+                    // 🍗 POLLO
+                    { id: Date.now() + 29, name: 'Pollo Broaster', price: 12000, icon: '🍗' },
+                    { id: Date.now() + 30, name: 'Pechuga a la Plancha', price: 20000, icon: '🍗' },
+                    { id: Date.now() + 31, name: 'Alitas Pollo x4', price: 20000, icon: '🍗' },
+                    { id: Date.now() + 32, name: 'Alitas Pollo x6', price: 26000, icon: '🍗' },
+                    
+                    // 🌮 ENTREMETIDAS
+                    { id: Date.now() + 33, name: 'Chori Papas', price: 15000, icon: '🌭' },
+                    { id: Date.now() + 34, name: 'Colitas Cubanas', price: 15000, icon: '🥖' },
+                    { id: Date.now() + 35, name: 'Tortillas Rellenas', price: 15000, icon: '🌮' },
+                    { id: Date.now() + 36, name: 'Patacón con Todo', price: 15000, icon: '🍌' },
+                    
+                    // 🥪 SÁNDWICHES
+                    { id: Date.now() + 37, name: 'Sándwich Sencillo', price: 13000, icon: '🥪' },
+                    { id: Date.now() + 38, name: 'Sándwich de Pollo', price: 20000, icon: '🥪' },
+                    { id: Date.now() + 39, name: 'Sándwich Tipo Cubano', price: 25000, icon: '🥪' },
+                    
+                    // 🍱 COMBO INFANTIL
+                    { id: Date.now() + 40, name: 'Combo Infantil', price: 22000, icon: '🍱' },
+                    
+                    // 🍦 HELADERÍA
+                    { id: Date.now() + 41, name: 'Cono', price: 3000, icon: '🍦' },
+                    { id: Date.now() + 42, name: 'Brownie Helado', price: 8000, icon: '🍦' },
+                    { id: Date.now() + 43, name: 'Salpihelado', price: 9000, icon: '🍦' },
+                    { id: Date.now() + 44, name: 'Copa Helado Sencilla', price: 9000, icon: '🍨' },
+                    { id: Date.now() + 45, name: 'Estrella', price: 10000, icon: '⭐' },
+                    { id: Date.now() + 46, name: 'Ensalada Frutas Sencilla', price: 12000, icon: '🥗' },
+                    { id: Date.now() + 47, name: 'Copa Helado Tropical', price: 12000, icon: '🍨' },
+                    { id: Date.now() + 48, name: 'Copa Cookies y Cream', price: 12000, icon: '🍨' },
+                    { id: Date.now() + 49, name: 'Ensalada Frutas con Queso', price: 13000, icon: '🥗' },
+                    { id: Date.now() + 50, name: 'Ensalada Frutas con Helado', price: 15000, icon: '🥗' },
+                    { id: Date.now() + 51, name: 'Banana Split', price: 15000, icon: '🍌' }
+                ];
+                saveData();
+                renderProductsGrid();
+                renderProductConfigList();
+            }
+        }
+
+        // ==================== NAVEGACIÓN ====================
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Desactivar todos los botones
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Mostrar sección seleccionada
+            document.getElementById(sectionName).classList.add('active');
+            
+            // Activar botón correspondiente
+            event.target.closest('.nav-btn').classList.add('active');
+            
+            // Actualizar datos si es necesario
+            if (sectionName === 'cierre') {
+                updateCloseData();
+            } else if (sectionName === 'reportes') {
+                updateReports();
+            }
+        }
+
+        // ==================== FECHA Y TOTALES ====================
+        function updateDate() {
+            const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            
+            const now = new Date();
+            const dayName = days[now.getDay()];
+            const day = now.getDate();
+            const month = months[now.getMonth()];
+            const year = now.getFullYear();
+            
+            document.getElementById('currentDate').textContent = `${dayName}, ${day} de ${month} de ${year}`;
+        }
+
+        function updateTotalDay() {
+            const today = getTodayString();
+            const todaySales = sales.filter(s => s.date === today);
+            const total = todaySales.reduce((sum, sale) => sum + sale.price, 0);
+            
+            document.getElementById('totalDay').textContent = formatMoney(total);
+        }
+
+        function getTodayString() {
+            const now = new Date();
+            return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        }
+
+        function formatMoney(amount) {
+            return '$' + Math.round(amount).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // ==================== PRODUCTOS RÁPIDOS ====================
+        function renderProductsGrid() {
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = products.map(product => `
+                <button class="product-btn" onclick="quickSale(${product.id})">
+                    <span class="icon">${product.icon}</span>
+                    <div>${product.name}</div>
+                    <div class="price">${formatMoney(product.price)}</div>
+                </button>
+            `).join('');
+        }
+
+        function quickSale(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Abrir modal para agregar cantidad
+            openAddToCartModal(product);
+        }
+
+        function openCustomProductModal() {
+            document.getElementById('saleProduct').value = '';
+            document.getElementById('salePrice').value = '';
+            updateSaleSummary();
+            
+            openSaleModal();
+        }
+
+        // ==================== CARRITO DE COMPRAS ====================
+        function openAddToCartModal(product) {
+            const modal = document.getElementById('addToCartModal');
+            document.getElementById('addToCartProduct').textContent = product.name;
+            document.getElementById('addToCartPrice').textContent = formatMoney(product.price);
+            document.getElementById('addToCartQuantity').value = 1;
+            document.getElementById('addToCartProductId').value = product.id;
+            
+            updateAddToCartTotal();
+            modal.classList.add('active');
+        }
+
+        function closeAddToCartModal() {
+            document.getElementById('addToCartModal').classList.remove('active');
+        }
+
+        function updateAddToCartTotal() {
+            const productId = parseInt(document.getElementById('addToCartProductId').value);
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const quantity = parseInt(document.getElementById('addToCartQuantity').value) || 1;
+            const total = quantity * product.price;
+            
+            document.getElementById('addToCartTotal').textContent = formatMoney(total);
+        }
+
+        function addToCart() {
+            const productId = parseInt(document.getElementById('addToCartProductId').value);
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const quantity = parseInt(document.getElementById('addToCartQuantity').value) || 1;
+            
+            // Verificar si el producto ya está en el carrito
+            const existingIndex = cart.findIndex(item => item.productId === productId);
+            
+            if (existingIndex >= 0) {
+                // Sumar cantidad al existente
+                cart[existingIndex].quantity += quantity;
+            } else {
+                // Agregar nuevo item
+                cart.push({
+                    id: Date.now(),
+                    productId: productId,
+                    name: product.name,
+                    price: product.price,
+                    quantity: quantity
+                });
+            }
+            
+            renderCart();
+            closeAddToCartModal();
+        }
+
+        function renderCart() {
+            const cartItemsDiv = document.getElementById('cartItems');
+            const cartCountSpan = document.getElementById('cartCount');
+            const cartTotalSpan = document.getElementById('cartTotal');
+            const btnCheckout = document.getElementById('btnCheckout');
+            const btnClearCart = document.getElementById('btnClearCart');
+            
+            if (cart.length === 0) {
+                cartItemsDiv.innerHTML = `
+                    <div class="empty-state" style="padding: 40px 20px; text-align: center;">
+                        <div style="font-size: 3em; opacity: 0.3;">🛒</div>
+                        <p style="color: var(--gray); margin-top: 10px;">Carrito vacío</p>
+                        <p style="color: var(--gray); font-size: 0.9em;">Agrega productos</p>
+                    </div>
+                `;
+                cartCountSpan.textContent = '0';
+                cartTotalSpan.textContent = '$0';
+                btnCheckout.disabled = true;
+                btnClearCart.disabled = true;
+                return;
+            }
+            
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            cartItemsDiv.innerHTML = cart.map(item => `
+                <div style="background: white; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 2px solid #e5e7eb;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: 700; color: var(--dark); margin-bottom: 4px;">${item.name}</div>
+                            <div style="color: var(--gray); font-size: 0.9em;">${item.quantity} × ${formatMoney(item.price)}</div>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" style="background: var(--danger); color: white; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-weight: 700;">
+                            ✕
+                        </button>
+                    </div>
+                    <div style="text-align: right; font-size: 1.2em; font-weight: 800; color: var(--primary);">
+                        ${formatMoney(item.price * item.quantity)}
+                    </div>
+                </div>
+            `).join('');
+            
+            cartCountSpan.textContent = totalItems;
+            cartTotalSpan.textContent = formatMoney(totalAmount);
+            btnCheckout.disabled = false;
+            btnClearCart.disabled = false;
+        }
+
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            renderCart();
+        }
+
+        function clearCart() {
+            if (!confirm('¿Seguro que quieres vaciar el carrito?')) return;
+            cart = [];
+            renderCart();
+        }
+
+        function openCheckoutModal() {
+            if (cart.length === 0) return;
+            
+            const modal = document.getElementById('checkoutModal');
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            
+            // Llenar el resumen del carrito
+            const checkoutSummary = document.getElementById('checkoutSummary');
+            checkoutSummary.innerHTML = cart.map(item => `
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                    <div>
+                        <div style="font-weight: 700; color: var(--dark);">${item.quantity}x ${item.name}</div>
+                        <div style="font-size: 0.9em; color: var(--gray);">${formatMoney(item.price)} c/u</div>
+                    </div>
+                    <div style="font-weight: 800; color: var(--primary);">${formatMoney(item.price * item.quantity)}</div>
+                </div>
+            `).join('');
+            
+            document.getElementById('checkoutTotal').textContent = formatMoney(totalAmount);
+            document.getElementById('checkoutForm').reset();
+            
+            selectCheckoutPaymentMethod('efectivo');
+            modal.classList.add('active');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').classList.remove('active');
+        }
+
+        function selectCheckoutPaymentMethod(method) {
+            currentPaymentMethod = method;
+            document.getElementById('checkoutPaymentMethod').value = method;
+            
+            // Actualizar botones
+            document.querySelectorAll('#checkoutModal .payment-method').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.method === method) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Mostrar/ocultar calculadora de cambio
+            const calculator = document.getElementById('checkoutChangeCalculator');
+            if (method === 'efectivo') {
+                calculator.classList.remove('hidden');
+            } else {
+                calculator.classList.add('hidden');
+            }
+            
+            // Mostrar/ocultar campo de cliente
+            const clientDiv = document.getElementById('checkoutClientNameDiv');
+            if (method === 'credito') {
+                clientDiv.style.display = 'block';
+                document.getElementById('checkoutClientName').required = true;
+            } else {
+                clientDiv.style.display = 'none';
+                document.getElementById('checkoutClientName').required = false;
+            }
+        }
+
+        function calculateCheckoutChange() {
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const received = parseFloat(document.getElementById('checkoutReceivedAmount').value) || 0;
+            const change = received - totalAmount;
+            
+            document.getElementById('checkoutChangeAmount').textContent = formatMoney(Math.max(0, change));
+        }
+
+        function saveCheckout(event) {
+            event.preventDefault();
+            
+            if (cart.length === 0) return;
+            
+            const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const paymentMethod = document.getElementById('checkoutPaymentMethod').value;
+            const note = document.getElementById('checkoutNote').value;
+            const clientName = document.getElementById('checkoutClientName').value;
+            
+            // Crear descripción de productos
+            const productsList = cart.map(item => 
+                `${item.quantity}x ${item.name}`
+            ).join(', ');
+            
+            // Crear venta
+            const sale = {
+                id: Date.now(),
+                product: productsList,
+                items: [...cart], // Guardar items detallados
+                quantity: cart.reduce((sum, item) => sum + item.quantity, 0),
+                unitPrice: null, // No aplica para ventas múltiples
+                price: totalAmount,
+                paymentMethod,
+                note,
+                clientName: paymentMethod === 'credito' ? clientName : null,
+                date: getTodayString(),
+                time: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            sales.unshift(sale);
+            
+            // Si es crédito, crear registro de crédito
+            if (paymentMethod === 'credito') {
+                const credit = {
+                    id: Date.now() + 1,
+                    clientName,
+                    amount: totalAmount,
+                    remaining: totalAmount,
+                    description: productsList,
+                    date: getTodayString(),
+                    payments: []
+                };
+                credits.unshift(credit);
+            }
+            
+            saveData();
+            renderSalesList();
+            renderCreditsList();
+            updateTotalDay();
+            updateCloseData();
+            closeCheckoutModal();
+            
+            // Limpiar carrito
+            cart = [];
+            renderCart();
+            
+            // Mostrar confirmación
+            alert(`✅ Venta registrada: ${productsList} - ${formatMoney(totalAmount)}`);
+        }
+
+        // ==================== VENTAS ====================
+        function openSaleModal(saleId = null, productData = null) {
+            const modal = document.getElementById('saleModal');
+            const form = document.getElementById('saleForm');
+            
+            form.reset();
+            document.getElementById('editSaleId').value = '';
+            document.getElementById('saleBtnText').textContent = '💵 Registrar Venta';
+            document.getElementById('saleQuantity').value = 1; // Valor por defecto
+            
+            if (saleId) {
+                const sale = sales.find(s => s.id === saleId);
+                if (sale) {
+                    document.getElementById('saleProduct').value = sale.product;
+                    document.getElementById('saleQuantity').value = sale.quantity || 1;
+                    document.getElementById('salePrice').value = sale.unitPrice || sale.price;
+                    document.getElementById('salePaymentMethod').value = sale.paymentMethod;
+                    document.getElementById('saleNote').value = sale.note || '';
+                    document.getElementById('editSaleId').value = saleId;
+                    document.getElementById('saleBtnText').textContent = '💾 Actualizar Venta';
+                    
+                    selectPaymentMethod(sale.paymentMethod);
+                    
+                    if (sale.clientName) {
+                        document.getElementById('saleClientName').value = sale.clientName;
+                    }
+                }
+            } else if (productData) {
+                // Si viene de venta rápida, llenar los datos del producto
+                document.getElementById('saleProduct').value = productData.name;
+                document.getElementById('salePrice').value = productData.price;
+                document.getElementById('saleQuantity').value = 1;
+                selectPaymentMethod('efectivo');
+            } else {
+                selectPaymentMethod('efectivo');
+            }
+            
+            updateSaleSummary();
+            modal.classList.add('active');
+        }
+
+        function closeSaleModal() {
+            document.getElementById('saleModal').classList.remove('active');
+        }
+
+        function selectPaymentMethod(method) {
+            currentPaymentMethod = method;
+            document.getElementById('salePaymentMethod').value = method;
+            
+            // Actualizar botones
+            document.querySelectorAll('.payment-method').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.method === method) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Mostrar/ocultar calculadora de cambio
+            const calculator = document.getElementById('changeCalculatorDiv');
+            if (method === 'efectivo') {
+                calculator.classList.remove('hidden');
+            } else {
+                calculator.classList.add('hidden');
+            }
+            
+            // Mostrar/ocultar campo de cliente
+            const clientDiv = document.getElementById('clientNameDiv');
+            if (method === 'credito') {
+                clientDiv.style.display = 'block';
+                document.getElementById('saleClientName').required = true;
+            } else {
+                clientDiv.style.display = 'none';
+                document.getElementById('saleClientName').required = false;
+            }
+        }
+
+        function calculateChange() {
+            const quantity = parseInt(document.getElementById('saleQuantity').value) || 1;
+            const unitPrice = parseFloat(document.getElementById('salePrice').value) || 0;
+            const total = quantity * unitPrice;
+            const received = parseFloat(document.getElementById('receivedAmount').value) || 0;
+            const change = received - total;
+            
+            document.getElementById('changeAmount').textContent = formatMoney(Math.max(0, change));
+        }
+
+        function updateSaleSummary() {
+            const quantity = parseInt(document.getElementById('saleQuantity').value) || 1;
+            const price = parseFloat(document.getElementById('salePrice').value) || 0;
+            const total = quantity * price;
+            
+            document.getElementById('saleSummarySubtotal').textContent = formatMoney(price);
+            document.getElementById('saleSummaryQuantity').textContent = quantity;
+            document.getElementById('saleSummaryTotal').textContent = formatMoney(total);
+        }
+
+        function saveSale(event) {
+            event.preventDefault();
+            
+            const editId = document.getElementById('editSaleId').value;
+            const product = document.getElementById('saleProduct').value;
+            const quantity = parseInt(document.getElementById('saleQuantity').value) || 1;
+            const unitPrice = parseFloat(document.getElementById('salePrice').value);
+            const totalPrice = quantity * unitPrice;
+            const paymentMethod = document.getElementById('salePaymentMethod').value;
+            const note = document.getElementById('saleNote').value;
+            const clientName = document.getElementById('saleClientName').value;
+            
+            if (editId) {
+                // Editar venta existente
+                const index = sales.findIndex(s => s.id === parseInt(editId));
+                if (index !== -1) {
+                    sales[index] = {
+                        ...sales[index],
+                        product,
+                        quantity,
+                        unitPrice,
+                        price: totalPrice,
+                        paymentMethod,
+                        note,
+                        clientName: paymentMethod === 'credito' ? clientName : null
+                    };
+                }
+            } else {
+                // Nueva venta
+                const sale = {
+                    id: Date.now(),
+                    product,
+                    quantity,
+                    unitPrice,
+                    price: totalPrice,
+                    paymentMethod,
+                    note,
+                    clientName: paymentMethod === 'credito' ? clientName : null,
+                    date: getTodayString(),
+                    time: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                };
+                
+                sales.unshift(sale);
+                
+                // Si es crédito, crear registro de crédito
+                if (paymentMethod === 'credito') {
+                    const credit = {
+                        id: Date.now() + 1,
+                        clientName,
+                        amount: totalPrice,
+                        remaining: totalPrice,
+                        description: `${product} (x${quantity})`,
+                        date: getTodayString(),
+                        payments: []
+                    };
+                    credits.unshift(credit);
+                }
+            }
+            
+            saveData();
+            renderSalesList();
+            renderCreditsList();
+            updateTotalDay();
+            updateCloseData();
+            closeSaleModal();
+            
+            // Mostrar confirmación
+            if (!editId) {
+                alert(`✅ Venta registrada: ${quantity}x ${product} - ${formatMoney(totalPrice)}`);
+            }
+        }
+
+        function renderSalesList() {
+            const today = getTodayString();
+            const todaySales = sales.filter(s => s.date === today);
+            
+            const list = document.getElementById('salesList');
+            
+            if (todaySales.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">💵</div>
+                        <h3>No hay ventas hoy</h3>
+                        <p>Las ventas del día aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = todaySales.map(sale => {
+                const methodIcons = {
+                    'efectivo': '💵',
+                    'nequi': '📱',
+                    'transferencia': '🏦',
+                    'credito': '💳'
+                };
+                
+                const methodNames = {
+                    'efectivo': 'Efectivo',
+                    'nequi': 'Nequi',
+                    'transferencia': 'Transferencia',
+                    'credito': 'Crédito'
+                };
+                
+                // Determinar si es una venta con múltiples items (del carrito) o una venta simple
+                let productDisplay = '';
+                let detailsDisplay = '';
+                
+                if (sale.items && sale.items.length > 0) {
+                    // Venta con múltiples items del carrito
+                    productDisplay = sale.product; // Ya tiene el formato "2x Hamburguesa, 3x Gaseosa"
+                    detailsDisplay = `${methodIcons[sale.paymentMethod]} ${methodNames[sale.paymentMethod]} • ${sale.time} • ${sale.items.length} productos`;
+                } else {
+                    // Venta simple (antigua o de producto personalizado)
+                    const quantity = sale.quantity || 1;
+                    productDisplay = quantity > 1 ? `${quantity}x ${sale.product}` : sale.product;
+                    const unitPriceDisplay = sale.unitPrice ? ` (${formatMoney(sale.unitPrice)} c/u)` : '';
+                    detailsDisplay = `${methodIcons[sale.paymentMethod]} ${methodNames[sale.paymentMethod]} • ${sale.time}${unitPriceDisplay}`;
+                }
+                
+                return `
+                    <div class="item-card">
+                        <div class="info">
+                            <div class="title">${productDisplay}</div>
+                            <div class="details">
+                                ${detailsDisplay}
+                                ${sale.clientName ? `<br>Cliente: ${sale.clientName}` : ''}
+                                ${sale.note ? `<br>${sale.note}` : ''}
+                            </div>
+                        </div>
+                        <div class="amount">${formatMoney(sale.price)}</div>
+                        <div class="actions">
+                            <button class="btn-edit" onclick="openSaleModal(${sale.id})">✏️</button>
+                            <button class="btn-delete" onclick="deleteSale(${sale.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteSale(saleId) {
+            if (!confirm('¿Seguro que quieres eliminar esta venta?')) return;
+            
+            sales = sales.filter(s => s.id !== saleId);
+            saveData();
+            renderSalesList();
+            updateTotalDay();
+            updateCloseData();
+        }
+
+        // ==================== GASTOS ====================
+        function openExpenseModal(expenseId = null) {
+            const modal = document.getElementById('expenseModal');
+            const form = document.getElementById('expenseForm');
+            
+            form.reset();
+            document.getElementById('editExpenseId').value = '';
+            document.getElementById('expenseBtnText').textContent = '📤 Registrar Gasto';
+            
+            if (expenseId) {
+                const expense = expenses.find(e => e.id === expenseId);
+                if (expense) {
+                    document.getElementById('expenseCategory').value = expense.category;
+                    document.getElementById('expenseDescription').value = expense.description;
+                    document.getElementById('expenseAmount').value = expense.amount;
+                    document.getElementById('expensePaymentMethod').value = expense.paymentMethod;
+                    document.getElementById('expenseNote').value = expense.note || '';
+                    document.getElementById('editExpenseId').value = expenseId;
+                    document.getElementById('expenseBtnText').textContent = '💾 Actualizar Gasto';
+                }
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeExpenseModal() {
+            document.getElementById('expenseModal').classList.remove('active');
+        }
+
+        function saveExpense(event) {
+            event.preventDefault();
+            
+            const editId = document.getElementById('editExpenseId').value;
+            const category = document.getElementById('expenseCategory').value;
+            const description = document.getElementById('expenseDescription').value;
+            const amount = parseFloat(document.getElementById('expenseAmount').value);
+            const paymentMethod = document.getElementById('expensePaymentMethod').value;
+            const note = document.getElementById('expenseNote').value;
+            
+            if (editId) {
+                // Editar gasto existente
+                const index = expenses.findIndex(e => e.id === parseInt(editId));
+                if (index !== -1) {
+                    expenses[index] = {
+                        ...expenses[index],
+                        category,
+                        description,
+                        amount,
+                        paymentMethod,
+                        note
+                    };
+                }
+            } else {
+                // Nuevo gasto
+                const expense = {
+                    id: Date.now(),
+                    category,
+                    description,
+                    amount,
+                    paymentMethod,
+                    note,
+                    date: getTodayString(),
+                    time: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+                };
+                
+                expenses.unshift(expense);
+            }
+            
+            saveData();
+            renderExpensesList();
+            updateCloseData();
+            closeExpenseModal();
+            
+            if (!editId) {
+                alert(`✅ Gasto registrado: ${description} - ${formatMoney(amount)}`);
+            }
+        }
+
+        function renderExpensesList() {
+            const today = getTodayString();
+            const todayExpenses = expenses.filter(e => e.date === today);
+            
+            const list = document.getElementById('expensesList');
+            
+            // Actualizar estadísticas
+            const totalToday = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('totalExpensesToday').textContent = formatMoney(totalToday);
+            
+            // Calcular gastos de esta semana
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const weekAgoString = `${weekAgo.getFullYear()}-${String(weekAgo.getMonth() + 1).padStart(2, '0')}-${String(weekAgo.getDate()).padStart(2, '0')}`;
+            const weekExpenses = expenses.filter(e => e.date >= weekAgoString);
+            const totalWeek = weekExpenses.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('totalExpensesWeek').textContent = formatMoney(totalWeek);
+            
+            if (todayExpenses.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📤</div>
+                        <h3>No hay gastos hoy</h3>
+                        <p>Los gastos del día aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = todayExpenses.map(expense => {
+                const methodIcons = {
+                    'efectivo': '💵',
+                    'nequi': '📱',
+                    'transferencia': '🏦'
+                };
+                
+                return `
+                    <div class="item-card">
+                        <div class="info">
+                            <div class="title">${expense.description}</div>
+                            <div class="details">
+                                📁 ${expense.category} • ${methodIcons[expense.paymentMethod]} • ${expense.time}
+                                ${expense.note ? `<br>${expense.note}` : ''}
+                            </div>
+                        </div>
+                        <div class="amount expense">${formatMoney(expense.amount)}</div>
+                        <div class="actions">
+                            <button class="btn-edit" onclick="openExpenseModal(${expense.id})">✏️</button>
+                            <button class="btn-delete" onclick="deleteExpense(${expense.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteExpense(expenseId) {
+            if (!confirm('¿Seguro que quieres eliminar este gasto?')) return;
+            
+            expenses = expenses.filter(e => e.id !== expenseId);
+            saveData();
+            renderExpensesList();
+            updateCloseData();
+        }
+
+        // ==================== CRÉDITOS ====================
+        function openCreditModal() {
+            const modal = document.getElementById('creditModal');
+            document.getElementById('creditForm').reset();
+            modal.classList.add('active');
+        }
+
+        function closeCreditModal() {
+            document.getElementById('creditModal').classList.remove('active');
+        }
+
+        function saveCredit(event) {
+            event.preventDefault();
+            
+            const clientName = document.getElementById('creditClientName').value;
+            const phone = document.getElementById('creditPhone').value;
+            const amount = parseFloat(document.getElementById('creditAmount').value);
+            const description = document.getElementById('creditDescription').value;
+            
+            const credit = {
+                id: Date.now(),
+                clientName,
+                phone,
+                amount,
+                remaining: amount,
+                description,
+                date: getTodayString(),
+                payments: []
+            };
+            
+            credits.unshift(credit);
+            
+            saveData();
+            renderCreditsList();
+            closeCreditModal();
+            
+            alert(`✅ Crédito registrado: ${clientName} - ${formatMoney(amount)}`);
+        }
+
+        function renderCreditsList() {
+            const activeCredits = credits.filter(c => c.remaining > 0);
+            
+            const list = document.getElementById('creditsList');
+            
+            // Actualizar estadísticas
+            document.getElementById('totalCreditsCount').textContent = activeCredits.length;
+            const totalAmount = activeCredits.reduce((sum, c) => sum + c.remaining, 0);
+            document.getElementById('totalCreditsAmount').textContent = formatMoney(totalAmount);
+            
+            if (activeCredits.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">💳</div>
+                        <h3>No hay créditos pendientes</h3>
+                        <p>Los créditos activos aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = activeCredits.map(credit => {
+                const today = new Date();
+                const creditDate = new Date(credit.date);
+                const daysOld = Math.floor((today - creditDate) / (1000 * 60 * 60 * 24));
+                
+                const isOld = daysOld > 15;
+                
+                return `
+                    <div class="credit-card ${isOld ? 'old' : ''}">
+                        <div class="client-name">${credit.clientName}</div>
+                        ${credit.phone ? `<div style="color: var(--gray); font-size: 0.9em;">📞 ${credit.phone}</div>` : ''}
+                        ${credit.description ? `<div style="color: var(--gray); margin-top: 5px;">${credit.description}</div>` : ''}
+                        
+                        <div class="credit-info">
+                            <div>
+                                <div class="credit-amount">${formatMoney(credit.remaining)}</div>
+                                <div class="credit-date">${credit.date} (${daysOld} días)</div>
+                            </div>
+                            ${isOld ? '<span class="badge badge-danger">⚠️ Vencido</span>' : '<span class="badge badge-warning">Pendiente</span>'}
+                        </div>
+                        
+                        ${credit.payments.length > 0 ? `
+                            <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb; font-size: 0.9em; color: var(--gray);">
+                                ${credit.payments.length} abono(s) • Total: ${formatMoney(credit.amount - credit.remaining)}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="actions">
+                            <button class="btn btn-primary" style="flex: 1;" onclick="openPaymentCreditModal(${credit.id})">
+                                💰 Abonar
+                            </button>
+                            <button class="btn-delete" onclick="deleteCredit(${credit.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openPaymentCreditModal(creditId) {
+            currentPaymentCreditId = creditId;
+            const credit = credits.find(c => c.id === creditId);
+            
+            if (!credit) return;
+            
+            const modal = document.getElementById('paymentCreditModal');
+            const infoDiv = document.getElementById('creditPaymentInfo');
+            
+            infoDiv.innerHTML = `
+                <div style="background: #f9fafb; padding: 20px; border-radius: 15px; margin-bottom: 20px;">
+                    <h3 style="font-weight: 800; color: var(--dark); margin-bottom: 10px;">${credit.clientName}</h3>
+                    <div style="color: var(--gray); margin-bottom: 15px;">${credit.description || ''}</div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.9em; color: var(--gray);">Saldo Pendiente</div>
+                            <div style="font-size: 2em; font-weight: 900; color: var(--danger);">${formatMoney(credit.remaining)}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.9em; color: var(--gray);">Crédito Original</div>
+                            <div style="font-size: 1.2em; font-weight: 700; color: var(--gray);">${formatMoney(credit.amount)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('paymentCreditForm').reset();
+            document.getElementById('paymentCreditId').value = creditId;
+            document.getElementById('paymentAmount').max = credit.remaining;
+            
+            modal.classList.add('active');
+        }
+
+        function closePaymentCreditModal() {
+            document.getElementById('paymentCreditModal').classList.remove('active');
+            currentPaymentCreditId = null;
+        }
+
+        function savePaymentCredit(event) {
+            event.preventDefault();
+            
+            const creditId = parseInt(document.getElementById('paymentCreditId').value);
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            const credit = credits.find(c => c.id === creditId);
+            if (!credit) return;
+            
+            if (amount > credit.remaining) {
+                alert('⚠️ El monto no puede ser mayor al saldo pendiente');
+                return;
+            }
+            
+            // Registrar el pago
+            const payment = {
+                id: Date.now(),
+                amount,
+                paymentMethod,
+                date: getTodayString(),
+                time: new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })
+            };
+            
+            credit.payments.push(payment);
+            credit.remaining -= amount;
+            
+            // Registrar como venta
+            const sale = {
+                id: Date.now() + 1,
+                product: `Abono crédito - ${credit.clientName}`,
+                price: amount,
+                paymentMethod,
+                note: credit.description,
+                clientName: credit.clientName,
+                date: getTodayString(),
+                time: payment.time
+            };
+            
+            sales.unshift(sale);
+            
+            saveData();
+            renderCreditsList();
+            renderSalesList();
+            updateTotalDay();
+            updateCloseData();
+            closePaymentCreditModal();
+            
+            if (credit.remaining === 0) {
+                alert(`✅ ¡Crédito pagado completamente! Cliente: ${credit.clientName}`);
+            } else {
+                alert(`✅ Abono registrado: ${formatMoney(amount)}\nSaldo restante: ${formatMoney(credit.remaining)}`);
+            }
+        }
+
+        function deleteCredit(creditId) {
+            if (!confirm('¿Seguro que quieres eliminar este crédito?')) return;
+            
+            credits = credits.filter(c => c.id !== creditId);
+            saveData();
+            renderCreditsList();
+        }
+
+        // ==================== CIERRE DE CAJA ====================
+        function updateCloseData() {
+            const today = getTodayString();
+            const todaySales = sales.filter(s => s.date === today);
+            const todayExpenses = expenses.filter(e => e.date === today);
+            
+            // Ventas por método de pago
+            const salesByCash = todaySales.filter(s => s.paymentMethod === 'efectivo').reduce((sum, s) => sum + s.price, 0);
+            const salesByNequi = todaySales.filter(s => s.paymentMethod === 'nequi').reduce((sum, s) => sum + s.price, 0);
+            const salesByTransfer = todaySales.filter(s => s.paymentMethod === 'transferencia').reduce((sum, s) => sum + s.price, 0);
+            const salesByCredit = todaySales.filter(s => s.paymentMethod === 'credito').reduce((sum, s) => sum + s.price, 0);
+            const totalSales = salesByCash + salesByNequi + salesByTransfer + salesByCredit;
+            
+            document.getElementById('closeSalesCash').textContent = formatMoney(salesByCash);
+            document.getElementById('closeSalesNequi').textContent = formatMoney(salesByNequi);
+            document.getElementById('closeSalesTransfer').textContent = formatMoney(salesByTransfer);
+            document.getElementById('closeSalesCredit').textContent = formatMoney(salesByCredit);
+            document.getElementById('closeTotalSales').textContent = formatMoney(totalSales);
+            
+            // Gastos por categoría
+            const expensesByCategory = {};
+            todayExpenses.forEach(expense => {
+                if (!expensesByCategory[expense.category]) {
+                    expensesByCategory[expense.category] = 0;
+                }
+                expensesByCategory[expense.category] += expense.amount;
+            });
+            
+            const categoryDiv = document.getElementById('closeExpensesByCategory');
+            categoryDiv.innerHTML = Object.entries(expensesByCategory).map(([category, amount]) => `
+                <div class="arqueo-row">
+                    <span class="label">📁 ${category}</span>
+                    <span class="value">${formatMoney(amount)}</span>
+                </div>
+            `).join('') || '<div class="arqueo-row"><span class="label">Sin gastos</span><span class="value">$0</span></div>';
+            
+            const totalExpenses = Object.values(expensesByCategory).reduce((sum, amount) => sum + amount, 0);
+            document.getElementById('closeTotalExpenses').textContent = formatMoney(totalExpenses);
+            
+            // Arqueo de efectivo
+            const cashExpenses = todayExpenses.filter(e => e.paymentMethod === 'efectivo').reduce((sum, e) => sum + e.amount, 0);
+            const netCash = salesByCash - cashExpenses;
+            
+            document.getElementById('closeExpectedCash').textContent = formatMoney(salesByCash);
+            document.getElementById('closeCashExpenses').textContent = formatMoney(cashExpenses);
+            document.getElementById('closeNetCash').textContent = formatMoney(netCash);
+            
+            // Actualizar diferencia al cambiar el input
+            document.getElementById('realCashInput').oninput = function() {
+                const realCash = parseFloat(this.value) || 0;
+                const difference = realCash - netCash;
+                
+                const diffDiv = document.getElementById('cashDifferenceDisplay');
+                
+                if (this.value === '') {
+                    diffDiv.innerHTML = '';
+                } else if (difference === 0) {
+                    diffDiv.innerHTML = `
+                        <div class="arqueo-row difference positive">
+                            <span class="label">✅ Cuadra Perfecto</span>
+                            <span class="value">${formatMoney(0)}</span>
+                        </div>
+                    `;
+                } else if (difference > 0) {
+                    diffDiv.innerHTML = `
+                        <div class="arqueo-row difference positive">
+                            <span class="label">💰 Sobrante</span>
+                            <span class="value" style="color: var(--success);">+${formatMoney(difference)}</span>
+                        </div>
+                    `;
+                } else {
+                    diffDiv.innerHTML = `
+                        <div class="arqueo-row difference">
+                            <span class="label">⚠️ Faltante</span>
+                            <span class="value" style="color: var(--danger);">${formatMoney(difference)}</span>
+                        </div>
+                    `;
+                }
+            };
+            
+            // Utilidad
+            const netProfit = totalSales - totalExpenses;
+            document.getElementById('closeUtilSales').textContent = formatMoney(totalSales);
+            document.getElementById('closeUtilExpenses').textContent = formatMoney(totalExpenses);
+            document.getElementById('closeNetProfit').textContent = formatMoney(netProfit);
+        }
+
+        function exportCloseSummary() {
+            const today = getTodayString();
+            const todaySales = sales.filter(s => s.date === today);
+            const todayExpenses = expenses.filter(e => e.date === today);
+            
+            // Calcular totales
+            const salesByCash = todaySales.filter(s => s.paymentMethod === 'efectivo').reduce((sum, s) => sum + s.price, 0);
+            const salesByNequi = todaySales.filter(s => s.paymentMethod === 'nequi').reduce((sum, s) => sum + s.price, 0);
+            const salesByTransfer = todaySales.filter(s => s.paymentMethod === 'transferencia').reduce((sum, s) => sum + s.price, 0);
+            const salesByCredit = todaySales.filter(s => s.paymentMethod === 'credito').reduce((sum, s) => sum + s.price, 0);
+            const totalSales = salesByCash + salesByNequi + salesByTransfer + salesByCredit;
+            const totalExpenses = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const netProfit = totalSales - totalExpenses;
+            
+            // Crear datos para Excel
+            const wb = XLSX.utils.book_new();
+            
+            // Hoja 1: Resumen
+            const summaryData = [
+                ['CIERRE DE CAJA - FAMILY COMIDAS RÁPIDAS'],
+                ['Fecha:', today],
+                [''],
+                ['VENTAS DEL DÍA'],
+                ['Efectivo', formatMoney(salesByCash)],
+                ['Nequi', formatMoney(salesByNequi)],
+                ['Transferencia', formatMoney(salesByTransfer)],
+                ['Crédito', formatMoney(salesByCredit)],
+                ['TOTAL VENTAS', formatMoney(totalSales)],
+                [''],
+                ['GASTOS DEL DÍA'],
+                ...todayExpenses.map(e => [e.category, e.description, formatMoney(e.amount)]),
+                ['TOTAL GASTOS', '', formatMoney(totalExpenses)],
+                [''],
+                ['UTILIDAD NETA', '', formatMoney(netProfit)]
+            ];
+            
+            const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+            XLSX.utils.book_append_sheet(wb, ws1, 'Resumen');
+            
+            // Descargar
+            XLSX.writeFile(wb, `Cierre_Caja_${today}.xlsx`);
+            
+            alert('✅ Resumen de cierre exportado a Excel');
+        }
+
+        function sendCloseToWhatsApp() {
+            const today = getTodayString();
+            const todaySales = sales.filter(s => s.date === today);
+            const todayExpenses = expenses.filter(e => e.date === today);
+            
+            const salesByCash = todaySales.filter(s => s.paymentMethod === 'efectivo').reduce((sum, s) => sum + s.price, 0);
+            const salesByNequi = todaySales.filter(s => s.paymentMethod === 'nequi').reduce((sum, s) => sum + s.price, 0);
+            const salesByTransfer = todaySales.filter(s => s.paymentMethod === 'transferencia').reduce((sum, s) => sum + s.price, 0);
+            const salesByCredit = todaySales.filter(s => s.paymentMethod === 'credito').reduce((sum, s) => sum + s.price, 0);
+            const totalSales = salesByCash + salesByNequi + salesByTransfer + salesByCredit;
+            const totalExpenses = todayExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const netProfit = totalSales - totalExpenses;
+            
+            const realCash = parseFloat(document.getElementById('realCashInput').value) || 0;
+            const expectedCash = salesByCash - todayExpenses.filter(e => e.paymentMethod === 'efectivo').reduce((sum, e) => sum + e.amount, 0);
+            const difference = realCash - expectedCash;
+            
+            let message = `🔒 *CIERRE DE CAJA*\n`;
+            message += `📅 ${today}\n\n`;
+            message += `💰 *VENTAS DEL DÍA*\n`;
+            message += `💵 Efectivo: ${formatMoney(salesByCash)}\n`;
+            message += `📱 Nequi: ${formatMoney(salesByNequi)}\n`;
+            message += `🏦 Transferencia: ${formatMoney(salesByTransfer)}\n`;
+            message += `💳 Crédito: ${formatMoney(salesByCredit)}\n`;
+            message += `*Total Ventas: ${formatMoney(totalSales)}*\n\n`;
+            message += `📤 *GASTOS DEL DÍA*\n`;
+            message += `Total Gastos: ${formatMoney(totalExpenses)}\n\n`;
+            
+            if (realCash > 0) {
+                message += `💵 *ARQUEO DE EFECTIVO*\n`;
+                message += `Debería haber: ${formatMoney(expectedCash)}\n`;
+                message += `Hay realmente: ${formatMoney(realCash)}\n`;
+                
+                if (difference === 0) {
+                    message += `✅ Cuadra perfecto\n\n`;
+                } else if (difference > 0) {
+                    message += `💰 Sobrante: ${formatMoney(difference)}\n\n`;
+                } else {
+                    message += `⚠️ Faltante: ${formatMoney(Math.abs(difference))}\n\n`;
+                }
+            }
+            
+            message += `💎 *UTILIDAD NETA: ${formatMoney(netProfit)}*`;
+            
+            const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappURL, '_blank');
+        }
+
+        // ==================== REPORTES ====================
+        function updateReports() {
+            const period = document.getElementById('reportPeriod').value;
+            let filteredSales = [];
+            let filteredExpenses = [];
+            
+            const today = new Date();
+            const todayString = getTodayString();
+            
+            if (period === 'today') {
+                filteredSales = sales.filter(s => s.date === todayString);
+                filteredExpenses = expenses.filter(e => e.date === todayString);
+            } else if (period === 'week') {
+                const weekAgo = new Date(today);
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const weekAgoString = `${weekAgo.getFullYear()}-${String(weekAgo.getMonth() + 1).padStart(2, '0')}-${String(weekAgo.getDate()).padStart(2, '0')}`;
+                filteredSales = sales.filter(s => s.date >= weekAgoString);
+                filteredExpenses = expenses.filter(e => e.date >= weekAgoString);
+            } else if (period === 'month') {
+                const monthAgo = new Date(today);
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
+                const monthAgoString = `${monthAgo.getFullYear()}-${String(monthAgo.getMonth() + 1).padStart(2, '0')}-${String(monthAgo.getDate()).padStart(2, '0')}`;
+                filteredSales = sales.filter(s => s.date >= monthAgoString);
+                filteredExpenses = expenses.filter(e => e.date >= monthAgoString);
+            } else {
+                filteredSales = sales;
+                filteredExpenses = expenses;
+            }
+            
+            const totalSales = filteredSales.reduce((sum, s) => sum + s.price, 0);
+            const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+            const profit = totalSales - totalExpenses;
+            const avgSale = filteredSales.length > 0 ? totalSales / filteredSales.length : 0;
+            
+            document.getElementById('reportTotalSales').textContent = formatMoney(totalSales);
+            document.getElementById('reportTotalExpenses').textContent = formatMoney(totalExpenses);
+            document.getElementById('reportProfit').textContent = formatMoney(profit);
+            document.getElementById('reportAvgSale').textContent = formatMoney(avgSale);
+            
+            // Top Productos
+            const productCount = {};
+            const productTotal = {};
+            
+            filteredSales.forEach(sale => {
+                if (!productCount[sale.product]) {
+                    productCount[sale.product] = 0;
+                    productTotal[sale.product] = 0;
+                }
+                productCount[sale.product]++;
+                productTotal[sale.product] += sale.price;
+            });
+            
+            const topProducts = Object.entries(productCount)
+                .map(([product, count]) => ({
+                    product,
+                    count,
+                    total: productTotal[product]
+                }))
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10);
+            
+            const topList = document.getElementById('topProductsList');
+            
+            if (topProducts.length === 0) {
+                topList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🏆</div>
+                        <h3>No hay datos para mostrar</h3>
+                        <p>Selecciona otro período</p>
+                    </div>
+                `;
+            } else {
+                topList.innerHTML = topProducts.map((item, index) => `
+                    <div class="product-config-item">
+                        <div class="info">
+                            <div class="name">${index + 1}. ${item.product}</div>
+                            <div style="color: var(--gray); font-size: 0.9em;">${item.count} vendidos</div>
+                        </div>
+                        <div class="price">${formatMoney(item.total)}</div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ==================== CONFIGURACIÓN DE PRODUCTOS ====================
+        function openProductConfigModal(productId = null) {
+            const modal = document.getElementById('productConfigModal');
+            const form = document.getElementById('productConfigForm');
+            
+            form.reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('productConfigBtnText').textContent = '💾 Guardar Producto';
+            
+            if (productId) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productPrice').value = product.price;
+                    document.getElementById('productIcon').value = product.icon;
+                    document.getElementById('editProductId').value = productId;
+                    document.getElementById('productConfigBtnText').textContent = '💾 Actualizar Producto';
+                }
+            }
+            
+            modal.classList.add('active');
+        }
+
+        function closeProductConfigModal() {
+            document.getElementById('productConfigModal').classList.remove('active');
+        }
+
+        function saveProductConfig(event) {
+            event.preventDefault();
+            
+            const editId = document.getElementById('editProductId').value;
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const icon = document.getElementById('productIcon').value;
+            
+            if (editId) {
+                const index = products.findIndex(p => p.id === parseInt(editId));
+                if (index !== -1) {
+                    products[index] = {
+                        ...products[index],
+                        name,
+                        price,
+                        icon
+                    };
+                }
+            } else {
+                const product = {
+                    id: Date.now(),
+                    name,
+                    price,
+                    icon
+                };
+                products.push(product);
+            }
+            
+            saveData();
+            renderProductsGrid();
+            renderProductConfigList();
+            closeProductConfigModal();
+            
+            alert(`✅ Producto ${editId ? 'actualizado' : 'agregado'}: ${name}`);
+        }
+
+        function renderProductConfigList() {
+            const list = document.getElementById('productConfigList');
+            
+            if (products.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🍔</div>
+                        <h3>No hay productos configurados</h3>
+                        <p>Agrega productos para ventas rápidas</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = products.map(product => `
+                <div class="product-config-item">
+                    <div class="info">
+                        <div class="name">${product.icon} ${product.name}</div>
+                        <div class="price">${formatMoney(product.price)}</div>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn-edit" onclick="openProductConfigModal(${product.id})">✏️</button>
+                        <button class="btn-delete" onclick="deleteProduct(${product.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deleteProduct(productId) {
+            if (!confirm('¿Seguro que quieres eliminar este producto?')) return;
+            
+            products = products.filter(p => p.id !== productId);
+            saveData();
+            renderProductsGrid();
+            renderProductConfigList();
+        }
+
+        // ==================== EXPORTAR/IMPORTAR ====================
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            
+            // Hoja 1: Ventas
+            const salesData = [
+                ['Fecha', 'Hora', 'Producto', 'Precio', 'Método de Pago', 'Cliente', 'Nota']
+            ];
+            sales.forEach(sale => {
+                salesData.push([
+                    sale.date,
+                    sale.time,
+                    sale.product,
+                    sale.price,
+                    sale.paymentMethod,
+                    sale.clientName || '',
+                    sale.note || ''
+                ]);
+            });
+            const ws1 = XLSX.utils.aoa_to_sheet(salesData);
+            XLSX.utils.book_append_sheet(wb, ws1, 'Ventas');
+            
+            // Hoja 2: Gastos
+            const expensesData = [
+                ['Fecha', 'Hora', 'Categoría', 'Descripción', 'Monto', 'Método de Pago', 'Nota']
+            ];
+            expenses.forEach(expense => {
+                expensesData.push([
+                    expense.date,
+                    expense.time,
+                    expense.category,
+                    expense.description,
+                    expense.amount,
+                    expense.paymentMethod,
+                    expense.note || ''
+                ]);
+            });
+            const ws2 = XLSX.utils.aoa_to_sheet(expensesData);
+            XLSX.utils.book_append_sheet(wb, ws2, 'Gastos');
+            
+            // Hoja 3: Créditos
+            const creditsData = [
+                ['Cliente', 'Teléfono', 'Monto Original', 'Saldo', 'Fecha', 'Descripción']
+            ];
+            credits.forEach(credit => {
+                creditsData.push([
+                    credit.clientName,
+                    credit.phone || '',
+                    credit.amount,
+                    credit.remaining,
+                    credit.date,
+                    credit.description || ''
+                ]);
+            });
+            const ws3 = XLSX.utils.aoa_to_sheet(creditsData);
+            XLSX.utils.book_append_sheet(wb, ws3, 'Créditos');
+            
+            const today = getTodayString();
+            XLSX.writeFile(wb, `Caja_Family_${today}.xlsx`);
+            
+            alert('✅ Datos exportados a Excel');
+        }
+
+        function exportJSON() {
+            const data = {
+                products,
+                sales,
+                expenses,
+                credits,
+                exportDate: new Date().toISOString()
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Caja_Respaldo_${getTodayString()}.json`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            
+            alert('✅ Respaldo JSON creado. Guárdalo en un lugar seguro (Google Drive, email, etc.)');
+        }
+
+        function importJSON() {
+            if (!confirm('⚠️ ADVERTENCIA: Esto reemplazará TODOS los datos actuales. ¿Seguro que quieres continuar?\n\nAsegúrate de tener un respaldo antes.')) {
+                return;
+            }
+            
+            document.getElementById('jsonFileInput').click();
+        }
+
+        function handleJSONImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.products) products = data.products;
+                    if (data.sales) sales = data.sales;
+                    if (data.expenses) expenses = data.expenses;
+                    if (data.credits) credits = data.credits;
+                    
+                    saveData();
+                    
+                    // Recargar todas las vistas
+                    renderProductsGrid();
+                    renderSalesList();
+                    renderExpensesList();
+                    renderCreditsList();
+                    renderProductConfigList();
+                    updateTotalDay();
+                    updateCloseData();
+                    updateReports();
+                    
+                    alert('✅ Datos importados correctamente');
+                } catch (error) {
+                    alert('❌ Error al importar el archivo. Asegúrate de que sea un archivo JSON válido.');
+                    console.error(error);
+                }
+            };
+            reader.readAsText(file);
+            
+            // Limpiar el input
+            event.target.value = '';
+        }
+
+        function resetProductsToDefault() {
+            if (!confirm('¿Actualizar productos con los precios del recetario? Esto sobrescribirá tus productos actuales.')) return;
+            
+            // Productos actualizados con precios correctos del recetario
+            products = [
+                // 🍟 SALCHIPAPAS (LO MÁS VENDIDO #1)
+                { id: Date.now() + 1, name: 'Salchipapa Personal', price: 15000, icon: '🍟' },
+                { id: Date.now() + 2, name: 'Salchipapa', price: 20000, icon: '🍟' },
+                { id: Date.now() + 3, name: 'Salchicostilla', price: 28000, icon: '🍟' },
+                { id: Date.now() + 4, name: 'Salchiburguer', price: 30000, icon: '🍟' },
+                { id: Date.now() + 5, name: 'Salchipapa Familiar', price: 40000, icon: '🍟' },
+                
+                // 🌭 PERROS CALIENTES (LO MÁS VENDIDO #2)
+                { id: Date.now() + 6, name: 'Perro Sencillo', price: 15000, icon: '🌭' },
+                { id: Date.now() + 7, name: 'Perro Americano', price: 20000, icon: '🌭' },
+                { id: Date.now() + 8, name: 'Perro Family', price: 25000, icon: '🌭' },
+                
+                // 🍔 HAMBURGUESAS (LO MÁS VENDIDO #3)
+                { id: Date.now() + 9, name: 'Hamburguesa Clásica', price: 18000, icon: '🍔' },
+                { id: Date.now() + 10, name: 'Hamburguesa con Tocineta', price: 20000, icon: '🍔' },
+                { id: Date.now() + 11, name: 'Hamburguesa Doble Carne', price: 25000, icon: '🍔' },
+                { id: Date.now() + 12, name: 'Hamburguesa de Camarón', price: 32000, icon: '🍔' },
+                
+                // 🍖 CARNES (LO MÁS VENDIDO #4)
+                { id: Date.now() + 13, name: 'Carne Asada', price: 20000, icon: '🍖' },
+                { id: Date.now() + 14, name: 'Picada', price: 20000, icon: '🍖' },
+                { id: Date.now() + 15, name: 'Carnes al Barril', price: 20000, icon: '🍖' },
+                { id: Date.now() + 16, name: 'Costillas BBQ', price: 25000, icon: '🍖' },
+                
+                // 🥤 GASEOSAS Y BEBIDAS (LO MÁS VENDIDO #5)
+                { id: Date.now() + 17, name: 'Agua', price: 2000, icon: '💧' },
+                { id: Date.now() + 18, name: 'Gaseosa 400ml', price: 4000, icon: '🥤' },
+                { id: Date.now() + 19, name: 'Jugo Hit', price: 4000, icon: '🧃' },
+                { id: Date.now() + 20, name: 'Squash', price: 4000, icon: '🥤' },
+                { id: Date.now() + 21, name: 'Daviloe', price: 4000, icon: '🥤' },
+                { id: Date.now() + 22, name: 'Soda', price: 4000, icon: '🥤' },
+                { id: Date.now() + 23, name: 'Cerveza', price: 5000, icon: '🍺' },
+                { id: Date.now() + 24, name: 'Gaseosa 1.5L', price: 7000, icon: '🥤' },
+                { id: Date.now() + 25, name: 'Jugo Natural Agua', price: 8000, icon: '🥤' },
+                { id: Date.now() + 26, name: 'Jugo Natural Leche', price: 10000, icon: '🥤' },
+                { id: Date.now() + 27, name: 'Gaseosa 3.5L', price: 11000, icon: '🥤' },
+                { id: Date.now() + 28, name: 'Frappé', price: 15000, icon: '☕' },
+                { id: Date.now() + 29, name: 'Malteada', price: 15000, icon: '🥤' },
+                
+                // 🍗 POLLO
+                { id: Date.now() + 30, name: 'Pollo Broaster', price: 12000, icon: '🍗' },
+                { id: Date.now() + 31, name: 'Pechuga a la Plancha', price: 20000, icon: '🍗' },
+                { id: Date.now() + 32, name: 'Alitas Pollo x4', price: 20000, icon: '🍗' },
+                { id: Date.now() + 33, name: 'Alitas Pollo x6', price: 26000, icon: '🍗' },
+                
+                // 🌮 ENTREMETIDAS
+                { id: Date.now() + 34, name: 'Chori Papas', price: 15000, icon: '🌭' },
+                { id: Date.now() + 35, name: 'Colitas Cubanas', price: 15000, icon: '🥖' },
+                { id: Date.now() + 36, name: 'Tortillas Rellenas', price: 15000, icon: '🌮' },
+                { id: Date.now() + 37, name: 'Patacón con Todo', price: 15000, icon: '🍌' },
+                
+                // 🥪 SÁNDWICHES
+                { id: Date.now() + 38, name: 'Sándwich Sencillo', price: 13000, icon: '🥪' },
+                { id: Date.now() + 39, name: 'Sándwich de Pollo', price: 20000, icon: '🥪' },
+                { id: Date.now() + 40, name: 'Sándwich Tipo Cubano', price: 25000, icon: '🥪' },
+                
+                // 🍱 COMBO INFANTIL
+                { id: Date.now() + 41, name: 'Combo Infantil', price: 22000, icon: '🍱' },
+                
+                // 🍦 HELADERÍA Y ENSALADAS
+                { id: Date.now() + 42, name: 'Cono', price: 3000, icon: '🍦' },
+                { id: Date.now() + 43, name: 'Brownie Helado', price: 8000, icon: '🍦' },
+                { id: Date.now() + 44, name: 'Salpihelado', price: 9000, icon: '🍦' },
+                { id: Date.now() + 45, name: 'Copa Helado Sencilla', price: 9000, icon: '🍨' },
+                { id: Date.now() + 46, name: 'Estrella', price: 10000, icon: '⭐' },
+                { id: Date.now() + 47, name: 'Ensalada Frutas Sencilla', price: 12000, icon: '🥗' },
+                { id: Date.now() + 48, name: 'Copa Helado Tropical', price: 12000, icon: '🍨' },
+                { id: Date.now() + 49, name: 'Copa Cookies y Cream', price: 12000, icon: '🍨' },
+                { id: Date.now() + 50, name: 'Ensalada Frutas con Queso', price: 13000, icon: '🥗' },
+                { id: Date.now() + 51, name: 'Ensalada Frutas con Helado', price: 15000, icon: '🥗' },
+                { id: Date.now() + 52, name: 'Banana Split', price: 15000, icon: '🍌' }
+            ];
+            
+            saveData();
+            renderProductsGrid();
+            renderProductConfigList();
+            
+            alert('✅ Productos actualizados con los 52 productos del recetario y precios correctos!');
+        }
+
+        function confirmResetData() {
+            const confirmation = prompt('⚠️ ADVERTENCIA: Esto borrará TODOS los datos.\n\nEscribe "BORRAR TODO" para confirmar:');
+            
+            if (confirmation === 'BORRAR TODO') {
+                products = [];
+                sales = [];
+                expenses = [];
+                credits = [];
+                
+                saveData();
+                
+                // Recargar todas las vistas
+                renderProductsGrid();
+                renderSalesList();
+                renderExpensesList();
+                renderCreditsList();
+                renderProductConfigList();
+                updateTotalDay();
+                updateCloseData();
+                updateReports();
+                
+                alert('✅ Todos los datos han sido borrados');
+                
+                // Inicializar productos por defecto
+                init();
+            } else {
+                alert('Operación cancelada');
+            }
+        }
+
+        // ==================== ALMACENAMIENTO ====================
+        function saveData() {
+            localStorage.setItem('familyCaja_products', JSON.stringify(products));
+            localStorage.setItem('familyCaja_sales', JSON.stringify(sales));
+            localStorage.setItem('familyCaja_expenses', JSON.stringify(expenses));
+            localStorage.setItem('familyCaja_credits', JSON.stringify(credits));
+        }
+
+        function loadData() {
+            const savedProducts = localStorage.getItem('familyCaja_products');
+            const savedSales = localStorage.getItem('familyCaja_sales');
+            const savedExpenses = localStorage.getItem('familyCaja_expenses');
+            const savedCredits = localStorage.getItem('familyCaja_credits');
+            
+            if (savedProducts) products = JSON.parse(savedProducts);
+            if (savedSales) sales = JSON.parse(savedSales);
+            if (savedExpenses) expenses = JSON.parse(savedExpenses);
+            if (savedCredits) credits = JSON.parse(savedCredits);
+        }
+
+        // ==================== INICIAR ====================
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

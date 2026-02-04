@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Manual de Ventas - COMPLETO (52 Productos)</title>
+    <style>
+        @media print {
+            .no-print {
+                display: none;
+            }
+            
+            body {
+                margin: 0;
+                padding: 10mm;
+            }
+            
+            .page-break {
+                page-break-after: always;
+            }
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .controls h2 {
+            margin-bottom: 15px;
+            color: #10b981;
+        }
+        
+        .btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background: #059669;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .ticket {
+            background: white;
+            border: 2px solid #333;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            width: 100%;
+        }
+        
+        .ticket-header {
+            text-align: center;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .ticket-logo {
+            max-width: 150px;
+            height: auto;
+            margin: 0 auto 10px;
+            display: block;
+        }
+        
+        .ticket-header h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .ticket-header p {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .ticket-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        
+        .info-box {
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .info-box label {
+            font-weight: 700;
+            display: block;
+            margin-bottom: 3px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #666;
+        }
+        
+        .info-box .value {
+            min-height: 22px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .ticket-table {
+            width: 100%;
+            margin-bottom: 15px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        .ticket-table th {
+            background: #f3f4f6;
+            padding: 6px 4px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .ticket-table td {
+            padding: 5px 4px;
+            border: 1px solid #ddd;
+        }
+        
+        .ticket-footer {
+            border-top: 2px solid #333;
+            padding-top: 10px;
+        }
+        
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .notes-section {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .notes-section label {
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .notes-section .lines {
+            min-height: 40px;
+        }
+        
+        .notes-section .line {
+            border-bottom: 1px solid #ddd;
+            height: 20px;
+        }
+        
+        .ticket-number {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 10px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .alert {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+        
+        .alert strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        @page {
+            margin: 10mm;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Controles -->
+        <div class="controls no-print">
+            <h2>📝 Registro Manual de Ventas</h2>
+            <p style="margin-bottom: 15px;">Imprime estos formatos para registrar ventas cuando hay mucho público. Luego pasa los datos al sistema digital.</p>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 600;">¿Cuántos formatos necesitas?</label>
+                <input type="number" id="ticketCount" value="10" min="1" max="100" style="padding: 8px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; width: 100px;">
+            </div>
+            
+            <button class="btn" onclick="generateTickets()">🔄 Generar Formatos</button>
+            <button class="btn" onclick="window.print()">🖨️ Imprimir</button>
+            <button class="btn btn-secondary" onclick="window.location.href='caja.html'">← Volver a Caja</button>
+            
+            <div class="alert">
+                <strong>💡 Cómo usar:</strong>
+                1. Marca con X la cantidad vendida (1-10) • 2. Marca con X el método de pago (E/N/T/C) • 3. Al final del día, pasa todo al sistema digital
+            </div>
+        </div>
+        
+        <!-- Aquí se generarán los tickets -->
+        <div id="ticketsContainer"></div>
+    </div>
+    
+    <script>
+        function generateTickets() {
+            const count = parseInt(document.getElementById('ticketCount').value) || 10;
+            const container = document.getElementById('ticketsContainer');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= count; i++) {
+                const ticket = createTicket(i);
+                container.appendChild(ticket);
+            }
+        }
+        
+        function createTicket(number) {
+            const div = document.createElement('div');
+            div.className = 'ticket page-break';
+            
+            // Productos del menú (ORDEN SEGÚN LA DUEÑA MIRYAM)
+            const products = [
+                { category: '🍟 SALCHIPAPAS (5 productos)', items: [
+                    { name: 'Salchipapa Personal', price: 15000 },
+                    { name: 'Salchipapa', price: 20000 },
+                    { name: 'Salchicostilla', price: 28000 },
+                    { name: 'Salchiburguer', price: 30000 },
+                    { name: 'Salchipapa Familiar', price: 40000 }
+                ]},
+                { category: '🍖 CARNES (4 productos)', items: [
+                    { name: 'Carne Asada', price: 20000 },
+                    { name: 'Picada', price: 20000 },
+                    { name: 'Carnes al Barril', price: 20000 },
+                    { name: 'Costillas BBQ', price: 25000 }
+                ]},
+                { category: '🍔 HAMBURGUESAS (4 productos)', items: [
+                    { name: 'Hamburguesa Clásica', price: 18000 },
+                    { name: 'Hamburguesa con Tocineta', price: 20000 },
+                    { name: 'Hamburguesa Doble Carne', price: 25000 },
+                    { name: 'Hamburguesa de Camarón', price: 32000 }
+                ]},
+                { category: '🌭 PERROS CALIENTES (3 productos)', items: [
+                    { name: 'Perro Sencillo', price: 15000 },
+                    { name: 'Perro Americano', price: 20000 },
+                    { name: 'Perro Family', price: 25000 }
+                ]},
+                { category: '🌮 ENTRADAS (4 productos)', items: [
+                    { name: 'Chori Papas', price: 15000 },
+                    { name: 'Colitas Cubanas', price: 15000 },
+                    { name: 'Tortillas Rellenas', price: 15000 },
+                    { name: 'Patacón con Todo', price: 15000 }
+                ]},
+                { category: '🥪 SÁNDWICHES (3 productos)', items: [
+                    { name: 'Sándwich Sencillo', price: 13000 },
+                    { name: 'Sándwich de Pollo', price: 20000 },
+                    { name: 'Sándwich Tipo Cubano', price: 25000 }
+                ]},
+                { category: '🍗 POLLO (4 productos)', items: [
+                    { name: 'Pollo Broaster', price: 12000 },
+                    { name: 'Pechuga a la Plancha', price: 20000 },
+                    { name: 'Alitas Pollo x4', price: 20000 },
+                    { name: 'Alitas Pollo x6', price: 26000 }
+                ]},
+                { category: '🥤 BEBIDAS (13 productos)', items: [
+                    { name: 'Agua', price: 2000 },
+                    { name: 'Gaseosa 400ml', price: 4000 },
+                    { name: 'Jugo Hit', price: 4000 },
+                    { name: 'Squash', price: 4000 },
+                    { name: 'Daviloe', price: 4000 },
+                    { name: 'Soda', price: 4000 },
+                    { name: 'Cerveza', price: 5000 },
+                    { name: 'Gaseosa 1.5L', price: 7000 },
+                    { name: 'Jugo Natural Agua', price: 8000 },
+                    { name: 'Jugo Natural Leche', price: 10000 },
+                    { name: 'Gaseosa 3.5L', price: 11000 },
+                    { name: 'Frappé', price: 15000 },
+                    { name: 'Malteada', price: 15000 }
+                ]},
+                { category: '🍱 COMBO INFANTIL (1 producto)', items: [
+                    { name: 'Combo Infantil', price: 22000 }
+                ]},
+                { category: '🍦 HELADERÍA Y ENSALADAS (11 productos)', items: [
+                    { name: 'Cono', price: 3000 },
+                    { name: 'Brownie con Helado', price: 8000 },
+                    { name: 'Salpihelado', price: 9000 },
+                    { name: 'Copa Helado Sencilla', price: 9000 },
+                    { name: 'Estrella', price: 10000 },
+                    { name: 'Ensalada Frutas Sencilla', price: 12000 },
+                    { name: 'Copa Helado Tropical', price: 12000 },
+                    { name: 'Copa Cookies y Cream', price: 12000 },
+                    { name: 'Ensalada Frutas con Queso', price: 13000 },
+                    { name: 'Ensalada Frutas con Helado', price: 15000 },
+                    { name: 'Banana Split', price: 15000 }
+                ]}
+            ];
+            
+            let tableRows = '';
+            
+            // Generar filas para cada categoría
+            products.forEach(category => {
+                // Fila de categoría
+                tableRows += `
+                    <tr style="background: #f3f4f6;">
+                        <td colspan="4" style="font-weight: 700; font-size: 10px; padding: 4px;">${category.category}</td>
+                    </tr>
+                `;
+                
+                // Filas de productos
+                category.items.forEach(product => {
+                    const qtyBoxes = Array(10).fill(0).map(() => 
+                        '<div style="width: 16px; height: 16px; border: 1px solid #333; margin: 1px;"></div>'
+                    ).join('');
+                    
+                    const paymentBoxes = Array(4).fill(0).map(() => 
+                        '<div style="width: 16px; height: 16px; border: 1px solid #333; margin: 1px;"></div>'
+                    ).join('');
+                    
+                    tableRows += `
+                        <tr>
+                            <td style="font-size: 10px; padding: 5px;">${product.name}</td>
+                            <td style="text-align: right; font-weight: 700; font-size: 10px;">$${product.price.toLocaleString('es-CO')}</td>
+                            <td style="padding: 2px;">
+                                <div style="display: flex; justify-content: space-around; flex-wrap: nowrap;">
+                                    ${qtyBoxes}
+                                </div>
+                            </td>
+                            <td style="padding: 2px;">
+                                <div style="display: flex; justify-content: space-around;">
+                                    ${paymentBoxes}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+            });
+            
+            // Agregar filas para "Otros"
+            tableRows += `
+                <tr style="background: #f3f4f6;">
+                    <td colspan="4" style="font-weight: 700; font-size: 10px; padding: 4px;">📝 OTROS (Escribir)</td>
+                </tr>
+            `;
+            
+            for (let i = 0; i < 5; i++) {
+                const qtyBoxes = Array(10).fill(0).map(() => 
+                    '<div style="width: 16px; height: 16px; border: 1px solid #333; margin: 1px;"></div>'
+                ).join('');
+                
+                const paymentBoxes = Array(4).fill(0).map(() => 
+                    '<div style="width: 16px; height: 16px; border: 1px solid #333; margin: 1px;"></div>'
+                ).join('');
+                
+                tableRows += `
+                    <tr>
+                        <td style="padding: 6px 5px; border-bottom: 1px solid #333;"></td>
+                        <td style="padding: 6px 5px; border-bottom: 1px solid #333;"></td>
+                        <td style="padding: 2px;">
+                            <div style="display: flex; justify-content: space-around; flex-wrap: nowrap;">
+                                ${qtyBoxes}
+                            </div>
+                        </td>
+                        <td style="padding: 2px;">
+                            <div style="display: flex; justify-content: space-around;">
+                                ${paymentBoxes}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            div.innerHTML = `
+                <div class="ticket-header">
+                    <img src="logo.jpg" alt="Family Comidas Rápidas" class="ticket-logo">
+                    <h1>FAMILY COMIDAS RÁPIDAS</h1>
+                    <p>Guapi, Cauca - Calle 6 #3_23</p>
+                </div>
+                
+                <div class="ticket-number">
+                    TICKET #${String(number).padStart(3, '0')}
+                </div>
+                
+                <div class="ticket-info">
+                    <div class="info-box">
+                        <label>📅 Fecha</label>
+                        <div class="value"></div>
+                    </div>
+                    <div class="info-box">
+                        <label>🕐 Hora</label>
+                        <div class="value"></div>
+                    </div>
+                    <div class="info-box">
+                        <label>👤 Vendedor/a</label>
+                        <div class="value"></div>
+                    </div>
+                    <div class="info-box">
+                        <label>🏷️ Cliente (Opcional)</label>
+                        <div class="value"></div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 10px; padding: 8px; background: #fef3c7; border-radius: 4px; text-align: center; font-weight: 700; font-size: 11px;">
+                    MARQUE CON "X" LA CANTIDAD Y MÉTODO DE PAGO
+                </div>
+                
+                <table class="ticket-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 28%;">Producto</th>
+                            <th style="width: 12%; text-align: right;">Precio</th>
+                            <th style="width: 45%; text-align: center; font-size: 9px;">Cantidad</th>
+                            <th style="width: 15%; text-align: center; font-size: 9px;">Pago</th>
+                        </tr>
+                        <tr>
+                            <th colspan="2"></th>
+                            <th style="background: #fff; padding: 4px;">
+                                <div style="display: flex; justify-content: space-around; font-size: 9px; font-weight: 700;">
+                                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                                </div>
+                            </th>
+                            <th style="background: #fff; padding: 4px;">
+                                <div style="display: flex; justify-content: space-around; font-size: 9px; font-weight: 700;">
+                                    <span>E</span><span>N</span><span>T</span><span>C</span>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                
+                <div style="background: #e5e7eb; padding: 8px; border-radius: 4px; margin-bottom: 10px; font-size: 10px; text-align: center;">
+                    <strong>Leyenda Pago:</strong> E=Efectivo • N=Nequi • T=Transferencia • C=Crédito
+                </div>
+                
+                <div class="ticket-footer">
+                    <div class="total-row">
+                        <span>TOTAL:</span>
+                        <span>$_______________</span>
+                    </div>
+                    
+                    <div class="notes-section">
+                        <label>📝 Notas / Observaciones</label>
+                        <div class="lines">
+                            <div class="line"></div>
+                            <div class="line"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return div;
+        }
+        
+        // Generar tickets al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            generateTickets();
+        });
+    </script>
+</body>
+</html>

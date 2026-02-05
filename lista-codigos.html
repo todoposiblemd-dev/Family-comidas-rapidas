@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Códigos - Family Comidas Rápidas</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            padding: 20px;
+            background: #f9fafb;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 5px solid #10b981;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            color: #1f2937;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1em;
+            cursor: pointer;
+            font-family: 'Rubik', sans-serif;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16,185,129,0.4);
+        }
+
+        .btn-secondary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #2563eb;
+        }
+
+        .category-section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+
+        .category-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-size: 1.4em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .product-item {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .product-item:hover {
+            border-color: #10b981;
+            background: #d1fae5;
+        }
+
+        .product-code {
+            background: #1f2937;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.3em;
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-name {
+            font-weight: 700;
+            color: #1f2937;
+            font-size: 0.95em;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-price {
+            color: #10b981;
+            font-weight: 800;
+            font-size: 1em;
+        }
+
+        .instructions {
+            background: #fef3c7;
+            border: 3px solid #f59e0b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .instructions h3 {
+            color: #92400e;
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .instructions ol {
+            color: #92400e;
+            margin-left: 25px;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .instructions .example {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: 700;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                padding: 20px;
+            }
+
+            .actions {
+                display: none;
+            }
+
+            .instructions {
+                page-break-after: always;
+            }
+
+            .category-section {
+                page-break-inside: avoid;
+            }
+
+            .product-item {
+                border: 2px solid #000;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .product-list {
+                grid-template-columns: 1fr;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 CÓDIGOS RÁPIDOS</h1>
+            <p>Family Comidas Rápidas - Guapi, Cauca</p>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" onclick="window.print()">
+                🖨️ Imprimir o Guardar PDF
+            </button>
+            <button class="btn btn-secondary" onclick="window.close()">
+                ← Volver a la Caja
+            </button>
+        </div>
+
+        <div class="instructions">
+            <h3>⚡ Cómo usar los códigos:</h3>
+            <ol>
+                <li>En la caja, busca el campo de búsqueda grande</li>
+                <li>Escribe el código de 2 dígitos (ejemplo: <strong>01</strong>)</li>
+                <li>Presiona <strong>ENTER</strong></li>
+                <li>El producto se agrega automáticamente al carrito</li>
+            </ol>
+            <div class="example">
+                💡 <strong>Ejemplo:</strong> Cliente pide "Salchipapa Personal" → Escribes <strong>01</strong> → ENTER → ¡Listo! 🎉
+            </div>
+        </div>
+
+        <!-- 🍟 SALCHIPAPAS -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🍟</span>
+                <span>SALCHIPAPAS</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">01</div>
+                    <div class="product-info">
+                        <div class="product-name">Salchipapa Personal</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">02</div>
+                    <div class="product-info">
+                        <div class="product-name">Salchipapa</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">03</div>
+                    <div class="product-info">
+                        <div class="product-name">Salchicostilla</div>
+                        <div class="product-price">$28,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">04</div>
+                    <div class="product-info">
+                        <div class="product-name">Salchiburguer</div>
+                        <div class="product-price">$30,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">05</div>
+                    <div class="product-info">
+                        <div class="product-name">Salchipapa Familiar</div>
+                        <div class="product-price">$40,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🌭 PERROS CALIENTES -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🌭</span>
+                <span>PERROS CALIENTES</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">06</div>
+                    <div class="product-info">
+                        <div class="product-name">Perro Sencillo</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">07</div>
+                    <div class="product-info">
+                        <div class="product-name">Perro Americano</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">08</div>
+                    <div class="product-info">
+                        <div class="product-name">Perro Family</div>
+                        <div class="product-price">$25,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🍔 HAMBURGUESAS -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🍔</span>
+                <span>HAMBURGUESAS</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">09</div>
+                    <div class="product-info">
+                        <div class="product-name">Hamburguesa Clásica</div>
+                        <div class="product-price">$18,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">10</div>
+                    <div class="product-info">
+                        <div class="product-name">Hamburguesa con Tocineta</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">11</div>
+                    <div class="product-info">
+                        <div class="product-name">Hamburguesa Doble Carne</div>
+                        <div class="product-price">$25,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">12</div>
+                    <div class="product-info">
+                        <div class="product-name">Hamburguesa de Camarón</div>
+                        <div class="product-price">$32,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🍖 CARNES -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🍖</span>
+                <span>CARNES</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">13</div>
+                    <div class="product-info">
+                        <div class="product-name">Carne Asada</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">14</div>
+                    <div class="product-info">
+                        <div class="product-name">Picada</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">15</div>
+                    <div class="product-info">
+                        <div class="product-name">Carnes al Barril</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">16</div>
+                    <div class="product-info">
+                        <div class="product-name">Costillas BBQ</div>
+                        <div class="product-price">$25,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🥤 BEBIDAS -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🥤</span>
+                <span>BEBIDAS Y GASEOSAS</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">17</div>
+                    <div class="product-info">
+                        <div class="product-name">Agua</div>
+                        <div class="product-price">$2,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">18</div>
+                    <div class="product-info">
+                        <div class="product-name">Gaseosa 400ml</div>
+                        <div class="product-price">$4,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">19</div>
+                    <div class="product-info">
+                        <div class="product-name">Jugo Hit</div>
+                        <div class="product-price">$4,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">20</div>
+                    <div class="product-info">
+                        <div class="product-name">Squash</div>
+                        <div class="product-price">$4,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">21</div>
+                    <div class="product-info">
+                        <div class="product-name">Daviloe</div>
+                        <div class="product-price">$4,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">22</div>
+                    <div class="product-info">
+                        <div class="product-name">Soda</div>
+                        <div class="product-price">$4,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">23</div>
+                    <div class="product-info">
+                        <div class="product-name">Cerveza</div>
+                        <div class="product-price">$5,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">24</div>
+                    <div class="product-info">
+                        <div class="product-name">Gaseosa 1.5L</div>
+                        <div class="product-price">$7,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">25</div>
+                    <div class="product-info">
+                        <div class="product-name">Jugo Natural Agua</div>
+                        <div class="product-price">$8,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">26</div>
+                    <div class="product-info">
+                        <div class="product-name">Jugo Natural Leche</div>
+                        <div class="product-price">$10,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">27</div>
+                    <div class="product-info">
+                        <div class="product-name">Gaseosa 3.5L</div>
+                        <div class="product-price">$11,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">28</div>
+                    <div class="product-info">
+                        <div class="product-name">Frappé</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">29</div>
+                    <div class="product-info">
+                        <div class="product-name">Malteada</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🍗 POLLO -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🍗</span>
+                <span>POLLO</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">30</div>
+                    <div class="product-info">
+                        <div class="product-name">Pollo Broaster</div>
+                        <div class="product-price">$12,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">31</div>
+                    <div class="product-info">
+                        <div class="product-name">Pechuga a la Plancha</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">32</div>
+                    <div class="product-info">
+                        <div class="product-name">Alitas Pollo x4</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">33</div>
+                    <div class="product-info">
+                        <div class="product-name">Alitas Pollo x6</div>
+                        <div class="product-price">$26,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🌮 OTROS PLATOS -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🍽️</span>
+                <span>OTROS PLATOS</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">34</div>
+                    <div class="product-info">
+                        <div class="product-name">Chori Papas</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">35</div>
+                    <div class="product-info">
+                        <div class="product-name">Colitas Cubanas</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">36</div>
+                    <div class="product-info">
+                        <div class="product-name">Tortillas Rellenas</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">37</div>
+                    <div class="product-info">
+                        <div class="product-name">Patacón con Todo</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">38</div>
+                    <div class="product-info">
+                        <div class="product-name">Sándwich Sencillo</div>
+                        <div class="product-price">$13,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">39</div>
+                    <div class="product-info">
+                        <div class="product-name">Sándwich de Pollo</div>
+                        <div class="product-price">$20,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">40</div>
+                    <div class="product-info">
+                        <div class="product-name">Sándwich Tipo Cubano</div>
+                        <div class="product-price">$25,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">41</div>
+                    <div class="product-info">
+                        <div class="product-name">Combo Infantil</div>
+                        <div class="product-price">$22,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🍦 HELADERÍA Y ENSALADAS -->
+        <div class="category-section">
+            <div class="category-header">
+                <span>🍦</span>
+                <span>HELADERÍA Y ENSALADAS</span>
+            </div>
+            <div class="product-list">
+                <div class="product-item">
+                    <div class="product-code">42</div>
+                    <div class="product-info">
+                        <div class="product-name">Cono</div>
+                        <div class="product-price">$3,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">43</div>
+                    <div class="product-info">
+                        <div class="product-name">Brownie Helado</div>
+                        <div class="product-price">$8,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">44</div>
+                    <div class="product-info">
+                        <div class="product-name">Salpihelado</div>
+                        <div class="product-price">$9,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">45</div>
+                    <div class="product-info">
+                        <div class="product-name">Copa Helado Sencilla</div>
+                        <div class="product-price">$9,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">46</div>
+                    <div class="product-info">
+                        <div class="product-name">Estrella</div>
+                        <div class="product-price">$10,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">47</div>
+                    <div class="product-info">
+                        <div class="product-name">Ensalada Frutas Sencilla</div>
+                        <div class="product-price">$12,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">48</div>
+                    <div class="product-info">
+                        <div class="product-name">Copa Helado Tropical</div>
+                        <div class="product-price">$12,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">49</div>
+                    <div class="product-info">
+                        <div class="product-name">Copa Cookies y Cream</div>
+                        <div class="product-price">$12,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">50</div>
+                    <div class="product-info">
+                        <div class="product-name">Ensalada Frutas con Queso</div>
+                        <div class="product-price">$13,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">51</div>
+                    <div class="product-info">
+                        <div class="product-name">Ensalada Frutas con Helado</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+                <div class="product-item">
+                    <div class="product-code">52</div>
+                    <div class="product-info">
+                        <div class="product-name">Banana Split</div>
+                        <div class="product-price">$15,000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 25px; background: #d1fae5; border: 3px solid #10b981; border-radius: 12px; text-align: center;">
+            <div style="font-size: 2em; margin-bottom: 10px;">💡</div>
+            <div style="font-weight: 800; font-size: 1.2em; color: #065f46; margin-bottom: 8px;">
+                Tip: Memoriza los códigos más vendidos
+            </div>
+            <div style="color: #047857; font-weight: 600;">
+                01-05: Salchipapas | 06-08: Perros | 09-12: Hamburguesas | 17-29: Bebidas
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center; color: #6b7280; font-size: 0.9em; padding: 20px;">
+            <p><strong>Family Comidas Rápidas</strong> - Guapi, Cauca, Colombia</p>
+            <p style="margin-top: 5px;">Sistema Digital de Gestión | 2025</p>
+        </div>
+    </div>
+</body>
+</html>

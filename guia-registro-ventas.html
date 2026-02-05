@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Completa: Registro de Ventas - Family</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rubik', sans-serif;
+            background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 5px solid #10b981;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            color: #1f2937;
+            margin-bottom: 15px;
+            font-weight: 900;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #10b981;
+            margin-bottom: 30px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .flow-container {
+            background: #f9fafb;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .step-card {
+            background: white;
+            border-left: 8px solid #10b981;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 1.6em;
+            color: #1f2937;
+            font-weight: 800;
+        }
+
+        .step-content {
+            margin-left: 80px;
+        }
+
+        .step-description {
+            color: #4b5563;
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .option-box {
+            background: #f9fafb;
+            border: 3px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .option-box:hover {
+            border-color: #10b981;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(16,185,129,0.3);
+        }
+
+        .option-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+        }
+
+        .option-title {
+            font-size: 1.2em;
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .option-desc {
+            color: #6b7280;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        .example-box {
+            background: #d1fae5;
+            border: 3px solid #10b981;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .example-title {
+            color: #065f46;
+            font-size: 1.4em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .example-step {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: start;
+            gap: 20px;
+        }
+
+        .example-emoji {
+            font-size: 2.5em;
+            flex-shrink: 0;
+        }
+
+        .example-text {
+            flex: 1;
+        }
+
+        .example-text strong {
+            color: #065f46;
+            font-size: 1.15em;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .example-text p {
+            color: #047857;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .screenshot {
+            background: #1f2937;
+            color: #10b981;
+            border-radius: 12px;
+            padding: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .screenshot-line {
+            margin: 8px 0;
+        }
+
+        .payment-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .payment-card {
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .payment-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .payment-title {
+            color: #1f2937;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .payment-desc {
+            color: #6b7280;
+            font-size: 0.95em;
+        }
+
+        .highlight-box {
+            background: #fef3c7;
+            border: 3px solid #f59e0b;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .highlight-title {
+            color: #92400e;
+            font-size: 1.4em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .highlight-text {
+            color: #92400e;
+            font-size: 1.05em;
+            line-height: 1.7;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .feature-list li {
+            padding: 12px 0;
+            padding-left: 40px;
+            position: relative;
+            color: #4b5563;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: 900;
+            font-size: 1.5em;
+        }
+
+        .arrow-down {
+            text-align: center;
+            font-size: 3em;
+            color: #10b981;
+            margin: 20px 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .step-content {
+                margin-left: 0;
+                margin-top: 20px;
+            }
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            .payment-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>📱 CÓMO FUNCIONA LA CAJA</h1>
+            <p>Guía Completa del Sistema de Registro de Ventas</p>
+        </div>
+
+        <!-- SECCIÓN 1: AGREGAR PRODUCTOS -->
+        <div class="section">
+            <div class="section-title">
+                <span>🛒</span>
+                <span>PASO 1: Agregar Productos al Carrito</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1A</div>
+                        <div class="step-title">Método Rápido: Código Numérico ⚡</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-description">
+                            El método más rápido para empleadas que no dominan la tecnología. Solo escriben 2 números y presionan ENTER.
+                        </div>
+
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>💡</span>
+                                <span>Ejemplo Práctico</span>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">👥</div>
+                                <div class="example-text">
+                                    <strong>Cliente dice:</strong>
+                                    <p>"Quiero una hamburguesa clásica y una gaseosa"</p>
+                                </div>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">👁️</div>
+                                <div class="example-text">
+                                    <strong>Empleada mira la lista pegada en la caja:</strong>
+                                    <p>Ve: "09 - Hamburguesa Clásica - $18,000"<br>
+                                    Ve: "18 - Gaseosa 400ml - $4,000"</p>
+                                </div>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">📱</div>
+                                <div class="example-text">
+                                    <strong>En el celular escribe:</strong>
+                                    <p>Escribe: <code>09</code> → Presiona ENTER → ✅ Hamburguesa agregada<br>
+                                    Escribe: <code>18</code> → Presiona ENTER → ✅ Gaseosa agregada</p>
+                                </div>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">✅</div>
+                                <div class="example-text">
+                                    <strong>Resultado:</strong>
+                                    <p>Carrito: 2 productos | Total: $22,000<br>
+                                    ⏱️ Tiempo total: 5 segundos</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="screenshot">
+                            <div class="screenshot-line">┌────────────────────────────────────┐</div>
+                            <div class="screenshot-line">│  🔍 Escribe código o nombre...    │</div>
+                            <div class="screenshot-line">│  [  09_                       ] 🔍 │</div>
+                            <div class="screenshot-line">└────────────────────────────────────┘</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">Presionas ENTER → Se abre modal para cantidad</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">┌────────────────────────────────────┐</div>
+                            <div class="screenshot-line">│ Hamburguesa Clásica - $18,000      │</div>
+                            <div class="screenshot-line">│ Cantidad: [ 1 ]                    │</div>
+                            <div class="screenshot-line">│ [  Agregar al Carrito  ]          │</div>
+                            <div class="screenshot-line">└────────────────────────────────────┘</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1B</div>
+                        <div class="step-title">Método Visual: Pestañas por Categoría 👀</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-description">
+                            Para quienes prefieren navegar visualmente. Los productos están organizados en categorías con botones grandes.
+                        </div>
+
+                        <div class="options-grid">
+                            <div class="option-box">
+                                <div class="option-icon">🍟</div>
+                                <div class="option-title">Salchipapas</div>
+                                <div class="option-desc">5 productos<br>Más vendidos #1</div>
+                            </div>
+                            <div class="option-box">
+                                <div class="option-icon">🍔</div>
+                                <div class="option-title">Hamburguesas</div>
+                                <div class="option-desc">4 productos<br>Más vendidos #3</div>
+                            </div>
+                            <div class="option-box">
+                                <div class="option-icon">🌭</div>
+                                <div class="option-title">Perros</div>
+                                <div class="option-desc">3 productos<br>Más vendidos #2</div>
+                            </div>
+                            <div class="option-box">
+                                <div class="option-icon">🥤</div>
+                                <div class="option-title">Bebidas</div>
+                                <div class="option-desc">13 productos<br>Complementos</div>
+                            </div>
+                        </div>
+
+                        <div class="highlight-box">
+                            <div class="highlight-title">
+                                <span>💡</span>
+                                <span>Cómo Funciona</span>
+                            </div>
+                            <div class="highlight-text">
+                                <ul class="feature-list">
+                                    <li>Click en la categoría (ej: 🍔 Hamburguesas)</li>
+                                    <li>Solo ve 4 hamburguesas en pantalla (menos confusión)</li>
+                                    <li>Botones grandes y fáciles de tocar en celular</li>
+                                    <li>Click en el producto → Se abre ventana para cantidad</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">1C</div>
+                        <div class="step-title">Método Búsqueda: Filtro Inteligente 🔍</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-description">
+                            Para quienes saben escribir. El sistema filtra productos en tiempo real mientras escribes.
+                        </div>
+
+                        <div class="screenshot">
+                            <div class="screenshot-line">Escribes: "salchi"</div>
+                            <div class="screenshot-line">↓</div>
+                            <div class="screenshot-line">Muestra solo:</div>
+                            <div class="screenshot-line">  [01] Salchipapa Personal - $15,000</div>
+                            <div class="screenshot-line">  [02] Salchipapa - $20,000</div>
+                            <div class="screenshot-line">  [03] Salchicostilla - $28,000</div>
+                            <div class="screenshot-line">  [04] Salchiburguer - $30,000</div>
+                            <div class="screenshot-line">  [05] Salchipapa Familiar - $40,000</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-down">⬇️</div>
+
+        <!-- SECCIÓN 2: COBRAR -->
+        <div class="section">
+            <div class="section-title">
+                <span>💵</span>
+                <span>PASO 2: Cobrar la Venta</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">2</div>
+                        <div class="step-title">Revisar Carrito y Click en "💵 Cobrar"</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-description">
+                            El carrito muestra todos los productos agregados con el total. Cuando esté listo, click en el botón verde "Cobrar".
+                        </div>
+
+                        <div class="screenshot">
+                            <div class="screenshot-line">┌─────────────── 🛒 CARRITO ───────────────┐</div>
+                            <div class="screenshot-line">│                                           │</div>
+                            <div class="screenshot-line">│  [Hamburguesa Clásica]            ✕      │</div>
+                            <div class="screenshot-line">│  1 × $18,000              $18,000        │</div>
+                            <div class="screenshot-line">│                                           │</div>
+                            <div class="screenshot-line">│  [Gaseosa 400ml]                  ✕      │</div>
+                            <div class="screenshot-line">│  1 × $4,000                $4,000        │</div>
+                            <div class="screenshot-line">│                                           │</div>
+                            <div class="screenshot-line">├───────────────────────────────────────────┤</div>
+                            <div class="screenshot-line">│  TOTAL:                          $22,000  │</div>
+                            <div class="screenshot-line">│                                           │</div>
+                            <div class="screenshot-line">│  [      💵 Cobrar      ]                 │</div>
+                            <div class="screenshot-line">│  [    🗑️ Vaciar Carrito   ]              │</div>
+                            <div class="screenshot-line">└───────────────────────────────────────────┘</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-down">⬇️</div>
+
+        <!-- SECCIÓN 3: MÉTODO DE PAGO -->
+        <div class="section">
+            <div class="section-title">
+                <span>💳</span>
+                <span>PASO 3: Seleccionar Método de Pago</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="payment-grid">
+                    <div class="payment-card">
+                        <div class="payment-icon">💵</div>
+                        <div class="payment-title">Efectivo</div>
+                        <div class="payment-desc">Con calculadora automática de cambio</div>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-icon">📱</div>
+                        <div class="payment-title">Nequi</div>
+                        <div class="payment-desc">Transferencia instantánea</div>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-icon">🏦</div>
+                        <div class="payment-title">Transferencia</div>
+                        <div class="payment-desc">Bancolombia, Daviplata, etc.</div>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-title">Crédito</div>
+                        <div class="payment-desc">Fiado (pide nombre del cliente)</div>
+                    </div>
+                </div>
+
+                <div class="example-box" style="margin-top: 30px;">
+                    <div class="example-title">
+                        <span>💵</span>
+                        <span>Si es Efectivo: Calculadora Automática</span>
+                    </div>
+
+                    <div class="screenshot">
+                        <div class="screenshot-line">┌─────── CALCULADORA DE CAMBIO ───────┐</div>
+                        <div class="screenshot-line">│                                      │</div>
+                        <div class="screenshot-line">│  Total a cobrar: $22,000            │</div>
+                        <div class="screenshot-line">│                                      │</div>
+                        <div class="screenshot-line">│  Cliente pagó con:                   │</div>
+                        <div class="screenshot-line">│  [ 50000_ ]                          │</div>
+                        <div class="screenshot-line">│                                      │</div>
+                        <div class="screenshot-line">│  Cambio a devolver:                  │</div>
+                        <div class="screenshot-line">│  💰 $28,000                          │</div>
+                        <div class="screenshot-line">│                                      │</div>
+                        <div class="screenshot-line">└──────────────────────────────────────┘</div>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">
+                        <span>💳</span>
+                        <span>Si es Crédito: Pide Nombre</span>
+                    </div>
+
+                    <div class="screenshot">
+                        <div class="screenshot-line">┌──────── CRÉDITO (FIADO) ────────┐</div>
+                        <div class="screenshot-line">│                                  │</div>
+                        <div class="screenshot-line">│  Nombre del Cliente:             │</div>
+                        <div class="screenshot-line">│  [ Juan Pérez_           ]       │</div>
+                        <div class="screenshot-line">│                                  │</div>
+                        <div class="screenshot-line">│  Monto: $22,000                  │</div>
+                        <div class="screenshot-line">│                                  │</div>
+                        <div class="screenshot-line">└──────────────────────────────────┘</div>
+                        <div class="screenshot-line"> </div>
+                        <div class="screenshot-line">* El crédito se guarda en la sección</div>
+                        <div class="screenshot-line">  de Créditos para cobrar después</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-down">⬇️</div>
+
+        <!-- SECCIÓN 4: DOMICILIO (OPCIONAL) -->
+        <div class="section">
+            <div class="section-title">
+                <span>🛵</span>
+                <span>PASO 4 (Opcional): Si es Domicilio</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">4</div>
+                        <div class="step-title">Marcar Checkbox "Es Domicilio"</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-description">
+                            Si la venta es para domicilio, marcar el checkbox y llenar los datos adicionales.
+                        </div>
+
+                        <div class="screenshot">
+                            <div class="screenshot-line">☑ Es Domicilio</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">Domiciliario:</div>
+                            <div class="screenshot-line">[ Seleccionar... ▼ ]</div>
+                            <div class="screenshot-line">  - Carlos</div>
+                            <div class="screenshot-line">  - María</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">Dirección:</div>
+                            <div class="screenshot-line">[ Calle 10 #5-20_ ]</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">Notas para domiciliario:</div>
+                            <div class="screenshot-line">[ Tocar timbre 2 veces_ ]</div>
+                        </div>
+
+                        <div class="highlight-box">
+                            <div class="highlight-title">
+                                <span>ℹ️</span>
+                                <span>Importante sobre Domicilios</span>
+                            </div>
+                            <div class="highlight-text">
+                                <ul class="feature-list">
+                                    <li>El domicilio queda en estado <strong>PENDIENTE</strong></li>
+                                    <li>El dinero NO se suma al total del día hasta que el domiciliario entregue</li>
+                                    <li>El domiciliario debe entregar el dinero con su PIN</li>
+                                    <li>Cuando entrega, el domicilio pasa a <strong>ENTREGADO</strong> y el dinero se suma</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="arrow-down">⬇️</div>
+
+        <!-- SECCIÓN 5: CONFIRMAR -->
+        <div class="section">
+            <div class="section-title">
+                <span>✅</span>
+                <span>PASO 5: Confirmar y Listo</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="step-card">
+                    <div class="step-header">
+                        <div class="step-number">5</div>
+                        <div class="step-title">Click en "Confirmar Venta"</div>
+                    </div>
+                    <div class="step-content">
+                        <div class="step-description">
+                            Una vez todo esté listo, click en el botón verde "Confirmar Venta".
+                        </div>
+
+                        <div class="example-box">
+                            <div class="example-title">
+                                <span>✅</span>
+                                <span>¿Qué Pasa Después?</span>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">💾</div>
+                                <div class="example-text">
+                                    <strong>Se Guarda la Venta:</strong>
+                                    <p>Productos, método de pago, hora, fecha, todo queda registrado</p>
+                                </div>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">🛒</div>
+                                <div class="example-text">
+                                    <strong>Carrito se Vacía:</strong>
+                                    <p>Queda listo para la siguiente venta</p>
+                                </div>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">💰</div>
+                                <div class="example-text">
+                                    <strong>Total del Día se Actualiza:</strong>
+                                    <p>En la parte superior ves el total acumulado del día</p>
+                                </div>
+                            </div>
+
+                            <div class="example-step">
+                                <div class="example-emoji">📋</div>
+                                <div class="example-text">
+                                    <strong>Aparece en la Lista:</strong>
+                                    <p>Abajo en "Ventas de Hoy" aparece la venta con todos los detalles</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="screenshot">
+                            <div class="screenshot-line">┌────────────────────────────────────────┐</div>
+                            <div class="screenshot-line">│ Total del Día:  $450,000              │</div>
+                            <div class="screenshot-line">└────────────────────────────────────────┘</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">VENTAS DE HOY:</div>
+                            <div class="screenshot-line"> </div>
+                            <div class="screenshot-line">┌────────────────────────────────────────┐</div>
+                            <div class="screenshot-line">│ 3:45 PM - Efectivo                     │</div>
+                            <div class="screenshot-line">│ 2x Hamburguesa Clásica, 1x Gaseosa     │</div>
+                            <div class="screenshot-line">│ Total: $22,000                  [✏️][🗑️]│</div>
+                            <div class="screenshot-line">└────────────────────────────────────────┘</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESUMEN FINAL -->
+        <div class="section">
+            <div class="section-title">
+                <span>🎯</span>
+                <span>Resumen: Sistema Completo</span>
+            </div>
+
+            <div class="flow-container">
+                <div class="highlight-box">
+                    <div class="highlight-title">
+                        <span>✨</span>
+                        <span>Lo Que Incluye el Sistema</span>
+                    </div>
+                    <div class="highlight-text">
+                        <ul class="feature-list">
+                            <li><strong>52 Productos</strong> - Todo el menú con precios actualizados</li>
+                            <li><strong>3 Formas de Buscar</strong> - Código, categorías, o búsqueda</li>
+                            <li><strong>Carrito Completo</strong> - Varios productos en una venta</li>
+                            <li><strong>4 Métodos de Pago</strong> - Efectivo, Nequi, Transferencia, Crédito</li>
+                            <li><strong>Calculadora Automática</strong> - Para dar cambio</li>
+                            <li><strong>Control de Domicilios</strong> - Con estados PENDIENTE/ENTREGADO</li>
+                            <li><strong>Control de Gastos</strong> - Por categorías</li>
+                            <li><strong>Control de Créditos</strong> - Quién debe cuánto</li>
+                            <li><strong>Cierre de Caja</strong> - Arqueo completo del día</li>
+                            <li><strong>Reportes</strong> - Por fecha, método de pago, productos</li>
+                            <li><strong>Exportar Excel/JSON</strong> - Respaldos y sincronización</li>
+                            <li><strong>Lista Impresa</strong> - Para pegar en la caja física</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="example-box" style="margin-top: 30px;">
+                    <div class="example-title">
+                        <span>⚡</span>
+                        <span>Tiempo de Registro por Venta</span>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+                        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">⚡</div>
+                            <div style="font-weight: 700; color: #065f46; font-size: 1.8em;">5-10 seg</div>
+                            <div style="color: #047857; margin-top: 5px;">Con códigos</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">👀</div>
+                            <div style="font-weight: 700; color: #065f46; font-size: 1.8em;">15-20 seg</div>
+                            <div style="color: #047857; margin-top: 5px;">Con categorías</div>
+                        </div>
+                        <div style="background: white; padding: 20px; border-radius: 10px; text-align: center;">
+                            <div style="font-size: 2em; margin-bottom: 10px;">🔍</div>
+                            <div style="font-weight: 700; color: #065f46; font-size: 1.8em;">10-15 seg</div>
+                            <div style="color: #047857; margin-top: 5px;">Con búsqueda</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 60px; padding-top: 40px; border-top: 3px solid #e5e7eb;">
+            <div style="font-size: 2em; margin-bottom: 15px;">🍔</div>
+            <h2 style="color: #1f2937; margin-bottom: 10px;">Family Comidas Rápidas</h2>
+            <p style="color: #6b7280; font-size: 1.1em;">Guapi, Cauca - Sistema Digital de Gestión</p>
+            <p style="color: #9ca3af; margin-top: 15px;">Actualizado: Febrero 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Imprimir función
+        function printGuide() {
+            window.print();
+        }
+    </script>
+</body>
+</html>

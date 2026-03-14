@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Family Comidas Rápidas – Panel de Control</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,700;0,9..144,900;1,9..144,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cafe:       #3D1F08;
+  --cafe2:      #6B3A1F;
+  --naranja:    #C85A0A;
+  --naranja2:   #E87030;
+  --lima:       #7AB830;
+  --verde:      #1E6040;
+  --verde2:     #2E8A58;
+  --azul:       #1A4A8B;
+  --crema:      #FDF6EC;
+  --arena:      #F0E4CC;
+  --linea:      #DDD0B8;
+  --gris:       #7A7060;
+  --gris2:      #B0A898;
+  --negro:      #140C04;
+  --amarillo:   #D4980A;
+  --rojo:       #B82020;
+  --surface:    #FFFFFF;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { font-size:16px; scroll-behavior:smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cafe);
+  color: var(--negro);
+  min-height: 100vh;
+}
+
+/* ===== HERO HEADER ===== */
+.hero {
+  background: var(--cafe);
+  padding: 32px 20px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 85% 20%, rgba(200,90,10,0.25) 0%, transparent 55%),
+    radial-gradient(ellipse at 10% 90%, rgba(122,184,48,0.12) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.hero-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-logo {
+  font-size: 44px;
+  line-height: 1;
+}
+
+.hero-fecha {
+  text-align: right;
+}
+
+.hero-fecha-dia {
+  font-family: 'Fraunces', serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--naranja2);
+  line-height: 1;
+}
+
+.hero-fecha-mes {
+  font-size: 12px;
+  color: rgba(253,246,236,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.hero-nombre {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(32px, 8vw, 52px);
+  font-weight: 900;
+  color: var(--crema);
+  line-height: 0.9;
+  letter-spacing: -1px;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-nombre em {
+  font-style: italic;
+  color: var(--naranja2);
+}
+
+.hero-sub {
+  font-size: 13px;
+  color: rgba(253,246,236,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 24px;
+}
+
+/* ===== STATS RÁPIDAS ===== */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.stat {
+  background: rgba(255,255,255,0.08);
+  padding: 14px 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+  text-align: center;
+}
+
+.stat-num {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--crema);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: rgba(253,246,236,0.45);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.stat-num.naranja { color: var(--naranja2); }
+.stat-num.lima { color: var(--lima); }
+.stat-num.amarillo { color: #F0C040; }
+
+/* ===== NEGOCIOS TABS ===== */
+.negocios-nav {
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.neg-tab {
+  flex: 1;
+  padding: 14px 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(253,246,236,0.4);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.neg-tab.active {
+  color: var(--crema);
+  border-bottom-color: var(--naranja2);
+  background: rgba(255,255,255,0.05);
+}
+
+/* ===== MAIN CONTENT ===== */
+.main {
+  background: var(--crema);
+  min-height: 100vh;
+  padding: 20px 16px 80px;
+}
+
+.negocio-seccion { display: none; }
+.negocio-seccion.activa { display: block; }
+
+/* ===== SECCIÓN TÍTULO ===== */
+.sec-titulo {
+  font-family: 'Fraunces', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gris2);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 20px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sec-titulo::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--linea);
+}
+
+/* ===== TARJETA DE MÓDULO ===== */
+.modulo-card {
+  background: var(--surface);
+  border: 1.5px solid var(--linea);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+
+.modulo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.modulo-card:active { transform: scale(0.98); }
+
+.modulo-barra {
+  width: 6px;
+  align-self: stretch;
+  flex-shrink: 0;
+}
+
+.barra-naranja { background: var(--naranja); }
+.barra-verde   { background: var(--verde2); }
+.barra-cafe    { background: var(--cafe2); }
+.barra-azul    { background: var(--azul); }
+.barra-amarillo{ background: var(--amarillo); }
+.barra-rojo    { background: var(--rojo); }
+.barra-lima    { background: var(--lima); }
+
+.modulo-icono {
+  font-size: 32px;
+  padding: 18px 16px;
+  flex-shrink: 0;
+}
+
+.modulo-info {
+  flex: 1;
+  padding: 16px 12px 16px 0;
+}
+
+.modulo-nombre {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--negro);
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.modulo-desc {
+  font-size: 12px;
+  color: var(--gris);
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.modulo-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  margin-top: 6px;
+  display: inline-block;
+}
+
+.badge-activo    { background: #E8F5E9; color: #2E7D32; }
+.badge-nuevo     { background: #FFF3E0; color: #E65100; }
+.badge-urgente   { background: #FFEBEE; color: var(--rojo); }
+.badge-listo     { background: #E3F2FD; color: var(--azul); }
+.badge-pendiente { background: #F5F5F5; color: var(--gris); }
+
+.modulo-flecha {
+  padding: 0 16px;
+  font-size: 18px;
+  color: var(--gris2);
+  flex-shrink: 0;
+}
+
+/* ===== TARJETA GRANDE / DESTACADA ===== */
+.modulo-card.destacado {
+  background: var(--cafe);
+  border-color: var(--cafe2);
+}
+
+.modulo-card.destacado .modulo-nombre { color: var(--crema); }
+.modulo-card.destacado .modulo-desc { color: rgba(253,246,236,0.6); }
+.modulo-card.destacado .modulo-flecha { color: var(--naranja2); }
+
+/* ===== AVISO ===== */
+.aviso {
+  background: #FFF8E1;
+  border: 1.5px solid var(--amarillo);
+  border-left: 5px solid var(--amarillo);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: #5C3D00;
+  line-height: 1.6;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.aviso strong {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  color: var(--amarillo);
+}
+
+.aviso-rojo {
+  background: #FFF0F0;
+  border-color: var(--rojo);
+  color: #5C0000;
+}
+
+.aviso-rojo strong { color: var(--rojo); }
+
+/* ===== PROGRESO PILARES ===== */
+.pilares {
+  background: var(--cafe);
+  border-radius: 0;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.pilares-titulo {
+  font-family: 'Fraunces', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--crema);
+  margin-bottom: 16px;
+  letter-spacing: 0.5px;
+}
+
+.pilar-item {
+  margin-bottom: 14px;
+}
+
+.pilar-item:last-child { margin-bottom: 0; }
+
+.pilar-top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.pilar-nombre {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--crema);
+  letter-spacing: 0.5px;
+}
+
+.pilar-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--naranja2);
+}
+
+.pilar-barra-bg {
+  height: 6px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 0;
+}
+
+.pilar-barra {
+  height: 6px;
+  border-radius: 0;
+  transition: width 1s ease;
+}
+
+/* ===== QUICK ACTIONS ===== */
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.quick-btn {
+  background: var(--surface);
+  border: 1.5px solid var(--linea);
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-decoration: none;
+  color: var(--negro);
+  transition: all 0.15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-btn:active { transform: scale(0.96); }
+
+.quick-btn-icon { font-size: 28px; }
+
+.quick-btn-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cafe2);
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  background: var(--cafe);
+  padding: 24px 20px;
+  text-align: center;
+}
+
+.footer-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--crema);
+  margin-bottom: 4px;
+}
+
+.footer-sub {
+  font-size: 11px;
+  color: rgba(253,246,236,0.35);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.footer-version {
+  font-size: 11px;
+  color: rgba(253,246,236,0.25);
+  margin-top: 12px;
+  font-family: monospace;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="hero-logo">🍔</div>
+    <div class="hero-fecha">
+      <div class="hero-fecha-dia" id="hero-dia">—</div>
+      <div class="hero-fecha-mes" id="hero-mes">—</div>
+    </div>
+  </div>
+  <div class="hero-nombre">Family<br><em>Comidas</em></div>
+  <div class="hero-sub">Guapi, Cauca · Panel de Control</div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num naranja" id="stat-negocios">2</div>
+      <div class="stat-label">Negocios</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num lima" id="stat-empleadas">3</div>
+      <div class="stat-label">Empleadas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num amarillo">52</div>
+      <div class="stat-label">Productos</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NAV NEGOCIOS ===== -->
+<nav class="negocios-nav">
+  <button class="neg-tab active" onclick="cambiarNegocio('general', this)">🏠 General</button>
+  <button class="neg-tab" onclick="cambiarNegocio('family', this)">🍔 Family</button>
+  <button class="neg-tab" onclick="cambiarNegocio('restaurante', this)">🍳 Restaurante</button>
+  <button class="neg-tab" onclick="cambiarNegocio('personal', this)">👥 Personal</button>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+
+<!-- ============ GENERAL ============ -->
+<div class="negocio-seccion activa" id="sec-general">
+
+  <div class="aviso aviso-rojo">
+    <strong>⚠️ Acción urgente</strong>
+    Tiene una empleada de 6 meses pendiente de liquidar. Vaya a la pestaña Personal para calcular la liquidación y generar el documento.
+  </div>
+
+  <!-- Progreso 4 pilares -->
+  <div class="pilares">
+    <div class="pilares-titulo">📊 Avance — Los 4 Pilares</div>
+
+    <div class="pilar-item">
+      <div class="pilar-top">
+        <div class="pilar-nombre">Pilar 1 · Radiografiar</div>
+        <div class="pilar-pct">60%</div>
+      </div>
+      <div class="pilar-barra-bg">
+        <div class="pilar-barra" style="width:60%;background:var(--naranja2);"></div>
+      </div>
+    </div>
+
+    <div class="pilar-item">
+      <div class="pilar-top">
+        <div class="pilar-nombre">Pilar 2 · Estandarizar</div>
+        <div class="pilar-pct">40%</div>
+      </div>
+      <div class="pilar-barra-bg">
+        <div class="pilar-barra" style="width:40%;background:var(--amarillo);"></div>
+      </div>
+    </div>
+
+    <div class="pilar-item">
+      <div class="pilar-top">
+        <div class="pilar-nombre">Pilar 3 · Delegar y Controlar</div>
+        <div class="pilar-pct">25%</div>
+      </div>
+      <div class="pilar-barra-bg">
+        <div class="pilar-barra" style="width:25%;background:var(--lima);"></div>
+      </div>
+    </div>
+
+    <div class="pilar-item">
+      <div class="pilar-top">
+        <div class="pilar-nombre">Pilar 4 · Equipo y Rendimiento</div>
+        <div class="pilar-pct">15%</div>
+      </div>
+      <div class="pilar-barra-bg">
+        <div class="pilar-barra" style="width:15%;background:var(--verde2);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <div class="sec-titulo">Acciones rápidas de hoy</div>
+  <div class="quick-actions">
+    <a class="quick-btn" onclick="cambiarNegocio('family', document.querySelectorAll('.neg-tab')[1])">
+      <span class="quick-btn-icon">🧮</span>
+      <span class="quick-btn-label">Abrir Caja Family</span>
+    </a>
+    <a class="quick-btn" onclick="cambiarNegocio('personal', document.querySelectorAll('.neg-tab')[3])">
+      <span class="quick-btn-icon">💰</span>
+      <span class="quick-btn-label">Liquidar Empleada</span>
+    </a>
+    <a class="quick-btn" onclick="cambiarNegocio('restaurante', document.querySelectorAll('.neg-tab')[2])">
+      <span class="quick-btn-icon">🍳</span>
+      <span class="quick-btn-label">Ver Restaurante</span>
+    </a>
+    <a class="quick-btn" href="https://wa.me/" target="_blank">
+      <span class="quick-btn-icon">📱</span>
+      <span class="quick-btn-label">Reporte por WhatsApp</span>
+    </a>
+  </div>
+
+  <!-- Todos los módulos -->
+  <div class="sec-titulo">Todos los sistemas</div>
+
+  <a class="modulo-card destacado" onclick="cambiarNegocio('family', document.querySelectorAll('.neg-tab')[1])">
+    <div class="modulo-barra barra-naranja"></div>
+    <div class="modulo-icono">🍔</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Family Comidas Rápidas</div>
+      <div class="modulo-desc">POS · Caja · Inventario · Recetario · Domicilios</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" onclick="cambiarNegocio('restaurante', document.querySelectorAll('.neg-tab')[2])">
+    <div class="modulo-barra barra-verde"></div>
+    <div class="modulo-icono">🍳</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Restaurante + Asadero</div>
+      <div class="modulo-desc">Desayunos · Almuerzos · Pollo frito</div>
+      <div class="modulo-badge badge-nuevo">En construcción</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" onclick="cambiarNegocio('personal', document.querySelectorAll('.neg-tab')[3])">
+    <div class="modulo-barra barra-rojo"></div>
+    <div class="modulo-icono">👥</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Personal</div>
+      <div class="modulo-desc">Empleadas · Liquidación · Documentos laborales</div>
+      <div class="modulo-badge badge-urgente">Acción requerida</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+</div>
+
+<!-- ============ FAMILY ============ -->
+<div class="negocio-seccion" id="sec-family">
+
+  <div class="aviso">
+    <strong>📱 Recuerda</strong>
+    El sistema de WhatsApp es tu control diario. Al cerrar, manda el reporte al grupo CAJA FAMILY con los 3 números: vendí, gasté, me quedó.
+  </div>
+
+  <div class="sec-titulo">Sistemas operativos</div>
+
+  <a class="modulo-card" href="caja.html" target="_blank">
+    <div class="modulo-barra barra-naranja"></div>
+    <div class="modulo-icono">🧮</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Sistema POS — Caja</div>
+      <div class="modulo-desc">52 productos · Domicilios con PIN · Cierre de caja · WhatsApp automático a cocina</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" href="recetario.html" target="_blank">
+    <div class="modulo-barra barra-cafe"></div>
+    <div class="modulo-icono">📖</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Recetario</div>
+      <div class="modulo-desc">51 recetas con fotos · Costos · Exportar/Importar JSON entre celulares</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" href="inventario.html" target="_blank">
+    <div class="modulo-barra barra-azul"></div>
+    <div class="modulo-icono">📦</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Inventario</div>
+      <div class="modulo-desc">Equipos · Utensilios · Muebles · Uniformes · Datos reales actualizados</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" href="lista-codigos.html" target="_blank">
+    <div class="modulo-barra barra-lima"></div>
+    <div class="modulo-icono">🔢</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Lista de Códigos</div>
+      <div class="modulo-desc">52 productos con códigos para pegar en la caja — referencia rápida</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" href="registro-manual-ventas-completo.html" target="_blank">
+    <div class="modulo-barra barra-amarillo"></div>
+    <div class="modulo-icono">📝</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Registro Manual de Ventas</div>
+      <div class="modulo-desc">Para cuando no hay sistema — talonario manual para Emerita y suplentes</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <a class="modulo-card" href="guia-registro-ventas.html" target="_blank">
+    <div class="modulo-barra barra-verde"></div>
+    <div class="modulo-icono">📚</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Guía de Registro de Ventas</div>
+      <div class="modulo-desc">Instrucciones paso a paso para el personal — cómo usar el sistema</div>
+      <div class="modulo-badge badge-activo">Activo</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <div class="sec-titulo">Proveedores Family</div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-lima"></div>
+    <div class="modulo-icono">🥬</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Casa Blanca</div>
+      <div class="modulo-desc">Verduras: papas, cebolla, pimentón, tomate, ajo, hierbas, limón, plátano, zanahoria, pepino, repollo, lechuga</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-rojo"></div>
+    <div class="modulo-icono">🥩</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Granero Olivert</div>
+      <div class="modulo-desc">Carnes frías · Empaques · Aseo</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-cafe"></div>
+    <div class="modulo-icono">🍞</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Granero Surtimax</div>
+      <div class="modulo-desc">Panes: hamburguesa, perro, tajado</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-amarillo"></div>
+    <div class="modulo-icono">🧀</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Distribuidora Jaime Alberto</div>
+      <div class="modulo-desc">Salsas · Quesos tajados</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-azul"></div>
+    <div class="modulo-icono">🥤</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Depósito Chaila</div>
+      <div class="modulo-desc">Bebidas: gaseosas, jugos, aguas, cervezas, pulpas de fruta</div>
+    </div>
+  </div>
+
+  <div class="sec-titulo">Herramientas de arranque</div>
+
+  <a class="modulo-card" href="miryam-3-opciones.html" target="_blank">
+    <div class="modulo-barra barra-naranja"></div>
+    <div class="modulo-icono">🗺️</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">3 Caminos para Ordenar</div>
+      <div class="modulo-desc">Cuaderno · WhatsApp · Hoja semanal — elige el que más te guste</div>
+      <div class="modulo-badge badge-listo">Para Miryam</div>
+    </div>
+    <div class="modulo-flecha">↗</div>
+  </a>
+
+</div>
+
+<!-- ============ RESTAURANTE ============ -->
+<div class="negocio-seccion" id="sec-restaurante">
+
+  <div class="aviso">
+    <strong>🚧 En construcción</strong>
+    El restaurante está en fase de diseño. Primero necesitamos completar el menú, los proveedores nuevos y las recetas base para poder construir los sistemas.
+  </div>
+
+  <div class="sec-titulo">Lo que falta definir</div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-amarillo"></div>
+    <div class="modulo-icono">📋</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Menú definitivo</div>
+      <div class="modulo-desc">Qué platos exactamente para desayuno, almuerzo y asadero</div>
+      <div class="modulo-badge badge-pendiente">Pendiente Miryam</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-amarillo"></div>
+    <div class="modulo-icono">🛒</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Proveedores nuevos</div>
+      <div class="modulo-desc">Granos, aceite, huevos, especias para el adobo del asadero</div>
+      <div class="modulo-badge badge-pendiente">Pendiente Miryam</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-amarillo"></div>
+    <div class="modulo-icono">🧾</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Fórmula del asadero</div>
+      <div class="modulo-desc">Ingredientes y proceso del adobo del señor — para costos reales</div>
+      <div class="modulo-badge badge-pendiente">Pendiente confirmar</div>
+    </div>
+  </div>
+
+  <div class="sec-titulo">Lo que viene cuando esté listo</div>
+
+  <div class="modulo-card" style="cursor:default; opacity:0.5;">
+    <div class="modulo-barra barra-verde"></div>
+    <div class="modulo-icono">🧮</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">POS Restaurante</div>
+      <div class="modulo-desc">Caja y pedidos separados de Family</div>
+      <div class="modulo-badge badge-pendiente">Por construir</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default; opacity:0.5;">
+    <div class="modulo-barra barra-verde"></div>
+    <div class="modulo-icono">📖</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Recetario Restaurante</div>
+      <div class="modulo-desc">Recetas con costos reales por plato</div>
+      <div class="modulo-badge badge-pendiente">Por construir</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default; opacity:0.5;">
+    <div class="modulo-barra barra-verde"></div>
+    <div class="modulo-icono">📦</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Control de Inventario</div>
+      <div class="modulo-desc">Entradas desde distribuidora · Consumo teórico vs real</div>
+      <div class="modulo-badge badge-pendiente">Por construir</div>
+    </div>
+  </div>
+
+  <div class="sec-titulo">Distribuidora (esposo)</div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-cafe"></div>
+    <div class="modulo-icono">🏪</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Distribuidora del esposo</div>
+      <div class="modulo-desc">Provee a Family y al Restaurante. Cada despacho debe indicar: qué, a cuál negocio y cuánto costó.</div>
+      <div class="modulo-badge badge-pendiente">Organizar despachos</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ PERSONAL ============ -->
+<div class="negocio-seccion" id="sec-personal">
+
+  <div class="aviso aviso-rojo">
+    <strong>⚠️ Urgente — Acción legal</strong>
+    Una empleada de 6 meses sin contrato escrito ni seguridad social. Abra el módulo de personal y calcule la liquidación antes de cualquier conversación con ella.
+  </div>
+
+  <div class="sec-titulo">Módulo de personal</div>
+
+  <a class="modulo-card" href="personal-family.html" target="_blank">
+    <div class="modulo-barra barra-rojo"></div>
+    <div class="modulo-icono">👩‍🍳</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Sistema de Personal</div>
+      <div class="modulo-desc">Registrar empleadas · Calcular liquidación · Indemnización · Documento para firmar · Guía de evidencias</div>
+      <div class="modulo-badge badge-nuevo">Recién construido</div>
+    </div>
+    <div class="modulo-flecha">→</div>
+  </a>
+
+  <div class="sec-titulo">Lo que aplica hoy en Colombia</div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-amarillo"></div>
+    <div class="modulo-icono">⚖️</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Contrato verbal = contrato real</div>
+      <div class="modulo-desc">En Colombia, si una persona trabaja con horario fijo y salario regular, ya hay contrato por ley — aunque no haya papel firmado.</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-rojo"></div>
+    <div class="modulo-icono">🏥</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Seguridad social pendiente</div>
+      <div class="modulo-desc">Salud, pensión y ARL son obligatorias desde el primer día. Las tres empleadas actuales no tienen cobertura. Consulte con la UGPP para regularizar.</div>
+    </div>
+  </div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-naranja"></div>
+    <div class="modulo-icono">📋</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Para las nuevas empleadas</div>
+      <div class="modulo-desc">Antes de que arranquen: registrarlas en el sistema, definir salario y horario por escrito, y afiliarlas a seguridad social.</div>
+    </div>
+  </div>
+
+  <div class="sec-titulo">Roles en los negocios</div>
+
+  <div class="modulo-card" style="cursor:default;">
+    <div class="modulo-barra barra-cafe"></div>
+    <div class="modulo-icono">🔑</div>
+    <div class="modulo-info">
+      <div class="modulo-nombre">Sistema de PINs</div>
+      <div class="modulo-desc">Cada persona tiene un rol con PIN: recibe insumos · cuenta inventario · cobra en caja · entrega domicilios. Nadie hace todo — así se controla.</div>
+      <div class="modulo-badge badge-listo">Diseñado</div>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- /main -->
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <div class="footer-logo">Family Comidas Rápidas</div>
+  <div class="footer-sub">Guapi, Cauca · Sistema de Gestión</div>
+  <div class="footer-version" id="footer-version">v1.0 · 2026</div>
+</div>
+
+<script>
+// ===== FECHA =====
+function actualizarFecha() {
+  const ahora = new Date();
+  const dias = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  document.getElementById('hero-dia').textContent = ahora.getDate();
+  document.getElementById('hero-mes').textContent =
+    dias[ahora.getDay()] + ' · ' + meses[ahora.getMonth()] + ' ' + ahora.getFullYear();
+  document.getElementById('footer-version').textContent =
+    'v1.0 · Actualizado ' + ahora.toLocaleDateString('es-CO');
+}
+actualizarFecha();
+
+// ===== NAVEGACIÓN =====
+function cambiarNegocio(id, btn) {
+  document.querySelectorAll('.negocio-seccion').forEach(s => s.classList.remove('activa'));
+  document.querySelectorAll('.neg-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('activa');
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: document.querySelector('.negocios-nav').offsetTop, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

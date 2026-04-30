@@ -1,0 +1,2595 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Personal – Family Comidas Rápidas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F0E8;
+  --surface: #FFFFFF;
+  --surface2: #FDF9F3;
+  --cafe: #5C3317;
+  --cafe2: #8B5E3C;
+  --naranja: #D4600A;
+  --naranja2: #F07830;
+  --verde: #2D6A4F;
+  --verde2: #52B788;
+  --rojo: #C0392B;
+  --amarillo: #E8A020;
+  --gris: #7A7068;
+  --gris2: #B5ADA5;
+  --linea: #E8DFD0;
+  --negro: #1A1208;
+  --text: #2C1A0A;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { font-size: 16px; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: var(--cafe);
+  padding: 20px 20px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.25);
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.header-titulo {
+  color: #FDF0E0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.header-subtitulo {
+  color: rgba(253,240,224,0.55);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.pin-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(253,240,224,0.7);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+/* ===== TABS ===== */
+.tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.tab {
+  flex: 1;
+  padding: 12px 8px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: rgba(255,255,255,0.08);
+  color: rgba(253,240,224,0.55);
+  border: none;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: rgba(255,255,255,0.15);
+  color: #FDF0E0;
+  border-bottom-color: var(--naranja2);
+}
+
+/* ===== CONTENIDO ===== */
+.contenido {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.seccion { display: none; }
+.seccion.activa { display: block; }
+
+/* ===== BOTÓN PRIMARIO ===== */
+.btn-primario {
+  background: var(--naranja);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.btn-primario:hover { background: var(--naranja2); }
+
+.btn-secundario {
+  background: transparent;
+  color: var(--cafe);
+  border: 2px solid var(--cafe);
+  padding: 12px 20px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: all 0.2s;
+}
+
+.btn-secundario:hover { background: var(--cafe); color: white; }
+
+.btn-rojo {
+  background: var(--rojo);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-verde {
+  background: var(--verde);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* ===== CARD EMPLEADA ===== */
+.empleada-card {
+  background: var(--surface);
+  border: 1.5px solid var(--linea);
+  padding: 20px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.empleada-card.family { border-left: 5px solid var(--naranja); }
+.empleada-card.restaurante { border-left: 5px solid var(--verde); }
+
+.empleada-nombre {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--negro);
+  margin-bottom: 4px;
+}
+
+.empleada-cargo {
+  font-size: 14px;
+  color: var(--gris);
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+.empleada-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.meta-item {
+  background: var(--bg);
+  padding: 10px 12px;
+}
+
+.meta-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gris2);
+  margin-bottom: 4px;
+}
+
+.meta-valor {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cafe);
+}
+
+.negocio-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.badge-family { background: #FEE8D6; color: var(--naranja); }
+.badge-restaurante { background: #D8F3E8; color: var(--verde); }
+
+.alerta-ss {
+  background: #FFF3CD;
+  border: 1px solid var(--amarillo);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #7A5C00;
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.card-acciones {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-overlay.visible { display: flex; }
+
+.modal {
+  background: var(--surface);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px 20px 40px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-titulo {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cafe);
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--linea);
+}
+
+/* ===== FORM ===== */
+.form-grupo {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--cafe2);
+  margin-bottom: 8px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  border: 2px solid var(--linea);
+  background: var(--surface2);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus, .form-select:focus {
+  border-color: var(--naranja);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-nota {
+  font-size: 12px;
+  color: var(--gris);
+  margin-top: 6px;
+  font-family: 'Lora', serif;
+  font-style: italic;
+}
+
+.modal-acciones {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-acciones button { flex: 1; padding: 16px; font-size: 15px; }
+
+/* ===== LIQUIDACIÓN ===== */
+.liquidacion-intro {
+  background: var(--cafe);
+  color: #FDF0E0;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.liquidacion-intro h2 {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.liquidacion-intro p {
+  font-size: 14px;
+  opacity: 0.75;
+  font-family: 'Lora', serif;
+  line-height: 1.6;
+}
+
+.selector-empleada {
+  margin-bottom: 20px;
+}
+
+.resultado-liq {
+  background: var(--surface);
+  border: 2px solid var(--linea);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.resultado-header {
+  background: var(--cafe);
+  color: #FDF0E0;
+  padding: 16px 20px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.resultado-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--linea);
+}
+
+.resultado-fila:last-child { border-bottom: none; }
+
+.resultado-concepto {
+  font-size: 14px;
+  color: var(--text);
+  flex: 1;
+}
+
+.resultado-valor {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--verde);
+}
+
+.resultado-total {
+  background: var(--verde);
+  color: white;
+  padding: 18px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.resultado-total span:first-child { font-size: 16px; font-weight: 700; }
+.resultado-total span:last-child { font-size: 22px; font-weight: 800; }
+
+.alerta-ss-grande {
+  background: #FFF3CD;
+  border: 2px solid var(--amarillo);
+  padding: 16px 20px;
+  margin-top: 16px;
+}
+
+.alerta-ss-grande h4 {
+  font-size: 14px;
+  color: #7A5C00;
+  margin-bottom: 6px;
+}
+
+.alerta-ss-grande p {
+  font-size: 13px;
+  color: #7A5C00;
+  font-family: 'Lora', serif;
+  line-height: 1.6;
+}
+
+/* ===== DOCUMENTO ===== */
+.doc-preview {
+  background: white;
+  border: 2px solid var(--cafe);
+  padding: 28px 24px;
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  line-height: 1.8;
+  color: #000;
+}
+
+.doc-titulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+
+.doc-subtitulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  text-align: center;
+  color: #666;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #000;
+}
+
+.doc-seccion {
+  margin-bottom: 16px;
+}
+
+.doc-seccion-titulo {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #666;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #DDD;
+}
+
+.doc-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dotted #DDD;
+}
+
+.doc-total-fila {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-top: 2px solid #000;
+  margin-top: 8px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.doc-firmas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid #DDD;
+}
+
+.doc-firma-campo {
+  text-align: center;
+}
+
+.doc-firma-linea {
+  border-bottom: 1.5px solid #000;
+  height: 48px;
+  margin-bottom: 8px;
+}
+
+.doc-firma-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #666;
+  text-transform: uppercase;
+}
+
+/* ===== ESTADOS VACÍOS ===== */
+.vacio {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--gris2);
+}
+
+.vacio-icon { font-size: 48px; margin-bottom: 16px; }
+.vacio-titulo { font-size: 18px; font-weight: 700; color: var(--gris); margin-bottom: 8px; }
+.vacio-desc { font-size: 14px; font-family: 'Lora', serif; line-height: 1.6; }
+
+/* ===== PIN MODAL ===== */
+.pin-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pin-modal.visible { display: flex; }
+
+.pin-box {
+  background: white;
+  padding: 32px 24px;
+  width: 100%;
+  max-width: 320px;
+  text-align: center;
+}
+
+.pin-titulo {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--cafe);
+  margin-bottom: 8px;
+}
+
+.pin-desc {
+  font-size: 13px;
+  color: var(--gris);
+  font-family: 'Lora', serif;
+  margin-bottom: 20px;
+}
+
+.pin-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 24px;
+  text-align: center;
+  letter-spacing: 8px;
+  border: 2px solid var(--linea);
+  font-family: 'Syne', sans-serif;
+  margin-bottom: 16px;
+}
+
+.pin-error {
+  color: var(--rojo);
+  font-size: 13px;
+  margin-bottom: 12px;
+  display: none;
+}
+
+/* ===== UTIL ===== */
+.divider {
+  border: none;
+  border-top: 1px solid var(--linea);
+  margin: 20px 0;
+}
+
+.tag-dias {
+  display: inline-block;
+  background: var(--bg);
+  padding: 4px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cafe2);
+  margin-left: 8px;
+}
+
+/* ===== FILTRO BAR ===== */
+.filtro-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filtro-btn {
+  padding: 8px 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid var(--linea);
+  background: white;
+  color: var(--gris);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filtro-btn.active {
+  background: var(--cafe);
+  color: white;
+  border-color: var(--cafe);
+}
+
+/* ===== EVIDENCIAS ===== */
+.evidencias-box {
+  background: #FFF3E0;
+  border: 2px solid var(--amarillo);
+  padding: 18px 20px;
+  margin: 16px 0;
+}
+
+.evidencias-titulo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #7A4800;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.evidencias-lista {
+  list-style: none;
+  padding: 0;
+}
+
+.evidencias-lista li {
+  font-size: 13px;
+  color: #7A4800;
+  font-family: 'Lora', serif;
+  padding: 5px 0;
+  border-bottom: 1px dotted rgba(122,72,0,0.2);
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.evidencias-lista li:last-child { border-bottom: none; }
+
+.indem-box {
+  background: #FFF0F0;
+  border: 2px solid var(--rojo);
+  padding: 18px 20px;
+  margin: 16px 0;
+}
+
+.indem-titulo {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--rojo);
+  margin-bottom: 6px;
+}
+
+.indem-desc {
+  font-size: 13px;
+  color: #7A0000;
+  font-family: 'Lora', serif;
+  line-height: 1.6;
+}
+
+.info-box {
+  background: var(--surface2);
+  border: 1px solid var(--linea);
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--gris);
+  font-family: 'Lora', serif;
+  font-style: italic;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.btn-wa {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-imprimir {
+  background: var(--cafe);
+  color: white;
+  border: none;
+  padding: 16px 24px;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+
+/* ===== FUNCIONES ===== */
+.func-card {
+  background: var(--surface);
+  border: 1.5px solid var(--linea);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.func-card.family { border-left: 5px solid var(--naranja); }
+
+.func-toggle {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.func-toggle:hover { background: var(--bg); }
+
+.func-ico {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--naranja);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.func-nombre {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--negro);
+  line-height: 1.1;
+}
+
+.func-tag {
+  font-size: 11px;
+  color: var(--gris);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.func-chevron {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--gris2);
+  transition: transform 0.2s;
+}
+
+.func-chevron.open { transform: rotate(180deg); }
+
+.func-body {
+  display: none;
+  padding: 0 20px 16px 20px;
+  border-top: 1px solid var(--linea);
+}
+
+.func-body.open { display: block; }
+
+.func-lista {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+}
+
+.func-lista li {
+  font-size: 13.5px;
+  color: var(--text);
+  font-family: 'Lora', serif;
+  padding: 6px 0;
+  border-bottom: 1px dotted var(--linea);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.func-lista li:last-child { border-bottom: none; }
+
+.func-bul { color: var(--naranja); font-size: 10px; margin-top: 4px; flex-shrink: 0; }
+
+.func-sistema {
+  background: #EEF6F2;
+  border: 1px solid var(--verde2);
+  padding: 10px 14px;
+  margin-top: 12px;
+  border-radius: 4px;
+}
+
+.func-sistema-titulo {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--verde);
+  margin-bottom: 6px;
+}
+
+.func-sistema p {
+  font-size: 12.5px;
+  color: var(--verde);
+  font-family: 'Lora', serif;
+  line-height: 1.6;
+}
+
+/* ===== PAGOS ===== */
+.pagos-intro {
+  background: var(--verde);
+  color: white;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.pagos-intro h2 { font-size: 19px; font-weight: 800; margin-bottom: 4px; }
+.pagos-intro p { font-size: 13px; opacity: 0.8; font-family: 'Lora', serif; line-height: 1.5; }
+
+.pago-record {
+  background: var(--surface);
+  border: 1.5px solid var(--linea);
+  border-left: 5px solid var(--verde);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.pago-rec-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.pago-rec-nombre {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--negro);
+}
+
+.pago-rec-periodo {
+  font-size: 12px;
+  color: var(--gris);
+  margin-top: 2px;
+}
+
+.pago-rec-monto {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--verde);
+  text-align: right;
+}
+
+.pago-rec-meta {
+  font-size: 11px;
+  color: var(--gris2);
+  text-align: right;
+}
+
+.pago-rec-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.pago-chip {
+  background: var(--bg);
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cafe2);
+}
+
+.pago-rec-acciones {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.btn-wa-sm {
+  background: #25D366;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-eliminar-sm {
+  background: transparent;
+  color: var(--rojo);
+  border: 1.5px solid var(--rojo);
+  padding: 8px 12px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pagos-filtro {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pagos-filtro label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gris2);
+}
+
+.pagos-total-box {
+  background: var(--verde);
+  color: white;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pagos-total-box span:first-child { font-size: 13px; opacity: 0.85; }
+.pagos-total-box span:last-child { font-size: 22px; font-weight: 800; }
+
+/* ===== FUNCIONES EDIT ITEMS ===== */
+.func-edit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--bg);
+  border: 1px solid var(--linea);
+  margin-bottom: 5px;
+}
+
+.func-edit-item span {
+  flex: 1;
+  font-size: 13px;
+  font-family: 'Lora', serif;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+.func-edit-del {
+  background: transparent;
+  border: none;
+  color: var(--rojo);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+@media print {
+  .header, .tabs, nav, .btn-primario, .btn-wa, .btn-imprimir,
+  .card-acciones, .modal-acciones, .acciones-doc { display: none !important; }
+  body { background: white; padding: 0; }
+  .doc-preview { border: none; padding: 0; }
+}
+</style>
+
+<!-- Firebase SDK -->
+<script src="https://unpkg.com/firebase@9.23.0/firebase-app-compat.js"></script>
+<script src="https://unpkg.com/firebase@9.23.0/firebase-database-compat.js"></script>
+<script>
+  let PERSONAL_REF = null;
+  let _personalSavedAt = '0';
+
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp({
+        apiKey: "AIzaSyBcpPQLsMjnRthybaIMNdQG_kS0injYko0",
+        authDomain: "family-comidas-rapidas.firebaseapp.com",
+        databaseURL: "https://family-comidas-rapidas-default-rtdb.firebaseio.com",
+        projectId: "family-comidas-rapidas",
+        storageBucket: "family-comidas-rapidas.firebasestorage.app",
+        messagingSenderId: "326594164908",
+        appId: "1:326594164908:web:2e2aa9f71a7f457df54709"
+      });
+    }
+    PERSONAL_REF = firebase.database().ref('family-personal');
+    console.log('✅ Firebase conectado (personal)');
+  } catch(e) {
+    console.warn('⚠️ Firebase no disponible:', e.message);
+  }
+
+  function savePersonalToFirebase(data) {
+    if (!PERSONAL_REF) return;
+    _personalSavedAt = data.updatedAt;
+    PERSONAL_REF.set(data).catch(e => console.warn('personal save error:', e));
+  }
+
+  function loadPersonalFromFirebase() {
+    if (!PERSONAL_REF) return Promise.resolve(null);
+    return PERSONAL_REF.get()
+      .then(snap => snap.exists() ? snap.val() : null)
+      .catch(() => null);
+  }
+
+  function startPersonalListener() {
+    if (!PERSONAL_REF) return;
+    PERSONAL_REF.on('value', snap => {
+      if (!snap.exists()) return;
+      const val = snap.val();
+      if (!val.updatedAt || val.updatedAt === _personalSavedAt) return;
+      if (typeof window._syncPersonalFromFirebase === 'function') {
+        window._syncPersonalFromFirebase(val);
+      }
+    }, e => console.warn('personal listener error:', e));
+  }
+</script>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-titulo">👩‍🍳 Personal</div>
+      <div class="header-subtitulo">Family · Restaurante</div>
+    </div>
+    <button class="pin-btn" onclick="mostrarPinCambio()">🔐 PIN Admin</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="cambiarTab('empleadas', this)">Empleadas</button>
+    <button class="tab" onclick="cambiarTab('funciones', this)">Funciones</button>
+    <button class="tab" onclick="cambiarTab('pagos', this)">Pagos</button>
+    <button class="tab" onclick="cambiarTab('liquidacion', this)">Liquidación</button>
+    <button class="tab" onclick="cambiarTab('documento', this)">Documento</button>
+  </div>
+</div>
+
+<!-- ============ TAB 1: EMPLEADAS ============ -->
+<div class="contenido">
+<div class="seccion activa" id="sec-empleadas">
+
+  <button class="btn-primario" onclick="abrirModalEmpleada()">
+    + Agregar Empleada
+  </button>
+
+  <!-- FILTRO POR NEGOCIO -->
+  <div class="filtro-bar">
+    <button class="filtro-btn active" onclick="filtrar('todos', this)">Todas</button>
+    <button class="filtro-btn" onclick="filtrar('family', this)">🍔 Family</button>
+    <button class="filtro-btn" onclick="filtrar('restaurante', this)">🍳 Restaurante</button>
+    <button class="filtro-btn" onclick="filtrar('ambos', this)">🔄 Ambos</button>
+  </div>
+
+  <div id="lista-empleadas"></div>
+
+</div>
+
+
+<!-- ============ TAB: FUNCIONES ============ -->
+<div class="seccion" id="sec-funciones">
+
+  <div style="background:var(--cafe);color:#FDF0E0;padding:18px 20px;margin-bottom:18px;">
+    <div style="font-size:19px;font-weight:800;margin-bottom:4px;">Funciones del Personal</div>
+    <div style="font-size:13px;opacity:0.75;font-family:'Lora',serif;">Family Comidas Rápidas · Guapi, Cauca</div>
+  </div>
+
+  <div id="lista-funciones"></div>
+
+</div><!-- /.seccion funciones -->
+
+<!-- ============ TAB: PAGOS ============ -->
+<div class="seccion" id="sec-pagos">
+
+  <div class="pagos-intro">
+    <h2>💸 Registro de Pagos</h2>
+    <p>Registre los pagos de salario y genere comprobante por WhatsApp.</p>
+  </div>
+
+  <button class="btn-primario" style="background:var(--verde);" onclick="abrirModalPago()">
+    + Registrar pago de salario
+  </button>
+
+  <!-- Filtro por empleada -->
+  <div class="pagos-filtro">
+    <label>Ver:</label>
+    <select class="form-select" id="pagos-filtro-emp" onchange="renderPagos()" style="flex:1;padding:10px 12px;font-size:14px;">
+      <option value="">— Todas las empleadas —</option>
+    </select>
+  </div>
+
+  <!-- Total del filtro -->
+  <div class="pagos-total-box" id="pagos-total-box">
+    <span>Total pagado (filtro)</span>
+    <span id="pagos-total-valor">$0</span>
+  </div>
+
+  <div id="lista-pagos"></div>
+
+</div><!-- /.seccion pagos -->
+
+<!-- ============ TAB 2: LIQUIDACIÓN ============ -->
+<div class="seccion" id="sec-liquidacion">
+
+  <div class="liquidacion-intro">
+    <h2>Calculadora de Liquidación</h2>
+    <p>Ingrese los datos y el sistema calcula automáticamente lo que le corresponde según la ley colombiana.</p>
+  </div>
+
+  <div class="selector-empleada form-grupo">
+    <label class="form-label">Seleccionar empleada (opcional)</label>
+    <select class="form-select" id="liq-selector" onchange="cargarEmpleadaLiq()">
+      <option value="">— Ingresar datos manualmente —</option>
+    </select>
+  </div>
+
+  <div class="form-grupo">
+    <label class="form-label">Nombre completo</label>
+    <input type="text" class="form-input" id="liq-nombre" placeholder="Nombre de la empleada">
+  </div>
+
+  <div class="form-row">
+    <div class="form-grupo">
+      <label class="form-label">Fecha de ingreso</label>
+      <input type="date" class="form-input" id="liq-ingreso">
+    </div>
+    <div class="form-grupo">
+      <label class="form-label">Fecha de retiro</label>
+      <input type="date" class="form-input" id="liq-retiro">
+    </div>
+  </div>
+
+  <div class="form-grupo">
+    <label class="form-label">Salario mensual promedio ($)</label>
+    <input type="number" class="form-input" id="liq-salario" placeholder="Ej: 1300000">
+    <div class="form-nota">Si el salario varió, use el promedio de los últimos 3 meses</div>
+  </div>
+
+  <div class="form-grupo">
+    <label class="form-label">Días de salario pendientes de pago</label>
+    <input type="number" class="form-input" id="liq-dias-pend" placeholder="0" value="0">
+    <div class="form-nota">Días del último mes que aún no se han pagado</div>
+  </div>
+
+  <div class="form-grupo">
+    <label class="form-label">¿Le pagaron vacaciones en algún momento?</label>
+    <select class="form-select" id="liq-vac-pagadas">
+      <option value="no">No, nunca se pagaron</option>
+      <option value="si">Sí, ya se pagaron</option>
+    </select>
+  </div>
+
+  <div class="form-grupo">
+    <label class="form-label">Tipo de retiro *</label>
+    <select class="form-select" id="liq-tipo-retiro" onchange="mostrarGuiaRetiro()">
+      <option value="voluntario">✅ Renuncia voluntaria de la empleada</option>
+      <option value="despido_sin_justa">⚠️ Despido sin justa causa (por decisión de la dueña)</option>
+      <option value="despido_con_justa">📋 Despido con justa causa (falta grave documentada)</option>
+      <option value="mutual">🤝 Acuerdo mutuo</option>
+    </select>
+    <div class="form-nota">Esto determina si aplica indemnización adicional por ley</div>
+  </div>
+
+  <!-- GUÍA EVIDENCIAS — aparece solo si es despido -->
+  <div id="guia-evidencias" style="display:none;"></div>
+
+  <button class="btn-primario" onclick="calcularLiquidacion()" style="margin-top:8px;">
+    Calcular liquidación →
+  </button>
+
+  <div id="resultado-liquidacion" style="display:none;">
+    <div class="resultado-liq">
+      <div class="resultado-header" id="res-nombre-header">Liquidación</div>
+      <div class="resultado-fila">
+        <div class="resultado-concepto">
+          <div>Cesantías</div>
+          <div style="font-size:12px;color:var(--gris);font-family:'Lora',serif;">(Salario × días) ÷ 360</div>
+        </div>
+        <div class="resultado-valor" id="res-cesantias">$0</div>
+      </div>
+      <div class="resultado-fila">
+        <div class="resultado-concepto">
+          <div>Intereses sobre cesantías</div>
+          <div style="font-size:12px;color:var(--gris);font-family:'Lora',serif;">12% anual sobre cesantías</div>
+        </div>
+        <div class="resultado-valor" id="res-intereses">$0</div>
+      </div>
+      <div class="resultado-fila">
+        <div class="resultado-concepto">
+          <div>Prima de servicios</div>
+          <div style="font-size:12px;color:var(--gris);font-family:'Lora',serif;">(Salario × días) ÷ 360</div>
+        </div>
+        <div class="resultado-valor" id="res-prima">$0</div>
+      </div>
+      <div class="resultado-fila" id="fila-vacaciones">
+        <div class="resultado-concepto">
+          <div>Vacaciones</div>
+          <div style="font-size:12px;color:var(--gris);font-family:'Lora',serif;">(Salario × días) ÷ 720</div>
+        </div>
+        <div class="resultado-valor" id="res-vacaciones">$0</div>
+      </div>
+      <div class="resultado-fila" id="fila-dias-pend" style="display:none;">
+        <div class="resultado-concepto">
+          <div>Días de salario pendientes</div>
+          <div style="font-size:12px;color:var(--gris);font-family:'Lora',serif;" id="res-dias-pend-detalle"></div>
+        </div>
+        <div class="resultado-valor" id="res-dias-pend">$0</div>
+      </div>
+      <div class="resultado-fila" id="fila-indem" style="display:none;">
+        <div class="resultado-concepto">
+          <div style="color:var(--rojo);font-weight:700;">Indemnización por despido sin justa causa</div>
+          <div style="font-size:12px;color:var(--gris);font-family:'Lora',serif;" id="res-indem-detalle">30 días de salario (menos de 1 año)</div>
+        </div>
+        <div class="resultado-valor" style="color:var(--rojo);" id="res-indem">$0</div>
+      </div>
+      <div class="resultado-total">
+        <span>TOTAL A PAGAR</span>
+        <span id="res-total">$0</span>
+      </div>
+    </div>
+
+    <div class="alerta-ss-grande">
+      <h4>⚠️ Seguridad Social No Pagada</h4>
+      <p>Esta liquidación no incluye la seguridad social que debió pagarse mensualmente. Salud, pensión y ARL son obligatorias desde el primer día. Le recomendamos consultar con un abogado laboral o la Unidad de Gestión Pensional y Parafiscales (UGPP) para regularizar esta situación antes de formalizar el retiro.</p>
+    </div>
+
+    <button class="btn-primario" onclick="pasarADocumento()" style="margin-top:16px;">
+      Generar documento de liquidación →
+    </button>
+  </div>
+
+</div>
+
+<!-- ============ TAB 3: DOCUMENTO ============ -->
+<div class="seccion" id="sec-documento">
+
+  <div class="info-box">
+    Complete el cálculo en la pestaña "Liquidación" para generar el documento. Puede editarlo directamente antes de imprimir o enviar.
+  </div>
+
+  <div id="doc-preview-container">
+    <div class="vacio">
+      <div class="vacio-icon">📄</div>
+      <div class="vacio-titulo">Sin documento aún</div>
+      <div class="vacio-desc">Calcule la liquidación en la pestaña anterior y el documento se generará aquí.</div>
+    </div>
+  </div>
+
+  <div class="acciones-doc" id="acciones-doc" style="display:none; margin-top:16px;">
+    <button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir documento</button>
+    <button class="btn-wa" onclick="compartirWA()">📱 Enviar por WhatsApp</button>
+  </div>
+
+</div>
+</div>
+
+<!-- ============ MODAL EMPLEADA ============ -->
+<div class="modal-overlay" id="modal-empleada">
+  <div class="modal">
+    <div class="modal-titulo" id="modal-titulo">Nueva Empleada</div>
+
+    <input type="hidden" id="emp-id">
+
+    <div class="form-grupo">
+      <label class="form-label">Nombre completo *</label>
+      <input type="text" class="form-input" id="emp-nombre" placeholder="Ej: María González">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Número de cédula</label>
+      <input type="text" class="form-input" id="emp-cedula" placeholder="Ej: 1234567890">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Cargo *</label>
+      <input type="text" class="form-input" id="emp-cargo" placeholder="Ej: Cocinera, Cajera, Mesera">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Negocio *</label>
+      <select class="form-select" id="emp-negocio">
+        <option value="family">🍔 Family Comidas Rápidas</option>
+        <option value="restaurante">🍳 Restaurante (Desayunos/Almuerzos)</option>
+        <option value="ambos">🔄 Ambos negocios</option>
+      </select>
+    </div>
+
+    <div class="form-row">
+      <div class="form-grupo">
+        <label class="form-label">Fecha de ingreso *</label>
+        <input type="date" class="form-input" id="emp-ingreso">
+      </div>
+      <div class="form-grupo">
+        <label class="form-label">Salario mensual ($)</label>
+        <input type="number" class="form-input" id="emp-salario" placeholder="1300000">
+      </div>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Horario de trabajo</label>
+      <input type="text" class="form-input" id="emp-horario" placeholder="Ej: Lun-Vie 7am-3pm">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Teléfono</label>
+      <input type="tel" class="form-input" id="emp-telefono" placeholder="300 000 0000">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Estado</label>
+      <select class="form-select" id="emp-estado">
+        <option value="activa">✅ Activa</option>
+        <option value="retirada">❌ Retirada</option>
+        <option value="incapacidad">🏥 Incapacidad</option>
+        <option value="permiso">📋 Permiso</option>
+      </select>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Observaciones</label>
+      <input type="text" class="form-input" id="emp-obs" placeholder="Ej: Tiene experiencia en cocina">
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-secundario" onclick="cerrarModal('modal-empleada')">Cancelar</button>
+      <button class="btn-primario" onclick="guardarEmpleada()" style="margin-bottom:0;">Guardar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============ MODAL EDITAR CARGO ============ -->
+<div class="modal-overlay" id="modal-cargo">
+  <div class="modal">
+    <div class="modal-titulo" id="cargo-modal-titulo">✏ Editar cargo</div>
+
+    <input type="hidden" id="cargo-edit-id">
+
+    <!-- FUNCIONES -->
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--cafe2);margin-bottom:10px;">Funciones del cargo</div>
+    <div id="cargo-funciones-lista" style="margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;">
+      <input type="text" class="form-input" id="cargo-nueva-funcion" placeholder="Nueva función…" style="flex:1;padding:11px 14px;font-size:14px;">
+      <button class="btn-verde" onclick="cargoAgregarFuncion()" style="padding:11px 16px;font-size:13px;">+ Agregar</button>
+    </div>
+
+    <hr class="divider">
+
+    <!-- APOYO DIGITAL -->
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--verde);margin-bottom:8px;">📱 Apoyo con el sistema</div>
+    <textarea class="form-input" id="cargo-sistema" rows="3" placeholder="Describe cómo apoya con el sistema digital…" style="resize:vertical;line-height:1.6;font-family:'Lora',serif;font-size:14px;"></textarea>
+
+    <hr class="divider">
+
+    <!-- VACANTE -->
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--amarillo);margin-bottom:8px;">📋 Publicación de vacante</div>
+
+    <div style="font-size:12px;font-weight:700;color:var(--gris);margin-bottom:6px;margin-top:4px;">Requisitos</div>
+    <div id="cargo-req-lista" style="margin-bottom:10px;"></div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <input type="text" class="form-input" id="cargo-nuevo-req" placeholder="Nuevo requisito…" style="flex:1;padding:11px 14px;font-size:14px;">
+      <button class="btn-verde" onclick="cargoAgregarReq()" style="padding:11px 16px;font-size:13px;">+ Agregar</button>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Horario</label>
+      <input type="text" class="form-input" id="cargo-horario" placeholder="Ej: 4:00 pm – 11:00 pm · Domingo a domingo">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Salario ofrecido</label>
+      <input type="text" class="form-input" id="cargo-salario" placeholder="Ej: A convenir / $1.300.000">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Celular de contacto</label>
+      <input type="tel" class="form-input" id="cargo-contacto" placeholder="Ej: 300 000 0000">
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-secundario" onclick="cerrarModal('modal-cargo')">Cancelar</button>
+      <button class="btn-primario" onclick="guardarCargo()" style="margin-bottom:0;">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PAGO ============ -->
+<div class="modal-overlay" id="modal-pago">
+  <div class="modal">
+    <div class="modal-titulo">💸 Registrar Pago</div>
+
+    <input type="hidden" id="pago-id">
+
+    <div class="form-grupo">
+      <label class="form-label">Empleada *</label>
+      <select class="form-select" id="pago-empleada"></select>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Período *</label>
+      <input type="text" class="form-input" id="pago-periodo" placeholder="Ej: Semana 14–20 de Mayo 2026">
+      <div class="form-nota">Indique qué semana o quincena corresponde este pago</div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-grupo">
+        <label class="form-label">Fecha de pago *</label>
+        <input type="date" class="form-input" id="pago-fecha">
+      </div>
+      <div class="form-grupo">
+        <label class="form-label">Método</label>
+        <select class="form-select" id="pago-metodo">
+          <option value="Efectivo">💵 Efectivo</option>
+          <option value="Nequi">📱 Nequi</option>
+          <option value="Transferencia">🏦 Transferencia</option>
+          <option value="Mixto">🔄 Mixto</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Salario base ($)</label>
+      <input type="number" class="form-input" id="pago-base" placeholder="Ej: 325000" oninput="calcTotalPago()">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Bonos o extras ($) — opcional</label>
+      <input type="number" class="form-input" id="pago-extras" placeholder="0" oninput="calcTotalPago()">
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Descuentos ($) — opcional</label>
+      <input type="number" class="form-input" id="pago-descuentos" placeholder="0" oninput="calcTotalPago()">
+      <div class="form-nota">Anticipos descontados, préstamos, etc.</div>
+    </div>
+
+    <div style="background:var(--verde);color:white;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:14px;font-weight:700;">TOTAL A PAGAR</span>
+      <span style="font-size:22px;font-weight:800;" id="pago-total-preview">$0</span>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label">Notas</label>
+      <input type="text" class="form-input" id="pago-notas" placeholder="Ej: Pago de la semana completa">
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-secundario" onclick="cerrarModal('modal-pago')">Cancelar</button>
+      <button class="btn-primario" onclick="guardarPago()" style="margin-bottom:0;background:var(--verde);">Guardar pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL PIN ============ -->
+<div class="pin-modal" id="pin-modal">
+  <div class="pin-box">
+    <div class="pin-titulo" id="pin-titulo">🔐 PIN de Administrador</div>
+    <div class="pin-desc" id="pin-desc">Ingrese el PIN para continuar</div>
+    <input type="password" class="pin-input" id="pin-input" maxlength="6" placeholder="••••">
+    <div class="pin-error" id="pin-error">PIN incorrecto. Intente de nuevo.</div>
+    <button class="btn-primario" onclick="verificarPin()" style="margin-bottom:0;">Confirmar</button>
+    <br>
+    <button class="btn-secundario" onclick="cerrarPinModal()" style="width:100%;margin-top:10px;">Cancelar</button>
+  </div>
+</div>
+
+<!-- ============ MODAL CONFIRMAR ELIMINAR ============ -->
+<div class="modal-overlay" id="modal-confirmar">
+  <div class="modal" style="padding:32px 24px;">
+    <div class="modal-titulo" style="color:var(--rojo);">⚠️ Confirmar eliminación</div>
+    <p style="font-family:'Lora',serif;font-size:16px;line-height:1.7;color:var(--gris);margin-bottom:24px;">
+      ¿Está segura que quiere eliminar esta empleada? Esta acción no se puede deshacer.
+    </p>
+    <div class="modal-acciones">
+      <button class="btn-secundario" onclick="cerrarModal('modal-confirmar')">No, cancelar</button>
+      <button class="btn-rojo" onclick="confirmarEliminar()" style="flex:1;padding:16px;font-size:15px;">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ ESTADO ============
+let empleadas = [
+  {
+    id: 1,
+    nombre: "Empleada de ejemplo",
+    cedula: "1234567890",
+    cargo: "Cocinera",
+    negocio: "family",
+    ingreso: "2024-09-01",
+    salario: 1300000,
+    horario: "Lun-Sáb 7am-3pm",
+    telefono: "300 000 0000",
+    estado: "activa",
+    obs: "Lleva 6 meses. Reemplazar antes de liquidar."
+  }
+];
+
+let pinAdmin = "1234";
+let pinCallback = null;
+let eliminarId = null;
+
+// ── Guardar todo el módulo personal a Firebase y localStorage ──
+const EMPLEADAS_KEY = 'personal_family_empleadas';
+
+function savePersonal() {
+  const now = new Date().toISOString();
+  const data = {
+    empleadas:  JSON.stringify(empleadas),
+    funciones:  localStorage.getItem('funciones_family_v1') || '[]',
+    pagos:      localStorage.getItem('pagos_family')        || '[]',
+    updatedAt:  now
+  };
+  // También guardar empleadas en localStorage para que otros módulos las lean
+  localStorage.setItem(EMPLEADAS_KEY,         JSON.stringify(empleadas));
+  localStorage.setItem('personal_family',     JSON.stringify(empleadas)); // compatibilidad
+  savePersonalToFirebase(data);
+}
+
+// ── Puente Firebase→estado local ──
+window._syncPersonalFromFirebase = function(remote) {
+  if (!remote) return;
+  try {
+    if (remote.empleadas) {
+      empleadas = JSON.parse(remote.empleadas);
+      localStorage.setItem(EMPLEADAS_KEY,     JSON.stringify(empleadas));
+      localStorage.setItem('personal_family', JSON.stringify(empleadas));
+      if (typeof renderEmpleadas            === 'function') renderEmpleadas();
+      if (typeof actualizarSelectorPagos    === 'function') actualizarSelectorPagos();
+      if (typeof actualizarSelectorLiq      === 'function') actualizarSelectorLiq();
+    }
+    if (remote.funciones) {
+      localStorage.setItem('funciones_family_v1', remote.funciones);
+      if (typeof renderFunciones === 'function') renderFunciones();
+    }
+    if (remote.pagos) {
+      localStorage.setItem('pagos_family', remote.pagos);
+      if (typeof renderPagos === 'function') renderPagos();
+    }
+    console.log('✅ Personal sincronizado desde Firebase | Empleadas:', empleadas.length);
+  } catch(e) { console.warn('sync personal error:', e); }
+};
+
+// ── Cargar desde Firebase al iniciar ──
+(function initFirebasePersonal() {
+  // Cargar empleadas desde localStorage si existen
+  const empSaved = localStorage.getItem(EMPLEADAS_KEY);
+  if (empSaved) try { empleadas = JSON.parse(empSaved); } catch(e) {}
+
+  loadPersonalFromFirebase().then(remote => {
+    if (remote) window._syncPersonalFromFirebase(remote);
+    startPersonalListener();
+  });
+})();
+let liquidacionActual = null;
+let filtroActual = 'todos';
+
+// ============ FILTRO ============
+function filtrar(negocio, btn) {
+  filtroActual = negocio;
+  document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEmpleadas();
+}
+
+// ============ TABS ============
+function cambiarTab(id, btn) {
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('activa');
+  btn.classList.add('active');
+  if (id === 'liquidacion') actualizarSelectorLiq();
+  if (id === 'pagos') { actualizarSelectorPagos(); setTimeout(renderPagos, 50); }
+}
+
+// ============ RENDER EMPLEADAS ============
+function renderEmpleadas() {
+  const lista = document.getElementById('lista-empleadas');
+
+  if (empleadas.length === 0) {
+    lista.innerHTML = `
+      <div class="vacio">
+        <div class="vacio-icon">👩‍🍳</div>
+        <div class="vacio-titulo">Sin empleadas registradas</div>
+        <div class="vacio-desc">Toque "Agregar Empleada" para registrar su primera empleada.</div>
+      </div>`;
+    return;
+  }
+
+  const ordenadas = [...empleadas]
+    .filter(e => filtroActual === 'todos' || e.negocio === filtroActual)
+    .sort((a,b) => {
+    const estados = { activa: 0, permiso: 1, incapacidad: 2, retirada: 3 };
+    return (estados[a.estado]||0) - (estados[b.estado]||0);
+  });
+
+  lista.innerHTML = ordenadas.map(emp => {
+    const dias = calcDias(emp.ingreso, new Date().toISOString().split('T')[0]);
+    const meses = Math.floor(dias / 30);
+    const negocioLabel = emp.negocio === 'family' ? '🍔 Family' : emp.negocio === 'restaurante' ? '🍳 Restaurante' : '🔄 Ambos';
+    const negocioClass = emp.negocio === 'family' ? 'badge-family' : emp.negocio === 'restaurante' ? 'badge-restaurante' : 'badge-family';
+    const cardClass = emp.negocio === 'restaurante' ? 'restaurante' : 'family';
+    const estadoIcon = { activa:'✅', retirada:'❌', incapacidad:'🏥', permiso:'📋' }[emp.estado] || '✅';
+
+    return `
+    <div class="empleada-card ${cardClass}">
+      <div class="negocio-badge ${negocioClass}">${negocioLabel}</div>
+      <div class="empleada-nombre">${emp.nombre}</div>
+      <div class="empleada-cargo">${emp.cargo} · ${estadoIcon} ${emp.estado.charAt(0).toUpperCase() + emp.estado.slice(1)}</div>
+
+      <div class="empleada-meta">
+        <div class="meta-item">
+          <div class="meta-label">Ingresó</div>
+          <div class="meta-valor">${formatFecha(emp.ingreso)}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Tiempo</div>
+          <div class="meta-valor">${meses} meses</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Salario</div>
+          <div class="meta-valor">${emp.salario ? formatPeso(emp.salario) : 'Sin definir'}</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-label">Cédula</div>
+          <div class="meta-valor">${emp.cedula || '—'}</div>
+        </div>
+      </div>
+
+      ${emp.horario ? `<div style="font-size:13px;color:var(--gris);margin-bottom:8px;">⏰ ${emp.horario}</div>` : ''}
+      ${emp.telefono ? `<div style="font-size:13px;color:var(--gris);margin-bottom:8px;">📞 ${emp.telefono}</div>` : ''}
+      ${emp.obs ? `<div style="font-size:13px;color:var(--gris);font-family:'Lora',serif;font-style:italic;margin-bottom:8px;">"${emp.obs}"</div>` : ''}
+
+      <div class="alerta-ss">
+        <span>⚠️</span>
+        <span>Seguridad social no registrada — recuerde regularizar esta situación.</span>
+      </div>
+
+      <div class="card-acciones">
+        <button class="btn-verde" onclick="editarEmpleada(${emp.id})">✏️ Editar</button>
+        <button class="btn-primario" onclick="liquidarDesde(${emp.id})" style="width:auto;margin-bottom:0;padding:10px 16px;font-size:13px;">💰 Liquidar</button>
+        <button class="btn-rojo" onclick="pedirPinEliminar(${emp.id})">🗑 Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============ MODAL EMPLEADA ============
+function abrirModalEmpleada(emp = null) {
+  document.getElementById('emp-id').value = emp ? emp.id : '';
+  document.getElementById('emp-nombre').value = emp ? emp.nombre : '';
+  document.getElementById('emp-cedula').value = emp ? emp.cedula || '' : '';
+  document.getElementById('emp-cargo').value = emp ? emp.cargo : '';
+  document.getElementById('emp-negocio').value = emp ? emp.negocio : 'family';
+  document.getElementById('emp-ingreso').value = emp ? emp.ingreso : '';
+  document.getElementById('emp-salario').value = emp ? emp.salario || '' : '';
+  document.getElementById('emp-horario').value = emp ? emp.horario || '' : '';
+  document.getElementById('emp-telefono').value = emp ? emp.telefono || '' : '';
+  document.getElementById('emp-estado').value = emp ? emp.estado : 'activa';
+  document.getElementById('emp-obs').value = emp ? emp.obs || '' : '';
+  document.getElementById('modal-titulo').textContent = emp ? 'Editar Empleada' : 'Nueva Empleada';
+  document.getElementById('modal-empleada').classList.add('visible');
+}
+
+function editarEmpleada(id) {
+  const emp = empleadas.find(e => e.id === id);
+  if (emp) abrirModalEmpleada(emp);
+}
+
+function guardarEmpleada() {
+  const nombre = document.getElementById('emp-nombre').value.trim();
+  const ingreso = document.getElementById('emp-ingreso').value;
+  if (!nombre || !ingreso) {
+    alert('El nombre y la fecha de ingreso son obligatorios.');
+    return;
+  }
+
+  const id = document.getElementById('emp-id').value;
+  const datos = {
+    nombre,
+    cedula: document.getElementById('emp-cedula').value.trim(),
+    cargo: document.getElementById('emp-cargo').value.trim(),
+    negocio: document.getElementById('emp-negocio').value,
+    ingreso,
+    salario: parseInt(document.getElementById('emp-salario').value) || 0,
+    horario: document.getElementById('emp-horario').value.trim(),
+    telefono: document.getElementById('emp-telefono').value.trim(),
+    estado: document.getElementById('emp-estado').value,
+    obs: document.getElementById('emp-obs').value.trim()
+  };
+
+  if (id) {
+    const idx = empleadas.findIndex(e => e.id == id);
+    empleadas[idx] = { ...empleadas[idx], ...datos };
+  } else {
+    datos.id = Date.now();
+    empleadas.push(datos);
+  }
+
+  cerrarModal('modal-empleada');
+  renderEmpleadas();
+  actualizarSelectorPagos();
+  actualizarSelectorLiq();
+  savePersonal(); // persistir y sincronizar a Firebase
+}
+
+// ============ ELIMINAR ============
+function pedirPinEliminar(id) {
+  eliminarId = id;
+  mostrarPinModal('Eliminar empleada', 'Ingrese el PIN de administrador para eliminar.', () => {
+    document.getElementById('modal-confirmar').classList.add('visible');
+  });
+}
+
+function confirmarEliminar() {
+  empleadas = empleadas.filter(e => e.id !== eliminarId);
+  cerrarModal('modal-confirmar');
+  renderEmpleadas();
+  actualizarSelectorPagos();
+  savePersonal(); // sincronizar eliminación a Firebase
+}
+
+// ============ LIQUIDACIÓN ============
+function actualizarSelectorLiq() {
+  const sel = document.getElementById('liq-selector');
+  const valActual = sel.value;
+  sel.innerHTML = '<option value="">— Ingresar datos manualmente —</option>';
+  empleadas.forEach(emp => {
+    const opt = document.createElement('option');
+    opt.value = emp.id;
+    opt.textContent = emp.nombre + ' · ' + emp.cargo;
+    sel.appendChild(opt);
+  });
+  if (valActual) sel.value = valActual;
+}
+
+function cargarEmpleadaLiq() {
+  const id = document.getElementById('liq-selector').value;
+  if (!id) return;
+  const emp = empleadas.find(e => e.id == id);
+  if (!emp) return;
+  document.getElementById('liq-nombre').value = emp.nombre;
+  document.getElementById('liq-ingreso').value = emp.ingreso;
+  document.getElementById('liq-salario').value = emp.salario || '';
+}
+
+function liquidarDesde(id) {
+  const emp = empleadas.find(e => e.id === id);
+  if (!emp) return;
+  cambiarTab('liquidacion', document.querySelectorAll('.tab')[3]);
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab')[3].classList.add('active');
+  actualizarSelectorLiq();
+  document.getElementById('liq-selector').value = id;
+  cargarEmpleadaLiq();
+  document.getElementById('liq-retiro').value = new Date().toISOString().split('T')[0];
+  window.scrollTo(0, 0);
+}
+
+// ============ GUÍA EVIDENCIAS ============
+function mostrarGuiaRetiro() {
+  const tipo = document.getElementById('liq-tipo-retiro').value;
+  const caja = document.getElementById('guia-evidencias');
+
+  if (tipo === 'despido_sin_justa') {
+    caja.style.display = 'block';
+    caja.innerHTML = `
+      <div class="indem-box">
+        <div class="indem-titulo">⚠️ Despido sin justa causa — aplica indemnización</div>
+        <div class="indem-desc">Por ley colombiana, si usted como empleadora termina el contrato sin una causa justificada, debe pagar una indemnización adicional. El sistema la calculará automáticamente.</div>
+      </div>
+      <div class="evidencias-box">
+        <div class="evidencias-titulo">📋 Aunque no hay justa causa, guarde estos documentos</div>
+        <ul class="evidencias-lista">
+          <li>📱 <span>Capturas de WhatsApp con instrucciones dadas y no cumplidas</span></li>
+          <li>📝 <span>Cualquier nota o mensaje donde se le haya llamado la atención</span></li>
+          <li>📅 <span>Registro de fechas y horarios en que no asistió o llegó tarde</span></li>
+          <li>👥 <span>Nombre de testigos (otras empleadas, clientes) que puedan dar fe</span></li>
+          <li>💰 <span>Comprobantes de todos los pagos que se le hicieron</span></li>
+        </ul>
+      </div>`;
+  } else if (tipo === 'despido_con_justa') {
+    caja.style.display = 'block';
+    caja.innerHTML = `
+      <div class="evidencias-box">
+        <div class="evidencias-titulo">📋 Despido con justa causa — DEBE tener estas evidencias</div>
+        <ul class="evidencias-lista">
+          <li>📝 <span><strong>Descargo escrito:</strong> carta donde se le notificó la falta y ella respondió (o se negó a firmar)</span></li>
+          <li>📱 <span><strong>Pruebas de la falta:</strong> fotos, capturas de WhatsApp, videos si aplica</span></li>
+          <li>👥 <span><strong>Testigos:</strong> mínimo una persona que presenció la situación y pueda confirmarlo</span></li>
+          <li>📋 <span><strong>Reglamento interno:</strong> si tiene normas escritas que ella conocía, guárdelas</span></li>
+          <li>⏱ <span><strong>Fechas exactas:</strong> cuándo ocurrió la falta, cuándo se le informó</span></li>
+          <li>⚠️ <span><strong>Sin estas evidencias, un juez puede convertir el despido con justa causa en despido sin justa causa — y obligarla a pagar indemnización de todas formas.</strong></span></li>
+        </ul>
+      </div>`;
+  } else {
+    caja.style.display = 'none';
+    caja.innerHTML = '';
+  }
+}
+
+function calcularLiquidacion() {
+  const nombre = document.getElementById('liq-nombre').value.trim();
+  const ingreso = document.getElementById('liq-ingreso').value;
+  const retiro = document.getElementById('liq-retiro').value;
+  const salario = parseInt(document.getElementById('liq-salario').value) || 0;
+  const diasPend = parseInt(document.getElementById('liq-dias-pend').value) || 0;
+  const vacPagadas = document.getElementById('liq-vac-pagadas').value === 'si';
+  const tipoRetiro = document.getElementById('liq-tipo-retiro').value;
+
+  if (!nombre || !ingreso || !retiro || !salario) {
+    alert('Por favor complete todos los campos obligatorios: nombre, fechas y salario.');
+    return;
+  }
+
+  const dias = calcDias(ingreso, retiro);
+  const anios = dias / 365;
+  const salarioDia = salario / 30;
+
+  const cesantias = Math.round((salario * dias) / 360);
+  const intereses = Math.round(cesantias * 0.12 * (dias / 360));
+  const prima = Math.round((salario * dias) / 360);
+  const vacaciones = vacPagadas ? 0 : Math.round((salario * dias) / 720);
+  const diasPendVal = Math.round(salarioDia * diasPend);
+
+  // Indemnización por despido sin justa causa (Art. 64 CST)
+  let indem = 0;
+  let indemDetalle = '';
+  if (tipoRetiro === 'despido_sin_justa') {
+    if (anios < 1) {
+      indem = Math.round(salario); // 30 días
+      indemDetalle = '30 días de salario (menos de 1 año)';
+    } else {
+      const diasBase = 30;
+      const diasExtra = Math.min(Math.floor(anios - 1), 4) * 20 + Math.max(0, Math.floor(anios - 5)) * 40;
+      indem = Math.round(salarioDia * (diasBase + diasExtra * (anios - 1)));
+      indemDetalle = `30 días base + ${Math.round(diasExtra)} días adicionales por ${Math.floor(anios)} años`;
+    }
+  }
+
+  const total = cesantias + intereses + prima + vacaciones + diasPendVal + indem;
+
+  liquidacionActual = {
+    nombre, ingreso, retiro, salario, dias,
+    cesantias, intereses, prima, vacaciones,
+    diasPend, diasPendVal, indem, indemDetalle,
+    total, vacPagadas, tipoRetiro
+  };
+
+  document.getElementById('res-nombre-header').textContent = 'Liquidación — ' + nombre;
+  document.getElementById('res-cesantias').textContent = formatPeso(cesantias);
+  document.getElementById('res-intereses').textContent = formatPeso(intereses);
+  document.getElementById('res-prima').textContent = formatPeso(prima);
+  document.getElementById('res-vacaciones').textContent = formatPeso(vacaciones);
+  document.getElementById('res-total').textContent = formatPeso(total);
+
+  document.getElementById('fila-vacaciones').style.display = vacPagadas ? 'none' : 'flex';
+
+  if (diasPend > 0) {
+    document.getElementById('fila-dias-pend').style.display = 'flex';
+    document.getElementById('res-dias-pend').textContent = formatPeso(diasPendVal);
+    document.getElementById('res-dias-pend-detalle').textContent = diasPend + ' días × ' + formatPeso(Math.round(salarioDia));
+  } else {
+    document.getElementById('fila-dias-pend').style.display = 'none';
+  }
+
+  if (indem > 0) {
+    document.getElementById('fila-indem').style.display = 'flex';
+    document.getElementById('res-indem').textContent = formatPeso(indem);
+    document.getElementById('res-indem-detalle').textContent = indemDetalle;
+  } else {
+    document.getElementById('fila-indem').style.display = 'none';
+  }
+
+  document.getElementById('resultado-liquidacion').style.display = 'block';
+  document.getElementById('resultado-liquidacion').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ============ DOCUMENTO ============
+function pasarADocumento() {
+  if (!liquidacionActual) return;
+  generarDocumento();
+  cambiarTab('documento', document.querySelectorAll('.tab')[4]);
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab')[4].classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function generarDocumento() {
+  const liq = liquidacionActual;
+  const hoy = new Date().toLocaleDateString('es-CO', { year:'numeric', month:'long', day:'numeric' });
+  const tipoTexto = {
+    voluntario: 'Renuncia voluntaria',
+    despido_sin_justa: 'Despido sin justa causa',
+    despido_con_justa: 'Despido con justa causa',
+    mutual: 'Acuerdo mutuo de terminación'
+  }[liq.tipoRetiro] || 'Terminación de contrato';
+
+  const html = `
+  <div class="doc-preview" id="doc-imprimible">
+    <div class="doc-titulo">Acta de Liquidación Laboral</div>
+    <div class="doc-subtitulo">Family Comidas Rápidas · Guapi, Cauca · ${hoy}</div>
+
+    <div class="doc-seccion">
+      <div class="doc-seccion-titulo">Datos de la trabajadora</div>
+      <div class="doc-fila"><span>Nombre completo:</span><span><strong>${liq.nombre}</strong></span></div>
+      <div class="doc-fila"><span>Fecha de ingreso:</span><span>${formatFecha(liq.ingreso)}</span></div>
+      <div class="doc-fila"><span>Fecha de retiro:</span><span>${formatFecha(liq.retiro)}</span></div>
+      <div class="doc-fila"><span>Tiempo laborado:</span><span>${liq.dias} días (${Math.floor(liq.dias/30)} meses aprox.)</span></div>
+      <div class="doc-fila"><span>Salario base:</span><span>${formatPeso(liq.salario)}/mes</span></div>
+      <div class="doc-fila"><span>Causa de terminación:</span><span><strong>${tipoTexto}</strong></span></div>
+    </div>
+
+    <div class="doc-seccion">
+      <div class="doc-seccion-titulo">Liquidación de prestaciones sociales</div>
+      <div class="doc-fila"><span>Cesantías:</span><span>${formatPeso(liq.cesantias)}</span></div>
+      <div class="doc-fila"><span>Intereses sobre cesantías (12%):</span><span>${formatPeso(liq.intereses)}</span></div>
+      <div class="doc-fila"><span>Prima de servicios:</span><span>${formatPeso(liq.prima)}</span></div>
+      ${!liq.vacPagadas ? `<div class="doc-fila"><span>Vacaciones proporcionales:</span><span>${formatPeso(liq.vacaciones)}</span></div>` : ''}
+      ${liq.diasPend > 0 ? `<div class="doc-fila"><span>Días de salario pendientes (${liq.diasPend} días):</span><span>${formatPeso(liq.diasPendVal)}</span></div>` : ''}
+      ${liq.indem > 0 ? `<div class="doc-fila" style="color:#C0392B;"><span><strong>Indemnización por despido sin justa causa:</strong><br><small>${liq.indemDetalle}</small></span><span><strong>${formatPeso(liq.indem)}</strong></span></div>` : ''}
+      <div class="doc-total-fila"><span>TOTAL A PAGAR:</span><span>${formatPeso(liq.total)}</span></div>
+    </div>
+
+    <div class="doc-seccion" style="background:#FFF9E6;padding:14px;border:1px solid #E8A020;margin-bottom:16px;">
+      <div style="font-size:12px;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:1px;color:#7A5C00;margin-bottom:6px;">NOTA IMPORTANTE</div>
+      <p style="font-size:13px;color:#7A5C00;line-height:1.6;">Esta liquidación no incluye aportes a seguridad social (salud, pensión, ARL) que no fueron realizados durante la vigencia del contrato. Las partes dejan constancia de esta situación y acuerdan resolverla por separado según la normativa vigente.</p>
+    </div>
+
+    <div class="doc-seccion">
+      <div class="doc-seccion-titulo">Declaración de las partes</div>
+      <p style="font-size:13px;line-height:1.7;">Con la firma de este documento, la trabajadora <strong>${liq.nombre}</strong> declara haber recibido a satisfacción la suma de <strong>${formatPeso(liq.total)}</strong> por concepto de liquidación de prestaciones sociales y demás acreencias laborales derivadas del contrato de trabajo, y que no tiene ninguna otra reclamación pendiente con <strong>Family Comidas Rápidas</strong>.</p>
+    </div>
+
+    <div class="doc-firmas">
+      <div class="doc-firma-campo">
+        <div class="doc-firma-linea"></div>
+        <div class="doc-firma-label">Firma Empleadora<br>Señora Miryam</div>
+      </div>
+      <div class="doc-firma-campo">
+        <div class="doc-firma-linea"></div>
+        <div class="doc-firma-label">Firma Trabajadora<br>${liq.nombre}</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:11px;color:#999;margin-top:24px;font-family:'Syne',sans-serif;letter-spacing:1px;">
+      Documento generado el ${hoy} · Family Comidas Rápidas · Guapi, Cauca
+    </div>
+  </div>`;
+
+  document.getElementById('doc-preview-container').innerHTML = html;
+  document.getElementById('acciones-doc').style.display = 'block';
+}
+
+function compartirWA() {
+  if (!liquidacionActual) return;
+  const liq = liquidacionActual;
+  const hoy = new Date().toLocaleDateString('es-CO');
+  const tipoTexto = {
+    voluntario: 'Renuncia voluntaria',
+    despido_sin_justa: 'Despido sin justa causa',
+    despido_con_justa: 'Despido con justa causa',
+    mutual: 'Acuerdo mutuo'
+  }[liq.tipoRetiro] || '';
+
+  const texto = `*LIQUIDACIÓN LABORAL*
+*Family Comidas Rápidas*
+Fecha: ${hoy}
+
+👤 *${liq.nombre}*
+📅 Ingreso: ${formatFecha(liq.ingreso)}
+📅 Retiro: ${formatFecha(liq.retiro)}
+⏱ Tiempo: ${Math.floor(liq.dias/30)} meses (${liq.dias} días)
+💰 Salario: ${formatPeso(liq.salario)}/mes
+📋 Causa: ${tipoTexto}
+
+*LIQUIDACIÓN:*
+• Cesantías: ${formatPeso(liq.cesantias)}
+• Intereses cesantías: ${formatPeso(liq.intereses)}
+• Prima de servicios: ${formatPeso(liq.prima)}
+${!liq.vacPagadas ? `• Vacaciones: ${formatPeso(liq.vacaciones)}\n` : ''}${liq.diasPend > 0 ? `• Días pendientes: ${formatPeso(liq.diasPendVal)}\n` : ''}${liq.indem > 0 ? `• Indemnización: ${formatPeso(liq.indem)}\n` : ''}
+*TOTAL A PAGAR: ${formatPeso(liq.total)}*
+
+⚠️ Pendiente regularizar seguridad social.`;
+
+  window.open('https://wa.me/?text=' + encodeURIComponent(texto), '_blank');
+}
+
+// ============ PIN ============
+function mostrarPinModal(titulo, desc, callback) {
+  pinCallback = callback;
+  document.getElementById('pin-titulo').textContent = '🔐 ' + titulo;
+  document.getElementById('pin-desc').textContent = desc;
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-error').style.display = 'none';
+  document.getElementById('pin-modal').classList.add('visible');
+  setTimeout(() => document.getElementById('pin-input').focus(), 300);
+}
+
+function verificarPin() {
+  const ingresado = document.getElementById('pin-input').value;
+  if (ingresado === pinAdmin) {
+    cerrarPinModal();
+    if (pinCallback) pinCallback();
+  } else {
+    document.getElementById('pin-error').style.display = 'block';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+  }
+}
+
+function cerrarPinModal() {
+  document.getElementById('pin-modal').classList.remove('visible');
+}
+
+function mostrarPinCambio() {
+  mostrarPinModal('Cambiar PIN', 'Ingrese el PIN actual para poder cambiarlo.', () => {
+    const nuevo = prompt('Ingrese el NUEVO PIN (mínimo 4 dígitos):');
+    if (nuevo && nuevo.length >= 4) {
+      pinAdmin = nuevo;
+      alert('✅ PIN actualizado correctamente.');
+    } else if (nuevo !== null) {
+      alert('El PIN debe tener mínimo 4 dígitos.');
+    }
+  });
+}
+
+document.getElementById('pin-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') verificarPin();
+});
+
+// ============ MODALES ============
+function cerrarModal(id) {
+  document.getElementById(id).classList.remove('visible');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(modal => {
+  modal.addEventListener('click', e => {
+    if (e.target === modal) cerrarModal(modal.id);
+  });
+});
+
+// ============ UTILIDADES ============
+function calcDias(fechaInicio, fechaFin) {
+  const d1 = new Date(fechaInicio);
+  const d2 = new Date(fechaFin);
+  return Math.max(0, Math.round((d2 - d1) / (1000 * 60 * 60 * 24)));
+}
+
+function formatPeso(valor) {
+  return '$' + Math.round(valor).toLocaleString('es-CO');
+}
+
+function formatFecha(fecha) {
+  if (!fecha) return '—';
+  const [y, m, d] = fecha.split('-');
+  const meses = ['','Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return `${parseInt(d)} ${meses[parseInt(m)]} ${y}`;
+}
+
+
+// ============ FUNCIONES DEL PERSONAL ============
+
+const FUNCIONES_KEY = 'funciones_family_v1';
+const CONTACTO_DEFAULT = '300 000 0000';
+const HORARIO_DEFAULT = '4:00 pm – 11:00 pm · Domingo a domingo · 1 día de descanso';
+
+const FUNCIONES_DEFAULT = [
+  {
+    id: 'cocinera', nombre: 'Cocinera Principal', emoji: '👩‍🍳', color: '#D4600A',
+    tag: 'Área de cocina · Turno noche',
+    funciones: [
+      'Preparar los productos del menú según las recetas y porciones establecidas.',
+      'Coordinar el trabajo dentro de la cocina.',
+      'Recibir y ejecutar las comandas enviadas por la cajera.',
+      'Mantener el orden y limpieza del área de cocina.',
+      'Supervisar el uso correcto de los ingredientes para evitar desperdicios.',
+      'Verificar la calidad y presentación de los alimentos antes de entregarlos.',
+      'Controlar los tiempos de preparación durante las horas pico.',
+      'Informar cuando algún insumo esté por agotarse.'
+    ],
+    sistemaDigital: 'Verificar las comandas recibidas por WhatsApp; informar a la cajera cuando un insumo esté agotado para que lo registre en el sistema de inventario.',
+    requisitos: [
+      'Experiencia en cocina de restaurante o negocio de comidas',
+      'Conocimiento de frituras y preparaciones rápidas',
+      'Responsable, puntual y con buena actitud',
+      'Disponibilidad de domingo a domingo con un día de descanso'
+    ],
+    horario: HORARIO_DEFAULT, salario: 'A convenir', contacto: CONTACTO_DEFAULT
+  },
+  {
+    id: 'ayudante', nombre: 'Ayudante de Cocina', emoji: '🍳', color: '#8B5E3C',
+    tag: 'Área de cocina · Turno noche',
+    funciones: [
+      'Apoyar en la preparación de ingredientes (papas, salsas, pollo, etc.).',
+      'Ayudar en frituras y armado de pedidos.',
+      'Preparar empaques y alistar pedidos.',
+      'Mantener limpia y organizada el área de trabajo.',
+      'Lavar utensilios y equipos utilizados.',
+      'Apoyar en el alistamiento antes de abrir el negocio.'
+    ],
+    sistemaDigital: 'Participar en el conteo de insumos (crudo/cocido) al inicio y cierre del turno en el sistema de rutinas, con orientación de la cajera o cocinera principal.',
+    requisitos: [
+      'No se requiere experiencia previa (se capacita en el negocio)',
+      'Disposición para aprender y trabajar en equipo',
+      'Responsable, ordenada y puntual'
+    ],
+    horario: HORARIO_DEFAULT, salario: 'A convenir', contacto: CONTACTO_DEFAULT
+  },
+  {
+    id: 'cajera', nombre: 'Cajera', emoji: '💰', color: '#C0392B',
+    tag: 'Atención al cliente · Caja · Turno noche',
+    funciones: [
+      'Recibir pedidos de clientes en el local, por teléfono o WhatsApp.',
+      'Registrar cada pedido mediante comanda.',
+      'Informar claramente los pedidos a cocina.',
+      'Cobrar pedidos en efectivo o transferencia.',
+      'Entregar pedidos al cliente o al domiciliario.',
+      'Llevar registro de ventas en el cuaderno de caja.',
+      'Realizar cierre de caja al final del turno.'
+    ],
+    sistemaDigital: 'Registrar cada pedido en la caja digital con código de producto; realizar el cierre de caja por WhatsApp al final del turno enviando el resumen a doña Miryam.',
+    requisitos: [
+      'Manejo básico de celular y WhatsApp',
+      'Buena atención al cliente y trato respetuoso',
+      'Honesta, responsable y organizada',
+      'Se valora experiencia en caja o atención al cliente'
+    ],
+    horario: HORARIO_DEFAULT, salario: 'A convenir', contacto: CONTACTO_DEFAULT
+  },
+  {
+    id: 'domiciliario', nombre: 'Domiciliario', emoji: '🛵', color: '#1565C0',
+    tag: 'Entregas · Turno noche',
+    funciones: [
+      'Recibir pedidos listos por parte de la cajera.',
+      'Verificar que el pedido esté completo antes de salir.',
+      'Entregar los pedidos en la dirección indicada.',
+      'Cobrar cuando el pedido sea contra entrega.',
+      'Brindar trato respetuoso a los clientes.',
+      'Informar cualquier novedad durante la entrega.'
+    ],
+    sistemaDigital: 'Ingresar su PIN en la caja digital al recibir un domicilio; revisar el detalle del pedido enviado por WhatsApp con la dirección y el total antes de salir.',
+    requisitos: [
+      'Conocimiento de las calles de Guapi',
+      'Responsable, puntual y con buena actitud',
+      'Trato respetuoso con los clientes',
+      'Moto propia (se valora, no es obligatorio)'
+    ],
+    horario: HORARIO_DEFAULT, salario: 'A convenir + propinas', contacto: CONTACTO_DEFAULT
+  },
+  {
+    id: 'aseadora', nombre: 'Aseadora', emoji: '🧹', color: '#2D6A4F',
+    tag: 'Limpieza y saneamiento · Turno noche',
+    funciones: [
+      'Limpiar pisos, mesas, baños y áreas comunes.',
+      'Mantener limpia el área de atención al cliente.',
+      'Apoyar en lavado de utensilios si es necesario.',
+      'Sacar la basura y mantener el orden del establecimiento.',
+      'Realizar limpieza general al finalizar la jornada.'
+    ],
+    sistemaDigital: 'Reportar el saneamiento al inicio del turno en el sistema de rutinas: verificar agua del tanque, presencia de plagas y estado del gas. Notificar novedades por WhatsApp a doña Miryam.',
+    requisitos: [
+      'No se requiere experiencia previa',
+      'Responsable, organizada y con buena actitud',
+      'Disponibilidad de domingo a domingo con un día de descanso'
+    ],
+    horario: HORARIO_DEFAULT, salario: 'A convenir', contacto: CONTACTO_DEFAULT
+  }
+];
+
+function getFunciones() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(FUNCIONES_KEY));
+    if (saved && Array.isArray(saved) && saved.length === FUNCIONES_DEFAULT.length) return saved;
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(FUNCIONES_DEFAULT)); // deep copy of defaults
+}
+
+function saveFunciones(arr) {
+  localStorage.setItem(FUNCIONES_KEY, JSON.stringify(arr));
+  savePersonal(); // sincronizar funciones a Firebase
+}
+
+function renderFunciones() {
+  const cargos = getFunciones();
+  const cont = document.getElementById('lista-funciones');
+  cont.innerHTML = cargos.map(c => `
+    <div class="func-card family" id="fcard-${c.id}">
+      <button class="func-toggle" onclick="toggleFunc(this)">
+        <div class="func-ico" style="background:${c.color};">${c.emoji}</div>
+        <div>
+          <div class="func-nombre">${c.nombre}</div>
+          <div class="func-tag">${c.tag}</div>
+        </div>
+        <span class="func-chevron">▼</span>
+      </button>
+      <div class="func-body">
+        <ul class="func-lista">
+          ${c.funciones.map(f => `<li><span class="func-bul">◆</span><span>${f}</span></li>`).join('')}
+        </ul>
+        <div class="func-sistema">
+          <div class="func-sistema-titulo">📱 Apoyo con el sistema</div>
+          <p>${c.sistemaDigital}</p>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+          <button class="btn-wa-sm" onclick="enviarFuncionesEmpleada('${c.id}')">📱 Enviar a empleada</button>
+          <button class="btn-wa-sm" style="background:var(--amarillo);color:#3A2000;" onclick="publicarVacante('${c.id}')">📋 Publicar vacante</button>
+          <button class="btn-wa-sm" style="background:var(--gris);" onclick="editarCargo('${c.id}')">✏ Editar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleFunc(btn) {
+  const body = btn.nextElementSibling;
+  const chevron = btn.querySelector('.func-chevron');
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
+}
+
+// ── WhatsApp: enviar funciones a empleada ───────────────────────────────────
+function enviarFuncionesEmpleada(id) {
+  const c = getFunciones().find(x => x.id === id);
+  if (!c) return;
+  let txt = `👩‍🍳 *FUNCIONES DEL CARGO*\n*${c.nombre} — Family Comidas Rápidas*\n\n`;
+  c.funciones.forEach(f => { txt += `• ${f}\n`; });
+  txt += `\n📱 *Apoyo con el sistema:*\n${c.sistemaDigital}\n\n`;
+  txt += `⏰ *Horario:* ${c.horario}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
+
+// ── WhatsApp: publicar vacante ───────────────────────────────────────────────
+function publicarVacante(id) {
+  const c = getFunciones().find(x => x.id === id);
+  if (!c) return;
+  let txt = `🔍 *SE BUSCA: ${c.nombre.toUpperCase()}*\n`;
+  txt += `📍 Family Comidas Rápidas · Guapi, Cauca\n\n`;
+  txt += `*¿Qué harás?*\n`;
+  c.funciones.forEach(f => { txt += `• ${f}\n`; });
+  if (c.requisitos && c.requisitos.length) {
+    txt += `\n*¿Qué necesitamos?*\n`;
+    c.requisitos.forEach(r => { txt += `• ${r}\n`; });
+  }
+  txt += `\n⏰ *Horario:* ${c.horario}\n`;
+  txt += `💰 *Pago:* ${c.salario}\n`;
+  txt += `\n📲 *Interesadas escribir al:* ${c.contacto}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
+
+// ── Editar cargo (PIN) ───────────────────────────────────────────────────────
+let cargoEditandoFunciones = [];
+let cargoEditandoReqs = [];
+
+function editarCargo(id) {
+  mostrarPinModal('Editar cargo', 'Ingrese PIN para editar las funciones y vacante.', () => {
+    const c = getFunciones().find(x => x.id === id);
+    if (!c) return;
+    document.getElementById('cargo-edit-id').value = id;
+    document.getElementById('cargo-modal-titulo').textContent = '✏ Editar — ' + c.nombre;
+    document.getElementById('cargo-sistema').value = c.sistemaDigital;
+    document.getElementById('cargo-horario').value = c.horario;
+    document.getElementById('cargo-salario').value = c.salario;
+    document.getElementById('cargo-contacto').value = c.contacto;
+    document.getElementById('cargo-nueva-funcion').value = '';
+    document.getElementById('cargo-nuevo-req').value = '';
+    cargoEditandoFunciones = [...c.funciones];
+    cargoEditandoReqs = [...(c.requisitos || [])];
+    renderCargoFuncionesEdit();
+    renderCargoReqEdit();
+    document.getElementById('modal-cargo').classList.add('visible');
+  });
+}
+
+function renderCargoFuncionesEdit() {
+  document.getElementById('cargo-funciones-lista').innerHTML = cargoEditandoFunciones.map((f, i) => `
+    <div class="func-edit-item">
+      <span>${f}</span>
+      <button class="func-edit-del" onclick="cargoEliminarFuncion(${i})">✕</button>
+    </div>`).join('');
+}
+
+function renderCargoReqEdit() {
+  document.getElementById('cargo-req-lista').innerHTML = cargoEditandoReqs.map((r, i) => `
+    <div class="func-edit-item">
+      <span>${r}</span>
+      <button class="func-edit-del" onclick="cargoEliminarReq(${i})">✕</button>
+    </div>`).join('');
+}
+
+function cargoAgregarFuncion() {
+  const val = document.getElementById('cargo-nueva-funcion').value.trim();
+  if (!val) return;
+  cargoEditandoFunciones.push(val);
+  document.getElementById('cargo-nueva-funcion').value = '';
+  renderCargoFuncionesEdit();
+}
+
+function cargoEliminarFuncion(i) {
+  cargoEditandoFunciones.splice(i, 1);
+  renderCargoFuncionesEdit();
+}
+
+function cargoAgregarReq() {
+  const val = document.getElementById('cargo-nuevo-req').value.trim();
+  if (!val) return;
+  cargoEditandoReqs.push(val);
+  document.getElementById('cargo-nuevo-req').value = '';
+  renderCargoReqEdit();
+}
+
+function cargoEliminarReq(i) {
+  cargoEditandoReqs.splice(i, 1);
+  renderCargoReqEdit();
+}
+
+function guardarCargo() {
+  const id = document.getElementById('cargo-edit-id').value;
+  if (!cargoEditandoFunciones.length) { alert('Debe tener al menos una función.'); return; }
+  const cargos = getFunciones();
+  const idx = cargos.findIndex(x => x.id === id);
+  if (idx < 0) return;
+  cargos[idx].funciones = [...cargoEditandoFunciones];
+  cargos[idx].sistemaDigital = document.getElementById('cargo-sistema').value.trim();
+  cargos[idx].requisitos = [...cargoEditandoReqs];
+  cargos[idx].horario = document.getElementById('cargo-horario').value.trim() || HORARIO_DEFAULT;
+  cargos[idx].salario = document.getElementById('cargo-salario').value.trim() || 'A convenir';
+  cargos[idx].contacto = document.getElementById('cargo-contacto').value.trim() || CONTACTO_DEFAULT;
+  saveFunciones(cargos);
+  cerrarModal('modal-cargo');
+  renderFunciones();
+}
+
+// Enter key in new-funcion / new-req fields
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('cargo-nueva-funcion').addEventListener('keydown', e => { if(e.key==='Enter') cargoAgregarFuncion(); });
+  document.getElementById('cargo-nuevo-req').addEventListener('keydown', e => { if(e.key==='Enter') cargoAgregarReq(); });
+});
+
+// ============ PAGOS ============
+const PAGOS_KEY = 'pagos_family';
+
+function getPagos() {
+  try { return JSON.parse(localStorage.getItem(PAGOS_KEY)) || []; } catch(e) { return []; }
+}
+
+function savePagos(arr) {
+  localStorage.setItem(PAGOS_KEY, JSON.stringify(arr));
+  savePersonal(); // sincronizar pagos a Firebase
+}
+
+function abrirModalPago(pagoId) {
+  mostrarPinModal('Registro de Pago', 'Ingrese PIN para registrar un pago.', () => {
+    // Llenar selector empleadas
+    const sel = document.getElementById('pago-empleada');
+    sel.innerHTML = '';
+    empleadas.forEach(e => {
+      if (e.estado === 'activa') {
+        const opt = document.createElement('option');
+        opt.value = e.id;
+        opt.textContent = e.nombre + ' — ' + e.cargo;
+        sel.appendChild(opt);
+      }
+    });
+    // Fecha default hoy
+    document.getElementById('pago-fecha').value = new Date().toISOString().slice(0,10);
+    document.getElementById('pago-id').value = pagoId || '';
+    document.getElementById('pago-periodo').value = '';
+    document.getElementById('pago-base').value = '';
+    document.getElementById('pago-extras').value = '';
+    document.getElementById('pago-descuentos').value = '';
+    document.getElementById('pago-notas').value = '';
+    document.getElementById('pago-metodo').value = 'Efectivo';
+    calcTotalPago();
+
+    // Si es edición, cargar datos
+    if (pagoId) {
+      const pagos = getPagos();
+      const p = pagos.find(x => x.id === pagoId);
+      if (p) {
+        document.getElementById('pago-empleada').value = p.empleadaId;
+        document.getElementById('pago-periodo').value = p.periodo;
+        document.getElementById('pago-fecha').value = p.fecha;
+        document.getElementById('pago-base').value = p.base;
+        document.getElementById('pago-extras').value = p.extras || '';
+        document.getElementById('pago-descuentos').value = p.descuentos || '';
+        document.getElementById('pago-notas').value = p.notas || '';
+        document.getElementById('pago-metodo').value = p.metodo;
+        calcTotalPago();
+      }
+    }
+
+    document.getElementById('modal-pago').classList.add('visible');
+  });
+}
+
+function calcTotalPago() {
+  const base = parseFloat(document.getElementById('pago-base').value) || 0;
+  const extras = parseFloat(document.getElementById('pago-extras').value) || 0;
+  const desc = parseFloat(document.getElementById('pago-descuentos').value) || 0;
+  const total = base + extras - desc;
+  document.getElementById('pago-total-preview').textContent = formatPeso(Math.max(0, total));
+}
+
+function guardarPago() {
+  const empleadaId = document.getElementById('pago-empleada').value;
+  const periodo = document.getElementById('pago-periodo').value.trim();
+  const fecha = document.getElementById('pago-fecha').value;
+  const base = parseFloat(document.getElementById('pago-base').value) || 0;
+  const extras = parseFloat(document.getElementById('pago-extras').value) || 0;
+  const desc = parseFloat(document.getElementById('pago-descuentos').value) || 0;
+  const total = Math.max(0, base + extras - desc);
+  const metodo = document.getElementById('pago-metodo').value;
+  const notas = document.getElementById('pago-notas').value.trim();
+  const pagoId = document.getElementById('pago-id').value;
+
+  if (!empleadaId) { alert('Seleccione una empleada.'); return; }
+  if (!periodo) { alert('El período es obligatorio.'); return; }
+  if (!fecha) { alert('La fecha es obligatoria.'); return; }
+  if (base <= 0) { alert('Ingrese el salario base.'); return; }
+
+  const emp = empleadas.find(e => e.id == empleadaId);
+  const pagos = getPagos();
+
+  const obj = {
+    id: pagoId || 'pago_' + Date.now(),
+    empleadaId, empleadaNombre: emp ? emp.nombre : '—',
+    empleadaCargo: emp ? emp.cargo : '—',
+    periodo, fecha, base, extras, descuentos: desc, total, metodo, notas,
+    registrado: new Date().toLocaleDateString('es-CO')
+  };
+
+  if (pagoId) {
+    const idx = pagos.findIndex(x => x.id === pagoId);
+    if (idx >= 0) pagos[idx] = obj; else pagos.unshift(obj);
+  } else {
+    pagos.unshift(obj);
+  }
+
+  savePagos(pagos);
+  cerrarModal('modal-pago');
+  renderPagos();
+  actualizarSelectorPagos();
+}
+
+function eliminarPago(id) {
+  if (!confirm('¿Eliminar este registro de pago?')) return;
+  const pagos = getPagos().filter(p => p.id !== id);
+  savePagos(pagos);
+  renderPagos();
+}
+
+function enviarPagoWA(id) {
+  const pagos = getPagos();
+  const p = pagos.find(x => x.id === id);
+  if (!p) return;
+  const fechaFmt = formatFecha(p.fecha);
+  let txt = `💸 *COMPROBANTE DE PAGO*\n*Family Comidas Rápidas*\n\n`;
+  txt += `👤 *${p.empleadaNombre}*\n`;
+  txt += `💼 ${p.empleadaCargo}\n`;
+  txt += `📅 Período: ${p.periodo}\n`;
+  txt += `📆 Fecha de pago: ${fechaFmt}\n`;
+  txt += `💳 Método: ${p.metodo}\n\n`;
+  txt += `*DETALLE:*\n`;
+  txt += `• Salario base: ${formatPeso(p.base)}\n`;
+  if (p.extras > 0) txt += `• Bonos/extras: ${formatPeso(p.extras)}\n`;
+  if (p.descuentos > 0) txt += `• Descuentos: -${formatPeso(p.descuentos)}\n`;
+  txt += `\n*TOTAL PAGADO: ${formatPeso(p.total)}*\n`;
+  if (p.notas) txt += `\n📝 ${p.notas}`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(txt), '_blank');
+}
+
+function renderPagos() {
+  const filtroEmp = document.getElementById('pagos-filtro-emp')?.value || '';
+  let pagos = getPagos();
+  if (filtroEmp) pagos = pagos.filter(p => p.empleadaId == filtroEmp);
+
+  const total = pagos.reduce((s, p) => s + (p.total || 0), 0);
+  document.getElementById('pagos-total-valor').textContent = formatPeso(total);
+
+  const lista = document.getElementById('lista-pagos');
+  if (!pagos.length) {
+    lista.innerHTML = `<div class="vacio"><div class="vacio-icon">💸</div><div class="vacio-titulo">Sin pagos registrados</div><div class="vacio-desc">Use el botón de arriba para registrar el primer pago.</div></div>`;
+    return;
+  }
+
+  lista.innerHTML = pagos.map(p => `
+    <div class="pago-record">
+      <div class="pago-rec-header">
+        <div>
+          <div class="pago-rec-nombre">${p.empleadaNombre}</div>
+          <div class="pago-rec-periodo">${p.periodo}</div>
+        </div>
+        <div>
+          <div class="pago-rec-monto">${formatPeso(p.total)}</div>
+          <div class="pago-rec-meta">${formatFecha(p.fecha)}</div>
+        </div>
+      </div>
+      <div class="pago-rec-chips">
+        <span class="pago-chip">Base: ${formatPeso(p.base)}</span>
+        ${p.extras > 0 ? `<span class="pago-chip" style="color:var(--verde);">+Extras: ${formatPeso(p.extras)}</span>` : ''}
+        ${p.descuentos > 0 ? `<span class="pago-chip" style="color:var(--rojo);">-Desc: ${formatPeso(p.descuentos)}</span>` : ''}
+        <span class="pago-chip">${p.metodo}</span>
+        ${p.notas ? `<span class="pago-chip" style="color:var(--gris);">${p.notas}</span>` : ''}
+      </div>
+      <div class="pago-rec-acciones">
+        <button class="btn-wa-sm" onclick="enviarPagoWA('${p.id}')">📱 WhatsApp</button>
+        <button class="btn-wa-sm" style="background:var(--naranja);" onclick="abrirModalPago('${p.id}')">✏ Editar</button>
+        <button class="btn-eliminar-sm" onclick="eliminarPago('${p.id}')">✕</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function actualizarSelectorPagos() {
+  const sel = document.getElementById('pagos-filtro-emp');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— Todas las empleadas —</option>';
+  empleadas.forEach(e => {
+    const opt = document.createElement('option');
+    opt.value = e.id;
+    opt.textContent = e.nombre + ' — ' + e.cargo;
+    if (e.id == current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+
+// ============ INIT ============
+renderEmpleadas();
+renderFunciones();
+actualizarSelectorPagos();
+</script>
+</body>
+</html>

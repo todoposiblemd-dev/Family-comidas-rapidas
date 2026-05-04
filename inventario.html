@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Inventario – Family Comidas Rápidas</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cafe:#3D1F08;--cafe2:#6B3A1F;--naranja:#C85A0A;--naranja2:#E87030;
+  --verde:#1E6040;--verde2:#2E8A58;--rojo:#B82020;--amarillo:#D4980A;
+  --crema:#FDF6EC;--arena:#F0E4CC;--linea:#DDD0B8;--gris:#7A7060;
+  --gris2:#B0A898;--bg:#F5F0E8;--negro:#140C04;--surface:#FFFFFF;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--negro);min-height:100vh;padding-bottom:80px;}
+
+/* PANTALLA PIN ENTRADA */
+.entrada{position:fixed;inset:0;background:var(--cafe);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center;}
+.entrada-logo{font-size:52px;margin-bottom:16px;}
+.entrada-titulo{font-family:'Fraunces',serif;font-size:28px;font-weight:900;color:var(--crema);margin-bottom:6px;}
+.entrada-sub{font-size:13px;color:rgba(253,246,236,0.5);margin-bottom:32px;letter-spacing:0.5px;}
+.entrada-pin-input{width:100%;max-width:280px;padding:16px;font-size:28px;text-align:center;letter-spacing:8px;border:2px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:var(--crema);font-family:'DM Sans',sans-serif;margin-bottom:10px;outline:none;}
+.entrada-pin-input:focus{border-color:var(--naranja2);}
+.entrada-error{color:#FF8080;font-size:13px;margin-bottom:12px;display:none;}
+.btn-entrada{width:100%;max-width:280px;background:var(--naranja);color:white;border:none;padding:16px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:8px;}
+.entrada-hint{font-size:11px;color:rgba(253,246,236,0.3);margin-top:16px;letter-spacing:1px;}
+
+/* HEADER */
+.header{background:var(--cafe);padding:18px 16px 0;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,0.3);}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.header-titulo{color:var(--crema);font-size:18px;font-weight:700;}
+.header-sub{color:rgba(253,246,236,0.5);font-size:11px;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+.header-salir{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(253,246,236,0.7);padding:7px 12px;font-size:11px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer;}
+
+/* CATEGORÍA FILTROS */
+.cat-btn{padding:6px 12px;border-radius:20px;border:1.5px solid var(--linea);background:white;font-size:12px;font-weight:600;cursor:pointer;color:var(--cafe);transition:all 0.18s;}
+.cat-btn:hover{border-color:var(--naranja);color:var(--naranja);}
+.cat-btn-active{background:var(--naranja)!important;color:white!important;border-color:var(--naranja)!important;}
+
+/* CARRITO ITEM */
+.carrito-item{display:flex;justify-content:space-between;align-items:center;background:white;border:1.5px solid var(--linea);border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:13px;}
+.carrito-item-nombre{font-weight:600;color:var(--cafe2);}
+.carrito-item-meta{color:var(--gris2);font-size:12px;}
+.carrito-item-precio{color:var(--verde2);font-weight:700;}
+.btn-quitar-item{background:none;border:none;color:var(--rojo);cursor:pointer;font-size:18px;padding:0 4px;}
+
+/* TABS */
+.tabs{display:flex;gap:1px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:rgba(255,255,255,0.06);color:rgba(253,246,236,0.4);border:none;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s;white-space:nowrap;}
+.tab.active{background:rgba(255,255,255,0.12);color:var(--crema);border-bottom-color:var(--naranja2);}
+
+/* MAIN */
+.main{padding:14px;max-width:520px;margin:0 auto;}
+.seccion{display:none;}
+.seccion.activa{display:block;}
+
+/* SEARCH */
+.search-wrap{margin-bottom:12px;}
+.search-input{width:100%;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:15px;border:1.5px solid var(--linea);background:var(--surface);color:var(--negro);outline:none;}
+.search-input:focus{border-color:var(--naranja);}
+
+/* CAT HEADER */
+.cat-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gris);margin:18px 0 8px;display:flex;align-items:center;gap:10px;}
+.cat-label::after{content:'';flex:1;height:1px;background:var(--linea);}
+.cat-prov{font-size:10px;font-weight:400;color:var(--gris2);background:var(--arena);padding:2px 8px;}
+
+/* PROD CARD */
+.prod-card{background:var(--surface);border:1.5px solid var(--linea);margin-bottom:8px;display:flex;align-items:stretch;overflow:hidden;position:relative;}
+.prod-sem{width:6px;flex-shrink:0;}
+.sem-v{background:var(--verde2);}.sem-a{background:var(--amarillo);}.sem-r{background:var(--rojo);}.sem-g{background:var(--gris2);}
+.prod-body{flex:1;padding:12px 14px;}
+.prod-nombre{font-size:15px;font-weight:600;color:var(--negro);margin-bottom:2px;}
+.prod-meta{font-size:12px;color:var(--gris);display:flex;gap:10px;flex-wrap:wrap;margin-bottom:3px;}
+.prod-prov{font-size:11px;color:var(--gris2);}
+.prod-precio-tag{font-size:12px;font-weight:700;color:var(--cafe2);}
+.prod-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding:10px 12px;gap:4px;flex-shrink:0;}
+.prod-stock{font-size:22px;font-weight:700;color:var(--negro);line-height:1;}
+.prod-unidad{font-size:10px;color:var(--gris2);text-align:right;}
+.prod-btns{display:flex;gap:4px;margin-top:4px;}
+.btn-pm{width:30px;height:30px;border:none;cursor:pointer;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
+.btn-mas{background:var(--verde2);color:white;}
+.btn-menos{background:var(--arena);color:var(--cafe);}
+.btn-edit-sm{background:transparent;border:1px solid var(--linea);color:var(--gris);padding:3px 8px;font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:4px;}
+
+/* CONTEO BADGE */
+.conteo-badge{position:absolute;top:8px;right:8px;background:var(--naranja);color:white;font-size:10px;font-weight:700;padding:2px 6px;letter-spacing:0.5px;}
+
+/* BTN AGREGAR */
+.btn-agregar{background:var(--naranja);color:white;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-bottom:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+/* PANEL ANALISIS */
+.panel-stat{background:var(--surface);border:1.5px solid var(--linea);padding:16px;margin-bottom:8px;}
+.panel-stat-titulo{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gris2);margin-bottom:8px;}
+.panel-stat-num{font-family:'Fraunces',serif;font-size:36px;font-weight:900;color:var(--negro);line-height:1;}
+.panel-stat-sub{font-size:13px;color:var(--gris);margin-top:4px;}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+
+.insight-card{background:var(--cafe);padding:16px;margin-bottom:8px;}
+.insight-titulo{font-size:13px;font-weight:700;color:var(--naranja2);margin-bottom:8px;}
+.insight-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px;color:rgba(253,246,236,0.8);}
+.insight-item:last-child{border-bottom:none;}
+.insight-val{font-weight:700;color:var(--crema);}
+
+/* HISTORIAL COMPRAS */
+.compra-card{background:var(--surface);border:1.5px solid var(--linea);margin-bottom:8px;padding:14px 16px;}
+.compra-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.compra-nombre{font-size:15px;font-weight:600;color:var(--negro);}
+.compra-fecha{font-size:11px;color:var(--gris2);}
+.compra-meta{font-size:13px;color:var(--gris);display:flex;gap:12px;flex-wrap:wrap;}
+.compra-precio{font-weight:700;}
+.precio-igual{color:var(--verde2);}
+.precio-sube{color:var(--amarillo);}
+.precio-sube-mucho{color:var(--rojo);}
+.compra-quien{font-size:11px;color:var(--gris2);margin-top:4px;}
+.precio-alerta{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;padding:2px 8px;}
+.alerta-v{background:#D8F3E8;color:var(--verde);}
+.alerta-a{background:#FFF3CD;color:#7A4800;}
+.alerta-r{background:#FFEBEE;color:var(--rojo);}
+
+/* CONTEO SECCION */
+.conteo-prod{background:var(--surface);border:1.5px solid var(--linea);margin-bottom:10px;padding:16px;}
+.conteo-nombre{font-size:16px;font-weight:700;color:var(--negro);margin-bottom:12px;}
+.conteo-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.conteo-etiq{font-size:13px;color:var(--gris);min-width:110px;}
+.conteo-input{flex:1;padding:12px;font-family:'DM Sans',sans-serif;font-size:20px;font-weight:700;border:2px solid var(--linea);background:var(--bg);color:var(--negro);text-align:center;outline:none;}
+.conteo-input:focus{border-color:var(--naranja);}
+.conteo-unidad{font-size:12px;color:var(--gris2);min-width:40px;}
+
+/* COMPRA FORM */
+.compra-form{background:var(--cafe);padding:20px;margin-bottom:12px;}
+.compra-form-titulo{font-size:16px;font-weight:700;color:var(--crema);margin-bottom:16px;}
+.form-grupo{margin-bottom:12px;}
+.form-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(253,246,236,0.5);margin-bottom:6px;}
+.form-input,.form-select{width:100%;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:16px;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.08);color:var(--crema);outline:none;}
+.form-input:focus,.form-select:focus{border-color:var(--naranja2);}
+.form-input::placeholder{color:rgba(253,246,236,0.3);}
+.form-select option{background:var(--cafe);color:var(--crema);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-registrar-compra{background:#25D366;color:white;border:none;padding:16px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.modal-overlay.visible{display:flex;}
+.modal{background:var(--surface);width:100%;max-width:520px;max-height:92vh;overflow-y:auto;padding:24px 18px 40px;animation:su 0.25s ease;}
+@keyframes su{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-titulo{font-size:20px;font-weight:700;color:var(--cafe);margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid var(--linea);}
+.modal-form-input,.modal-form-select{width:100%;padding:12px 14px;font-family:'DM Sans',sans-serif;font-size:15px;border:1.5px solid var(--linea);background:var(--bg);color:var(--negro);outline:none;margin-top:6px;}
+.modal-form-input:focus,.modal-form-select:focus{border-color:var(--naranja);}
+.modal-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--cafe2);margin-top:12px;}
+.modal-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.modal-acciones{display:flex;gap:8px;margin-top:20px;}
+.btn-guardar{flex:1;background:var(--naranja);color:white;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
+.btn-cancelar{background:transparent;color:var(--gris);border:1.5px solid var(--linea);padding:14px 18px;font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;}
+.btn-eliminar-m{background:var(--rojo);color:white;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+
+/* CHECKBOX CONTEO */
+.conteo-check-wrap{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--linea);}
+.conteo-check{width:20px;height:20px;cursor:pointer;accent-color:var(--naranja);}
+.conteo-check-label{font-size:13px;color:var(--gris);cursor:pointer;}
+.conteo-count-badge{font-size:11px;color:white;background:var(--naranja);padding:2px 8px;font-weight:700;}
+
+/* AVISO */
+.aviso-box{background:#FFF8E1;border-left:4px solid var(--amarillo);padding:12px 14px;margin-bottom:12px;font-size:13px;color:#5C3D00;line-height:1.6;}
+.aviso-box strong{display:block;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--amarillo);margin-bottom:4px;}
+
+/* WA BTN */
+.btn-wa-full{background:#25D366;color:white;border:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
+</style>
+
+<!-- Firebase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-database-compat.js"></script>
+<script>
+  let INV_REF    = null; // family-inventario/ (productos)
+  let COMP_REF   = null; // family-compras/    (compras compartidas con rutinas)
+  let _invSavedAt = '0';
+
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp({
+        apiKey: "AIzaSyBcpPQLsMjnRthybaIMNdQG_kS0injYko0",
+        authDomain: "family-comidas-rapidas.firebaseapp.com",
+        databaseURL: "https://family-comidas-rapidas-default-rtdb.firebaseio.com",
+        projectId: "family-comidas-rapidas",
+        storageBucket: "family-comidas-rapidas.firebasestorage.app",
+        messagingSenderId: "326594164908",
+        appId: "1:326594164908:web:2e2aa9f71a7f457df54709"
+      });
+    }
+    const db  = firebase.database();
+    INV_REF   = db.ref('family-inventario');
+    COMP_REF  = db.ref('family-compras');
+    console.log('✅ Firebase conectado (inventario)');
+  } catch(e) {
+    console.warn('⚠️ Firebase no disponible:', e.message);
+  }
+
+  function saveInvToFirebase(productosArr, comprasArr) {
+    const now = new Date().toISOString();
+    localStorage.setItem('inv_localSavedAt', now);
+    _invSavedAt = now;
+    if (INV_REF)  INV_REF.set({ productos: JSON.stringify(productosArr || []), updatedAt: now })
+                         .catch(e => console.warn('inv save error:', e));
+    if (COMP_REF) COMP_REF.set({ compras: JSON.stringify(comprasArr || []), updatedAt: now })
+                          .catch(e => console.warn('comp save error:', e));
+  }
+
+  function loadInvFromFirebase() {
+    if (!INV_REF || !COMP_REF) return Promise.resolve(null);
+    return Promise.all([INV_REF.get(), COMP_REF.get()])
+      .then(([invSnap, compSnap]) => ({
+        productos: invSnap.exists()  ? JSON.parse(invSnap.val().productos  || '[]') : null,
+        compras:   compSnap.exists() ? JSON.parse(compSnap.val().compras   || '[]') : null,
+        updatedAt: invSnap.exists()  ? invSnap.val().updatedAt : null
+      }))
+      .catch(() => null);
+  }
+
+  function startInvListener() {
+    if (!INV_REF) return;
+    INV_REF.on('value', snap => {
+      if (!snap.exists()) return;
+      const val = snap.val();
+      if (!val.updatedAt || val.updatedAt === _invSavedAt) return;
+      if (typeof window._syncInvFromFirebase === 'function') {
+        const prods = JSON.parse(val.productos || '[]');
+        window._syncInvFromFirebase({ productos: prods });
+      }
+    }, e => console.warn('inv listener error:', e));
+
+    if (COMP_REF) COMP_REF.on('value', snap => {
+      if (!snap.exists()) return;
+      const val = snap.val();
+      if (typeof window._syncInvFromFirebase === 'function') {
+        const comps = JSON.parse(val.compras || '[]');
+        window._syncInvFromFirebase({ compras: comps });
+      }
+    }, e => console.warn('comp listener error:', e));
+  }
+</script>
+</head>
+<body>
+
+<!-- PANTALLA ENTRADA PIN -->
+<div class="entrada" id="pantalla-entrada">
+  <div class="entrada-logo">📦</div>
+  <div class="entrada-titulo">Inventario</div>
+  <div class="entrada-sub">Family Comidas Rápidas · Acceso exclusivo Miryam</div>
+  <input type="password" class="entrada-pin-input" id="entrada-pin" maxlength="6" placeholder="••••" oninput="verificarEntrada()">
+  <div class="entrada-error" id="entrada-error">PIN incorrecto. Intente de nuevo.</div>
+  <button class="btn-entrada" onclick="verificarEntrada()">Entrar</button>
+  <div class="entrada-hint">SISTEMA ADMINISTRATIVO · SOLO DOÑA MIRYAM</div>
+</div>
+
+<!-- APP PRINCIPAL (oculta hasta PIN correcto) -->
+<div id="app-principal" style="display:none;">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-titulo">📦 Inventario Admin</div>
+      <div class="header-sub">Doña Miryam · Family</div>
+    </div>
+    <button class="header-salir" onclick="salir()">← Salir</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="cambiarTab('panel',this)">📊 Panel</button>
+    <button class="tab" onclick="cambiarTab('productos',this)">📦 Productos</button>
+    <button class="tab" onclick="cambiarTab('compras',this)">🛒 Compras</button>
+    <button class="tab" onclick="cambiarTab('conteo',this)">✅ Conteo</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ===== PANEL ===== -->
+<div class="seccion activa" id="sec-panel">
+
+  <div class="stats-grid">
+    <div class="panel-stat">
+      <div class="panel-stat-titulo">Alertas stock</div>
+      <div class="panel-stat-num" id="p-alertas" style="color:var(--rojo);">0</div>
+      <div class="panel-stat-sub">productos bajos</div>
+    </div>
+    <div class="panel-stat">
+      <div class="panel-stat-titulo">Compras hoy</div>
+      <div class="panel-stat-num" id="p-compras-hoy" style="color:var(--naranja);">0</div>
+      <div class="panel-stat-sub">registradas</div>
+    </div>
+    <div class="panel-stat">
+      <div class="panel-stat-titulo">Subidas precio</div>
+      <div class="panel-stat-num" id="p-subidas" style="color:var(--amarillo);">0</div>
+      <div class="panel-stat-sub">esta semana</div>
+    </div>
+    <div class="panel-stat">
+      <div class="panel-stat-titulo">En conteo</div>
+      <div class="panel-stat-num" id="p-en-conteo" style="color:var(--verde2);">0</div>
+      <div class="panel-stat-sub">de 10 máx</div>
+    </div>
+  </div>
+
+  <div class="insight-card" id="panel-alertas-lista">
+    <div class="insight-titulo">⚠️ Productos por debajo del mínimo</div>
+    <div style="font-size:13px;color:rgba(253,246,236,0.5);font-style:italic;">Cargando...</div>
+  </div>
+
+  <div class="insight-card" id="panel-sin-movimiento">
+    <div class="insight-titulo">🔴 Sin movimiento (stock en 0)</div>
+    <div style="font-size:13px;color:rgba(253,246,236,0.5);font-style:italic;">Cargando...</div>
+  </div>
+
+  <div class="insight-card" id="panel-precios-subieron">
+    <div class="insight-titulo">🟡 Precios que subieron recientemente</div>
+    <div style="font-size:13px;color:rgba(253,246,236,0.5);font-style:italic;">Cargando...</div>
+  </div>
+
+  <button class="btn-wa-full" onclick="enviarResumenWA()">📱 Enviar resumen semanal por WhatsApp</button>
+
+</div>
+
+<!-- ===== PRODUCTOS ===== -->
+<div class="seccion" id="sec-productos">
+
+  <div class="search-wrap">
+    <input type="text" class="search-input" placeholder="🔍 Buscar producto..." id="buscador" oninput="buscar()">
+  </div>
+
+  <div id="cat-filtros" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">
+    <button class="cat-btn cat-btn-active" onclick="filtrarCat('todas',this)">🔍 Todas</button>
+    <button class="cat-btn" onclick="filtrarCat('carnes',this)">🥩 Carnes</button>
+    <button class="cat-btn" onclick="filtrarCat('verduras',this)">🥬 Verduras</button>
+    <button class="cat-btn" onclick="filtrarCat('salsas',this)">🧴 Salsas</button>
+    <button class="cat-btn" onclick="filtrarCat('panes',this)">🍞 Panes</button>
+    <button class="cat-btn" onclick="filtrarCat('empaques',this)">📦 Empaques</button>
+    <button class="cat-btn" onclick="filtrarCat('especias',this)">🛢 Aceites</button>
+    <button class="cat-btn" onclick="filtrarCat('aseo',this)">🧹 Aseo</button>
+    <button class="cat-btn" onclick="filtrarCat('bebidas',this)">🥤 Bebidas</button>
+  </div>
+
+  <button class="btn-agregar" onclick="abrirModal(null)">+ Agregar producto</button>
+
+  <div class="aviso-box">
+    <strong>✅ Productos en conteo diario</strong>
+    Los productos marcados con <strong>naranja</strong> aparecen en el conteo de apertura y cierre que hacen las trabajadoras. Máximo 10. Márquelos editando el producto.
+  </div>
+
+  <div id="lista-todos-productos"></div>
+</div>
+
+<!-- ===== COMPRAS ===== -->
+<div class="seccion" id="sec-compras">
+
+  <div class="compra-form">
+    <div class="compra-form-titulo">🛒 Registrar compras</div>
+
+    <!-- FACTURA Y PROVEEDOR — quedan fijos hasta que los cambie -->
+    <div style="background:rgba(200,90,10,0.08);border:1.5px solid var(--naranja2);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--naranja);margin-bottom:10px;">📋 DATOS DE LA FACTURA</div>
+      <div class="form-row">
+        <div class="form-grupo">
+          <label class="form-label">N° Factura</label>
+          <input type="text" class="form-input" id="c-factura" placeholder="Ej: 260503">
+        </div>
+        <div class="form-grupo">
+          <label class="form-label">Quién recibió</label>
+          <select class="form-select" id="c-quien"></select>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--gris2);margin-top:4px;">💡 Estos datos quedan fijos — no los tienes que repetir por cada producto</div>
+    </div>
+
+    <!-- BUSCADOR DE PRODUCTO CON AUTOCOMPLETE -->
+    <div class="form-grupo" style="position:relative;">
+      <label class="form-label">Buscar producto *</label>
+      <input type="text" class="form-input" id="c-buscar-prod" placeholder="Escribe el nombre..." oninput="autocompleteCompra()" autocomplete="off">
+      <div id="c-sugerencias" style="display:none;position:absolute;left:0;right:0;background:white;border:1.5px solid var(--naranja2);border-top:none;border-radius:0 0 8px 8px;z-index:100;max-height:200px;overflow-y:auto;"></div>
+      <input type="hidden" id="c-producto-id">
+      <div id="c-unidad-tag" style="display:none;margin-top:6px;font-size:13px;color:var(--verde2);font-weight:600;"></div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-grupo">
+        <label class="form-label">Cantidad *</label>
+        <input type="number" class="form-input" id="c-cantidad" placeholder="0" min="0">
+      </div>
+      <div class="form-grupo">
+        <label class="form-label">Precio pagado *</label>
+        <input type="number" class="form-input" id="c-precio" placeholder="$0">
+      </div>
+    </div>
+
+    <div id="c-alerta-precio" style="display:none;background:#FFF3CD;border:1px solid var(--amarillo);padding:10px 14px;margin-top:4px;font-size:13px;color:#7A4800;"></div>
+
+    <button class="btn-registrar-compra" onclick="agregarAlCarrito()" style="background:var(--cafe);">+ Agregar producto a la factura</button>
+
+    <!-- CARRITO DE LA FACTURA -->
+    <div id="c-carrito-wrap" style="display:none;margin-top:14px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--gris);margin-bottom:8px;">📦 PRODUCTOS AGREGADOS</div>
+      <div id="c-carrito-lista"></div>
+      <button class="btn-registrar-compra" onclick="enviarFactura()" style="background:var(--verde2);margin-top:10px;">📱 Guardar y enviar a Miryam por WhatsApp</button>
+    </div>
+  </div>
+
+  <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gris);margin-bottom:10px;">Historial de compras</div>
+  <div id="lista-compras"></div>
+
+</div>
+
+<!-- ===== CONTEO ===== -->
+<div class="seccion" id="sec-conteo">
+
+  <div class="aviso-box">
+    <strong>📋 Gestión del conteo diario</strong>
+    Aquí ve los conteos registrados por las trabajadoras y puede ajustar qué productos aparecen en el conteo. Los conteos llegan también por WhatsApp.
+  </div>
+
+  <div class="insight-card" id="ultimo-conteo">
+    <div class="insight-titulo">📊 Último conteo registrado</div>
+    <div style="font-size:13px;color:rgba(253,246,236,0.5);font-style:italic;">Sin conteos aún. Las trabajadoras los registran desde rutinas.html</div>
+  </div>
+
+  <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gris);margin:16px 0 10px;">Productos en conteo diario</div>
+  <div id="lista-conteo-config"></div>
+
+</div>
+
+</div><!-- /main -->
+
+<!-- MODAL PRODUCTO -->
+<div class="modal-overlay" id="modal-prod">
+  <div class="modal">
+    <div class="modal-titulo" id="modal-titulo">Producto</div>
+    <input type="hidden" id="prod-id">
+
+    <label class="modal-label">Nombre *</label>
+    <input type="text" class="modal-form-input" id="prod-nombre" placeholder="Ej: Salchicha perro">
+
+    <div class="modal-row">
+      <div>
+        <label class="modal-label">Categoría</label>
+        <select class="modal-form-select" id="prod-cat">
+          <option value="carnes">Carnes y Embutidos</option>
+          <option value="verduras">Verduras</option>
+          <option value="salsas">Salsas</option>
+          <option value="panes">Panes</option>
+          <option value="empaques">Empaques</option>
+          <option value="especias">Especias y Aceites</option>
+          <option value="aseo">Aseo</option>
+          <option value="bebidas">Bebidas</option>
+          <option value="equipos">Equipos</option>
+        </select>
+      </div>
+      <div>
+        <label class="modal-label">Unidad</label>
+        <select class="modal-form-select" id="prod-unidad">
+          <option>Unidad</option><option>Libra</option><option>Kg</option>
+          <option>Gramos</option><option>Bulto</option><option>Paquete</option><option>Litro</option>
+          <option>Galón</option><option>Atado</option><option>Caja</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="modal-row">
+      <div>
+        <label class="modal-label">Stock actual</label>
+        <input type="number" class="modal-form-input" id="prod-stock" placeholder="0" min="0">
+      </div>
+      <div>
+        <label class="modal-label">Precio ($)</label>
+        <input type="number" class="modal-form-input" id="prod-precio" placeholder="0">
+      </div>
+    </div>
+
+    <div class="modal-row">
+      <div>
+        <label class="modal-label">Mínimo</label>
+        <input type="number" class="modal-form-input" id="prod-min" placeholder="1">
+      </div>
+      <div>
+        <label class="modal-label">Máximo</label>
+        <input type="number" class="modal-form-input" id="prod-max" placeholder="10">
+      </div>
+    </div>
+
+    <label class="modal-label">Proveedor</label>
+    <select class="modal-form-select" id="prod-prov">
+      <option value="Casa Blanca">Casa Blanca (Verduras)</option>
+      <option value="Granero Olivert">Granero Olivert (Carnes, Empaques, Aseo)</option>
+      <option value="Granero Surtimax">Granero Surtimax (Panes)</option>
+      <option value="Distribuidora Jaime Alberto">Distribuidora Jaime Alberto (Salsas)</option>
+      <option value="Depósito Chaila">Depósito Chaila (Bebidas)</option>
+      <option value="Distribuidora esposo">Distribuidora esposo</option>
+      <option value="Otro">Otro</option>
+    </select>
+
+    <label class="modal-label">Observaciones</label>
+    <input type="text" class="modal-form-input" id="prod-obs" placeholder="Ej: precio por libra">
+
+    <!-- CONTEO CONFIG -->
+    <div style="margin-top:16px;padding-top:16px;border-top:1.5px solid var(--linea);">
+      <div style="font-size:13px;font-weight:700;color:var(--cafe2);margin-bottom:10px;">Configuración de conteo diario</div>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--negro);">
+        <input type="checkbox" id="prod-en-conteo" style="width:18px;height:18px;accent-color:var(--naranja);">
+        Incluir en conteo diario de trabajadoras
+      </label>
+      <div id="prod-estado-wrap" style="margin-top:12px;display:none;">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--negro);">
+          <input type="checkbox" id="prod-tiene-estado" style="width:18px;height:18px;accent-color:var(--verde2);">
+          Tiene estado crudo / cocido (proteínas)
+        </label>
+      </div>
+      <div id="prod-opcional-wrap" style="margin-top:12px;display:none;">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px;color:var(--negro);">
+          <input type="checkbox" id="prod-opcional" style="width:18px;height:18px;accent-color:var(--gris2);">
+          Es eventual (ej: chicharrón) — solo contar cuando haya
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-acciones">
+      <button class="btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-eliminar-m" id="btn-elim" onclick="eliminarProd()" style="display:none">Eliminar</button>
+      <button class="btn-guardar" onclick="guardarProd()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /app-principal -->
+
+<script>
+// ===== NÚMEROS OFUSCADOS =====
+const _m = atob('NTI0MDgzMDg0MQ=='); // Miryam
+
+// ===== PIN =====
+const PIN = atob('MTIzNA==');
+
+function verificarEntrada() {
+  const v = document.getElementById('entrada-pin').value;
+  if (v === PIN) {
+    document.getElementById('pantalla-entrada').style.display = 'none';
+    document.getElementById('app-principal').style.display = 'block';
+    iniciar();
+  } else if (v.length >= 4) {
+    document.getElementById('entrada-error').style.display = 'block';
+    document.getElementById('entrada-pin').value = '';
+  }
+}
+
+document.getElementById('entrada-pin').addEventListener('keydown', e => {
+  if (e.key === 'Enter') verificarEntrada();
+});
+
+function salir() {
+  document.getElementById('app-principal').style.display = 'none';
+  document.getElementById('pantalla-entrada').style.display = 'flex';
+  document.getElementById('entrada-pin').value = '';
+  document.getElementById('entrada-error').style.display = 'none';
+}
+
+// ===== DATOS =====
+const DATOS_DEFAULT = [
+  {id:1,cat:'carnes',nombre:'Lomo de cerdo',unidad:'Libra',stock:0,min:2,max:10,precio:13500,prov:'Granero Olivert',obs:'Precio por libra',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:2,cat:'carnes',nombre:'Costilla de cerdo fresca',unidad:'Libra',stock:0,min:2,max:8,precio:12000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:3,cat:'carnes',nombre:'Costilla ahumada',unidad:'Libra',stock:0,min:2,max:8,precio:12000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:4,cat:'carnes',nombre:'Bola negra res',unidad:'Libra',stock:0,min:2,max:8,precio:18000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:5,cat:'carnes',nombre:'Panceta',unidad:'Libra',stock:0,min:1,max:5,precio:12000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:6,cat:'carnes',nombre:'Carne molida',unidad:'Libra',stock:0,min:2,max:8,precio:20000,prov:'Granero Olivert',obs:'',enConteo:true,tieneEstado:true,opcional:false,histPrecios:[]},
+  {id:7,cat:'carnes',nombre:'Pechuga de pollo',unidad:'Libra',stock:0,min:2,max:10,precio:9000,prov:'Granero Olivert',obs:'',enConteo:true,tieneEstado:true,opcional:false,histPrecios:[]},
+  {id:8,cat:'carnes',nombre:'Pollo blanco entero',unidad:'Unidad',stock:0,min:2,max:10,precio:20000,prov:'Granero Olivert',obs:'~1.8kg',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:9,cat:'carnes',nombre:'Salchicha perro',unidad:'Paquete',stock:0,min:2,max:8,precio:21000,prov:'Granero Olivert',obs:'',enConteo:true,tieneEstado:true,opcional:false,histPrecios:[]},
+  {id:10,cat:'carnes',nombre:'Salchicha manguera',unidad:'Unidad',stock:0,min:3,max:15,precio:4500,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:11,cat:'carnes',nombre:'Jamón Rica',unidad:'Paquete',stock:0,min:2,max:6,precio:18000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:12,cat:'carnes',nombre:'Tocineta ahumada',unidad:'Unidad',stock:0,min:1,max:5,precio:32000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:13,cat:'carnes',nombre:'Chorizo paquete x5',unidad:'Paquete',stock:0,min:2,max:8,precio:13000,prov:'Granero Olivert',obs:'',enConteo:true,tieneEstado:true,opcional:false,histPrecios:[]},
+  {id:14,cat:'carnes',nombre:'Chicharrón',unidad:'Libra',stock:0,min:1,max:5,precio:0,prov:'Granero Olivert',obs:'Eventual',enConteo:true,tieneEstado:true,opcional:true,histPrecios:[]},
+  {id:15,cat:'carnes',nombre:'Queso tajado 2500g',unidad:'Unidad',stock:0,min:1,max:4,precio:68000,prov:'Distribuidora Jaime Alberto',obs:'Bloque 2.5kg',enConteo:true,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:20,cat:'verduras',nombre:'Papas (bulto 50kg)',unidad:'Bulto',stock:0,min:1,max:3,precio:130000,prov:'Casa Blanca',obs:'',enConteo:true,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:21,cat:'verduras',nombre:'Plátano',unidad:'Unidad',stock:0,min:5,max:30,precio:3000,prov:'Casa Blanca',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:22,cat:'verduras',nombre:'Cebolla',unidad:'Libra',stock:0,min:2,max:10,precio:3000,prov:'Casa Blanca',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:23,cat:'verduras',nombre:'Tomate',unidad:'Libra',stock:0,min:2,max:10,precio:7000,prov:'Casa Blanca',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:24,cat:'verduras',nombre:'Ajo',unidad:'Libra',stock:0,min:1,max:5,precio:8000,prov:'Casa Blanca',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:25,cat:'verduras',nombre:'Repollo',unidad:'Unidad',stock:0,min:1,max:4,precio:7000,prov:'Casa Blanca',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:26,cat:'verduras',nombre:'Lechuga',unidad:'Unidad',stock:0,min:1,max:4,precio:4000,prov:'Casa Blanca',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:40,cat:'salsas',nombre:'Salsa tártara x4000g',unidad:'Unidad',stock:0,min:1,max:3,precio:50000,prov:'Distribuidora Jaime Alberto',obs:'',enConteo:true,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:41,cat:'salsas',nombre:'Salsa de tomate x4000g',unidad:'Unidad',stock:0,min:1,max:3,precio:28000,prov:'Distribuidora Jaime Alberto',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:42,cat:'salsas',nombre:'Mayonesa x4000g',unidad:'Unidad',stock:0,min:1,max:3,precio:48000,prov:'Distribuidora Jaime Alberto',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:43,cat:'salsas',nombre:'Salsa BBQ x4000g',unidad:'Unidad',stock:0,min:1,max:3,precio:32000,prov:'Distribuidora Jaime Alberto',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:50,cat:'panes',nombre:'Pan hamburguesa',unidad:'Unidad',stock:0,min:20,max:100,precio:0,prov:'Granero Surtimax',obs:'',enConteo:true,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:51,cat:'panes',nombre:'Pan perro caliente',unidad:'Unidad',stock:0,min:20,max:100,precio:0,prov:'Granero Surtimax',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:60,cat:'empaques',nombre:'Cajas pequeñas x200',unidad:'Paquete',stock:0,min:1,max:3,precio:41000,prov:'Granero Olivert',obs:'',enConteo:true,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:61,cat:'empaques',nombre:'Cajas grandes x200',unidad:'Paquete',stock:0,min:1,max:3,precio:75000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:62,cat:'empaques',nombre:'Servilletas',unidad:'Paquete',stock:0,min:2,max:6,precio:3000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:80,cat:'especias',nombre:'Aceite galón 15L',unidad:'Galón',stock:0,min:1,max:3,precio:115000,prov:'Distribuidora esposo',obs:'',enConteo:true,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:81,cat:'especias',nombre:'Sal',unidad:'Paquete',stock:0,min:1,max:4,precio:22000,prov:'Distribuidora esposo',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:90,cat:'aseo',nombre:'Jabón lava loza',unidad:'Unidad',stock:0,min:1,max:4,precio:28000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:91,cat:'aseo',nombre:'Bolsas industriales x15',unidad:'Paquete',stock:0,min:1,max:4,precio:17000,prov:'Granero Olivert',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  // BEBIDAS — precios de venta al cliente (costo real pendiente confirmar con Depósito Chaila)
+  {id:110,cat:'bebidas',nombre:'Jugo natural en agua',unidad:'Unidad',stock:0,min:5,max:30,precio:10000,prov:'Depósito Chaila',obs:'Precio venta $10.000 · costo pendiente',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:111,cat:'bebidas',nombre:'Jugo natural en leche',unidad:'Unidad',stock:0,min:5,max:30,precio:12000,prov:'Depósito Chaila',obs:'Precio venta $12.000 · costo pendiente',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:112,cat:'bebidas',nombre:'Frappette',unidad:'Unidad',stock:0,min:5,max:20,precio:15000,prov:'Depósito Chaila',obs:'Precio venta $15.000 · costo pendiente',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:113,cat:'bebidas',nombre:'Malteada',unidad:'Unidad',stock:0,min:5,max:20,precio:15000,prov:'Depósito Chaila',obs:'Precio venta $15.000 · costo pendiente',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:114,cat:'bebidas',nombre:'Limonada',unidad:'Unidad',stock:0,min:5,max:20,precio:8000,prov:'Depósito Chaila',obs:'Precio venta $8.000 · costo pendiente',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:115,cat:'bebidas',nombre:'Gaseosa x400ml',unidad:'Unidad',stock:0,min:10,max:60,precio:4000,prov:'Depósito Chaila',obs:'Precio venta $4.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:116,cat:'bebidas',nombre:'Agua x600ml',unidad:'Unidad',stock:0,min:10,max:60,precio:3000,prov:'Depósito Chaila',obs:'Precio venta $3.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:117,cat:'bebidas',nombre:'Agua x2 litros',unidad:'Unidad',stock:0,min:5,max:30,precio:5000,prov:'Depósito Chaila',obs:'Precio venta $5.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:118,cat:'bebidas',nombre:'Agua saborizada',unidad:'Unidad',stock:0,min:5,max:30,precio:5000,prov:'Depósito Chaila',obs:'Precio venta $5.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:119,cat:'bebidas',nombre:'Jugo Hit',unidad:'Unidad',stock:0,min:10,max:50,precio:5000,prov:'Depósito Chaila',obs:'Precio venta $5.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:120,cat:'bebidas',nombre:'Cerveza',unidad:'Unidad',stock:0,min:10,max:50,precio:5000,prov:'Depósito Chaila',obs:'Precio venta $5.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:121,cat:'bebidas',nombre:'Saviloe',unidad:'Unidad',stock:0,min:5,max:30,precio:5000,prov:'Depósito Chaila',obs:'Precio venta $5.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:122,cat:'bebidas',nombre:'Squash',unidad:'Unidad',stock:0,min:5,max:30,precio:5000,prov:'Depósito Chaila',obs:'Precio venta $5.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:123,cat:'bebidas',nombre:'Soda',unidad:'Unidad',stock:0,min:5,max:30,precio:4000,prov:'Depósito Chaila',obs:'Precio venta $4.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:124,cat:'bebidas',nombre:'Gaseosa 1.5 litros',unidad:'Unidad',stock:0,min:5,max:30,precio:8000,prov:'Depósito Chaila',obs:'Precio venta $8.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:125,cat:'bebidas',nombre:'Gaseosa 2.5 litros',unidad:'Unidad',stock:0,min:5,max:20,precio:10000,prov:'Depósito Chaila',obs:'Precio venta $10.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:126,cat:'bebidas',nombre:'Gaseosa 3.5 litros',unidad:'Unidad',stock:0,min:5,max:20,precio:12000,prov:'Depósito Chaila',obs:'Precio venta $12.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:127,cat:'bebidas',nombre:'Pony Malta personal',unidad:'Unidad',stock:0,min:5,max:30,precio:4000,prov:'Depósito Chaila',obs:'Precio venta $4.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:128,cat:'bebidas',nombre:'Pony Malta litro',unidad:'Unidad',stock:0,min:5,max:30,precio:7000,prov:'Depósito Chaila',obs:'Precio venta $7.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:129,cat:'bebidas',nombre:'Pony Malta 1.5 litros',unidad:'Unidad',stock:0,min:5,max:20,precio:8000,prov:'Depósito Chaila',obs:'Precio venta $8.000',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+
+  {id:200,cat:'equipos',nombre:'Estufa Industrial',unidad:'Unidad',stock:1,min:1,max:1,precio:0,prov:'',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:201,cat:'equipos',nombre:'Freidora',unidad:'Unidad',stock:1,min:1,max:2,precio:0,prov:'',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:202,cat:'equipos',nombre:'Nevera',unidad:'Unidad',stock:1,min:1,max:2,precio:0,prov:'',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+  {id:203,cat:'equipos',nombre:'Congelador',unidad:'Unidad',stock:1,min:1,max:2,precio:0,prov:'',obs:'',enConteo:false,tieneEstado:false,opcional:false,histPrecios:[]},
+];
+
+let productos = [];
+let compras = [];
+const EMPLEADAS_DEFAULT = ['Miryam','Emerita','Empleada 1','Empleada 2','Empleada 3'];
+
+function cargar() {
+  const p = localStorage.getItem('inv_productos_v2');
+  productos = p ? JSON.parse(p) : JSON.parse(JSON.stringify(DATOS_DEFAULT));
+  const c = localStorage.getItem('inv_compras');
+  compras = c ? JSON.parse(c) : [];
+}
+
+function guardar() {
+  localStorage.setItem('inv_productos_v2', JSON.stringify(productos));
+  localStorage.setItem('inv_compras', JSON.stringify(compras));
+  // Publicar productos de conteo para rutinas.html
+  const conteo = productos.filter(p => p.enConteo);
+  localStorage.setItem('inv_conteo_productos', JSON.stringify(conteo));
+  // Sincronizar a Firebase
+  saveInvToFirebase(productos, compras);
+}
+
+// ── Puente Firebase→UI ──
+let _invSyncing = false; // guard anti-loop
+window._syncInvFromFirebase = function(remote) {
+  if (!remote || _invSyncing) return;
+  _invSyncing = true;
+  try {
+    if (remote.productos && remote.productos.length > 0) {
+      productos = remote.productos;
+      localStorage.setItem('inv_productos_v2', JSON.stringify(productos));
+      const conteo = productos.filter(p => p.enConteo);
+      localStorage.setItem('inv_conteo_productos', JSON.stringify(conteo));
+    }
+    if (remote.compras) {
+      compras = remote.compras;
+      localStorage.setItem('inv_compras', JSON.stringify(compras));
+    }
+    // Refrescar UI si las funciones ya están disponibles
+    if (typeof renderProductos === 'function') renderProductos();
+    if (typeof renderCompras   === 'function') renderCompras();
+    console.log('✅ Inventario sincronizado desde Firebase | Productos:', productos.length, '| Compras:', compras.length);
+  } finally {
+    setTimeout(() => { _invSyncing = false; }, 500);
+  }
+};
+
+// ── Cargar desde Firebase al iniciar ──
+(function initFirebaseInv() {
+  loadInvFromFirebase().then(remote => {
+    if (remote) {
+      if (remote.productos && remote.productos.length > 0) {
+        productos = remote.productos;
+        localStorage.setItem('inv_productos_v2', JSON.stringify(productos));
+        const conteo = productos.filter(p => p.enConteo);
+        localStorage.setItem('inv_conteo_productos', JSON.stringify(conteo));
+      }
+      if (remote.compras) {
+        compras = remote.compras;
+        localStorage.setItem('inv_compras', JSON.stringify(compras));
+      }
+    }
+    startInvListener();
+  });
+})();
+
+function getEmpleadas() {
+  const saved = localStorage.getItem('personal_family');
+  if (saved) {
+    try {
+      const emp = JSON.parse(saved);
+      return emp.filter(e => e.estado === 'activa').map(e => e.nombre);
+    } catch(e) {}
+  }
+  return EMPLEADAS_DEFAULT;
+}
+
+function fp(n) { return n ? '$' + parseInt(n).toLocaleString('es-CO') : '—'; }
+function fechaHoy() {
+  const h = new Date();
+  const d = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const m = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return d[h.getDay()] + ' ' + h.getDate() + ' ' + m[h.getMonth()];
+}
+
+// ===== RENDER PRODUCTOS =====
+function renderProductos(lista = null) {
+  const base = lista || productos;
+  const prods = (!lista && _catActiva && _catActiva !== 'todas') ? base.filter(p => p.cat === _catActiva) : base;
+  const cats = ['carnes','verduras','salsas','panes','empaques','especias','aseo','bebidas','equipos'];
+  const nombres = {carnes:'🥩 Carnes y Embutidos',verduras:'🥬 Verduras',salsas:'🧴 Salsas',panes:'🍞 Panes',empaques:'📦 Empaques',especias:'🛢 Especias y Aceites',aseo:'🧹 Aseo',bebidas:'🥤 Bebidas',equipos:'🔧 Equipos'};
+  let html = '';
+  cats.forEach(cat => {
+    const items = prods.filter(p => p.cat === cat);
+    if (!items.length) return;
+    html += `<div class="cat-label">${nombres[cat]}<span class="cat-prov">${items.length}</span></div>`;
+    items.forEach(p => {
+      const sem = p.cat === 'equipos' ? 'sem-g' : p.stock <= 0 ? 'sem-r' : p.stock <= p.min ? 'sem-a' : 'sem-v';
+      html += `
+      <div class="prod-card">
+        <div class="prod-sem ${sem}"></div>
+        ${p.enConteo ? '<div class="conteo-badge">CONTEO</div>' : ''}
+        <div class="prod-body">
+          <div class="prod-nombre">${p.nombre}</div>
+          <div class="prod-meta">
+            <span>${p.unidad}</span>
+            ${p.precio ? `<span class="prod-precio-tag">${fp(p.precio)}</span>` : ''}
+            ${p.tieneEstado ? '<span style="color:var(--verde2);font-size:11px;">🔄 crudo/cocido</span>' : ''}
+            ${p.opcional ? '<span style="color:var(--gris2);font-size:11px;">⚙️ eventual</span>' : ''}
+          </div>
+          ${p.prov ? `<div class="prod-prov">📦 ${p.prov}</div>` : ''}
+        </div>
+        <div class="prod-right">
+          <div class="prod-stock">${p.stock}</div>
+          <div class="prod-unidad">${p.unidad}</div>
+          <div class="prod-btns">
+            <button class="btn-pm btn-menos" onclick="cambiarStock(${p.id},-1)">−</button>
+            <button class="btn-pm btn-mas" onclick="cambiarStock(${p.id},+1)">+</button>
+          </div>
+          <button class="btn-edit-sm" onclick="abrirModal(${p.id})">✏️ Editar</button>
+        </div>
+      </div>`;
+    });
+  });
+  document.getElementById('lista-todos-productos').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--gris2);">Sin resultados</div>';
+}
+
+function cambiarStock(id, delta) {
+  const p = productos.find(p => p.id === id);
+  if (!p) return;
+  p.stock = Math.max(0, p.stock + delta);
+  guardar();
+  renderProductos();
+  renderPanel();
+}
+
+let _catActiva = 'todas';
+
+function filtrarCat(cat, btn) {
+  _catActiva = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('cat-btn-active'));
+  btn.classList.add('cat-btn-active');
+  document.getElementById('buscador').value = '';
+  renderProductos();
+}
+
+function buscar() {
+  const q = document.getElementById('buscador').value.toLowerCase();
+  // Si hay búsqueda, ignorar filtro de categoría
+  if (q) {
+    renderProductos(productos.filter(p => p.nombre.toLowerCase().includes(q) || (p.prov||'').toLowerCase().includes(q)));
+  } else {
+    renderProductos();
+  }
+}
+
+// ===== RENDER PANEL =====
+function renderPanel() {
+  const alertas = productos.filter(p => p.stock <= p.min && p.cat !== 'equipos');
+  const sinMov = productos.filter(p => p.stock === 0 && p.cat !== 'equipos');
+  const enConteo = productos.filter(p => p.enConteo).length;
+  const hoy = new Date().toDateString();
+  const comprasHoy = compras.filter(c => new Date(c.fecha).toDateString() === hoy).length;
+  const semana = Date.now() - 7*24*60*60*1000;
+  const subidas = compras.filter(c => c.fecha > semana && c.alertaPrecio).length;
+
+  document.getElementById('p-alertas').textContent = alertas.length;
+  document.getElementById('p-compras-hoy').textContent = comprasHoy;
+  document.getElementById('p-subidas').textContent = subidas;
+  document.getElementById('p-en-conteo').textContent = enConteo;
+
+  // Lista alertas
+  const elA = document.getElementById('panel-alertas-lista');
+  if (alertas.length) {
+    elA.innerHTML = '<div class="insight-titulo">⚠️ Comprar pronto (' + alertas.length + ')</div>' +
+      alertas.map(p => {
+        const falta = p.min - p.stock;
+        return `<div class="insight-item"><span>${p.nombre}</span><span class="insight-val" style="color:var(--rojo);">Tienes: ${p.stock} ${p.unidad} · faltan: ${falta > 0 ? falta : 0}</span></div>`;
+      }).join('') +
+      `<button onclick="irACompras()" style="width:100%;margin-top:10px;padding:10px;background:var(--naranja);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">🛒 Ir a registrar compras</button>`;
+  } else {
+    elA.innerHTML = '<div class="insight-titulo">✅ Stock OK</div><div style="font-size:13px;color:rgba(253,246,236,0.5);">Todos los productos tienen stock suficiente</div>';
+  }
+
+  // Sin movimiento
+  const elS = document.getElementById('panel-sin-movimiento');
+  if (sinMov.length) {
+    elS.innerHTML = '<div class="insight-titulo">🔴 En cero — revisar</div>' +
+      sinMov.slice(0,5).map(p => `<div class="insight-item"><span>${p.nombre}</span><span class="insight-val" style="color:var(--rojo);">0 ${p.unidad}</span></div>`).join('');
+  } else {
+    elS.innerHTML = '<div class="insight-titulo">✅ Sin productos en cero</div>';
+  }
+
+  // Precios que subieron
+  const elP = document.getElementById('panel-precios-subieron');
+  const subidas7 = compras.filter(c => c.fecha > semana && c.alertaPrecio).slice(0,5);
+  if (subidas7.length) {
+    elP.innerHTML = '<div class="insight-titulo">🟡 Precios que subieron esta semana</div>' +
+      subidas7.map(c => `<div class="insight-item"><span>${c.nombre}</span><span class="insight-val" style="color:var(--amarillo);">${fp(c.precio)} <small style="font-size:11px;">(antes ${fp(c.precioAnterior)})</small></span></div>`).join('');
+  } else {
+    elP.innerHTML = '<div class="insight-titulo">✅ Sin cambios de precio esta semana</div>';
+  }
+}
+
+// ===== RENDER COMPRAS =====
+let carritoCompra = []; // items acumulados de la factura actual
+
+function renderCompras() {
+  // Selector empleadas
+  const quien = document.getElementById('c-quien');
+  if (quien) quien.innerHTML = getEmpleadas().map(e => `<option>${e}</option>`).join('');
+  renderHistorialCompras();
+}
+
+function renderHistorialCompras() {
+  const lista = document.getElementById('lista-compras');
+  if (!compras.length) {
+    lista.innerHTML = '<div style="text-align:center;padding:32px;color:var(--gris2);">Sin compras registradas aún</div>';
+    return;
+  }
+  lista.innerHTML = [...compras].reverse().slice(0,30).map(c => {
+    const alertClass = !c.precioAnterior ? 'alerta-v' : c.precio > c.precioAnterior ? 'alerta-a' : 'alerta-v';
+    const alertTxt = !c.precioAnterior ? '✅ Primera vez' : c.precio > c.precioAnterior ? `⬆️ Subió ${fp(c.precio - c.precioAnterior)}` : '✅ Igual o baja';
+    return `
+    <div class="compra-card">
+      <div class="compra-header">
+        <div class="compra-nombre">${c.nombre}</div>
+        <div class="compra-fecha">${new Date(c.fecha).toLocaleDateString('es-CO')}</div>
+      </div>
+      <div class="compra-meta">
+        <span>Cantidad: <strong>${c.cantidad} ${c.unidad}</strong></span>
+        <span class="compra-precio">${fp(c.precio)}</span>
+        ${c.factura ? `<span>Factura: #${c.factura}</span>` : ''}
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+        <div class="compra-quien">👤 ${c.quien}</div>
+        <span class="precio-alerta ${alertClass}">${alertTxt}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Autocomplete búsqueda de producto en compras ──
+function autocompleteCompra() {
+  const q = document.getElementById('c-buscar-prod').value.toLowerCase().trim();
+  const sug = document.getElementById('c-sugerencias');
+  const alerta = document.getElementById('c-alerta-precio');
+  document.getElementById('c-producto-id').value = '';
+  document.getElementById('c-unidad-tag').style.display = 'none';
+  alerta.style.display = 'none';
+
+  if (q.length < 1) { sug.style.display = 'none'; return; }
+
+  const matches = productos.filter(p => p.cat !== 'equipos' && p.nombre.toLowerCase().includes(q)).slice(0, 8);
+  if (!matches.length) { sug.style.display = 'none'; return; }
+
+  sug.innerHTML = matches.map(p =>
+    `<div onclick="seleccionarProductoCompra(${p.id})" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid #f0f0f0;font-size:14px;">
+      <strong>${p.nombre}</strong> <span style="color:#888;font-size:12px;">· ${p.unidad}${p.precio ? ' · último precio ' + fp(p.precio) : ''}</span>
+    </div>`
+  ).join('');
+  sug.style.display = 'block';
+}
+
+function seleccionarProductoCompra(id) {
+  const prod = productos.find(p => p.id === id);
+  if (!prod) return;
+  document.getElementById('c-buscar-prod').value = prod.nombre;
+  document.getElementById('c-producto-id').value = prod.id;
+  document.getElementById('c-sugerencias').style.display = 'none';
+
+  // Mostrar unidad automáticamente
+  const tag = document.getElementById('c-unidad-tag');
+  tag.textContent = `📏 Unidad: ${prod.unidad}`;
+  tag.style.display = 'block';
+
+  // Mostrar alerta de precio anterior
+  if (prod.precio) {
+    const alerta = document.getElementById('c-alerta-precio');
+    alerta.style.display = 'block';
+    alerta.style.background = '#EEF6FF';
+    alerta.textContent = `ℹ️ Último precio registrado: ${fp(prod.precio)} por ${prod.unidad}`;
+  }
+  document.getElementById('c-cantidad').focus();
+}
+
+// Cerrar sugerencias si se toca fuera
+document.addEventListener('click', e => {
+  if (!e.target.closest('#c-buscar-prod') && !e.target.closest('#c-sugerencias')) {
+    const sug = document.getElementById('c-sugerencias');
+    if (sug) sug.style.display = 'none';
+  }
+});
+
+// Alerta dinámica al escribir precio
+document.addEventListener('input', e => {
+  if (e.target.id !== 'c-precio') return;
+  const prodId = document.getElementById('c-producto-id').value;
+  const prod = productos.find(p => p.id == prodId);
+  const alerta = document.getElementById('c-alerta-precio');
+  if (prod && prod.precio && e.target.value) {
+    const nuevo = parseInt(e.target.value);
+    const anterior = prod.precio;
+    if (nuevo > anterior) {
+      alerta.style.display = 'block';
+      alerta.style.background = '#FFF3CD';
+      alerta.textContent = `⚠️ Precio anterior: ${fp(anterior)} → Nuevo: ${fp(nuevo)} (+${fp(nuevo - anterior)})`;
+    } else {
+      alerta.style.display = 'block';
+      alerta.style.background = '#D8F3E8';
+      alerta.textContent = `✅ Precio anterior: ${fp(anterior)} → Igual o menor`;
+    }
+  }
+});
+
+// ── Agregar un producto al carrito de la factura ──
+function agregarAlCarrito() {
+  const prodId = document.getElementById('c-producto-id').value;
+  const prod = productos.find(p => p.id == prodId);
+  const cantidad = parseInt(document.getElementById('c-cantidad').value) || 0;
+  const precio = parseInt(document.getElementById('c-precio').value) || 0;
+
+  if (!prod) { alert('Selecciona un producto del listado.'); return; }
+  if (!cantidad || !precio) { alert('Ingresa cantidad y precio.'); return; }
+
+  carritoCompra.push({ prod, cantidad, precio, precioAnterior: prod.precio || 0 });
+
+  // Limpiar campos de producto (factura y quién quedan)
+  document.getElementById('c-buscar-prod').value = '';
+  document.getElementById('c-producto-id').value = '';
+  document.getElementById('c-cantidad').value = '';
+  document.getElementById('c-precio').value = '';
+  document.getElementById('c-unidad-tag').style.display = 'none';
+  document.getElementById('c-alerta-precio').style.display = 'none';
+  document.getElementById('c-buscar-prod').focus();
+
+  renderCarrito();
+}
+
+function renderCarrito() {
+  const wrap = document.getElementById('c-carrito-wrap');
+  const lista = document.getElementById('c-carrito-lista');
+  if (!carritoCompra.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+
+  const total = carritoCompra.reduce((s, i) => s + i.precio, 0);
+  lista.innerHTML = carritoCompra.map((item, idx) => {
+    const subio = item.precio > item.precioAnterior;
+    return `
+    <div class="carrito-item">
+      <div>
+        <div class="carrito-item-nombre">${item.prod.nombre}</div>
+        <div class="carrito-item-meta">${item.cantidad} ${item.prod.unidad} ${subio ? '⬆️ precio subió' : ''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="carrito-item-precio">${fp(item.precio)}</span>
+        <button class="btn-quitar-item" onclick="quitarDelCarrito(${idx})">×</button>
+      </div>
+    </div>`;
+  }).join('') + `<div style="text-align:right;font-size:13px;color:var(--gris);margin-top:4px;">Total factura: <strong>${fp(total)}</strong></div>`;
+}
+
+function quitarDelCarrito(idx) {
+  carritoCompra.splice(idx, 1);
+  renderCarrito();
+}
+
+// ── Guardar toda la factura y enviar WhatsApp ──
+function enviarFactura() {
+  if (!carritoCompra.length) return;
+  const factura = document.getElementById('c-factura').value.trim();
+  const quien = document.getElementById('c-quien').value;
+  const now = Date.now();
+
+  let txtWA = `🛒 *COMPRAS REGISTRADAS*\n*Family Comidas Rápidas*\n📅 ${fechaHoy()}\n`;
+  if (factura) txtWA += `🧾 Factura: #${factura}\n`;
+  txtWA += `👤 Recibió: ${quien}\n\n`;
+
+  carritoCompra.forEach(item => {
+    const { prod, cantidad, precio, precioAnterior } = item;
+    const alertaPrecio = precio > precioAnterior;
+
+    // Guardar en historial de compras
+    compras.push({
+      id: now + Math.random(),
+      fecha: now,
+      prodId: prod.id,
+      nombre: prod.nombre,
+      unidad: prod.unidad,
+      cantidad, precio, factura, quien,
+      precioAnterior, alertaPrecio
+    });
+
+    // Actualizar producto
+    prod.precio = precio;
+    if (!prod.histPrecios) prod.histPrecios = [];
+    prod.histPrecios.push({ fecha: now, precio });
+    prod.stock = (prod.stock || 0) + cantidad;
+
+    txtWA += `📦 ${prod.nombre}: ${cantidad} ${prod.unidad} → ${fp(precio)}`;
+    if (alertaPrecio) txtWA += ` ⬆️ (antes ${fp(precioAnterior)})`;
+    txtWA += '\n';
+  });
+
+  const total = carritoCompra.reduce((s, i) => s + i.precio, 0);
+  txtWA += `\n💰 *Total factura: ${fp(total)}*`;
+
+  guardar();
+  renderHistorialCompras();
+  renderPanel();
+
+  // Limpiar carrito
+  carritoCompra = [];
+  renderCarrito();
+  document.getElementById('c-factura').value = '';
+
+  window.open('https://wa.me/' + _m + '?text=' + encodeURIComponent(txtWA), '_blank');
+}
+
+// registrarCompra() — mantener por compatibilidad con código antiguo
+function registrarCompra() { enviarFactura(); }
+
+// ===== RENDER CONTEO CONFIG =====
+function renderConteoConfig() {
+  const enConteo = productos.filter(p => p.enConteo);
+  const el = document.getElementById('lista-conteo-config');
+
+  // Último conteo
+  const conteos = JSON.parse(localStorage.getItem('inv_conteos') || '[]');
+  const ultimo = conteos[conteos.length - 1];
+  const elUlt = document.getElementById('ultimo-conteo');
+  if (ultimo) {
+    elUlt.innerHTML = `<div class="insight-titulo">📊 Último conteo — ${new Date(ultimo.fecha).toLocaleDateString('es-CO')}</div>` +
+      `<div style="font-size:13px;color:rgba(253,246,236,0.6);margin-bottom:8px;">👤 Registró: ${ultimo.quien}</div>` +
+      ultimo.items.map(item => `
+        <div class="insight-item">
+          <span>${item.nombre}</span>
+          <span class="insight-val">${item.crudo !== undefined ? `${item.crudo} crudo · ${item.cocido} cocido` : item.cantidad} ${item.unidad}</span>
+        </div>`).join('');
+  }
+
+  el.innerHTML = `<div style="font-size:13px;color:var(--gris);margin-bottom:8px;">${enConteo.length}/10 productos marcados</div>` +
+    enConteo.map(p => `
+    <div class="prod-card" style="margin-bottom:8px;">
+      <div class="prod-sem sem-v"></div>
+      <div class="prod-body">
+        <div class="prod-nombre">${p.nombre}</div>
+        <div class="prod-meta">
+          <span>${p.unidad}</span>
+          ${p.tieneEstado ? '<span style="color:var(--verde2);">🔄 crudo/cocido</span>' : ''}
+          ${p.opcional ? '<span style="color:var(--gris2);">⚙️ eventual</span>' : ''}
+        </div>
+      </div>
+      <div class="prod-right">
+        <button class="btn-edit-sm" onclick="abrirModal(${p.id})">✏️ Config</button>
+      </div>
+    </div>`).join('');
+}
+
+// ===== MODAL =====
+document.getElementById('prod-en-conteo').addEventListener('change', function() {
+  document.getElementById('prod-estado-wrap').style.display = this.checked ? 'block' : 'none';
+  document.getElementById('prod-opcional-wrap').style.display = this.checked ? 'block' : 'none';
+});
+
+function abrirModal(id) {
+  const prod = id ? productos.find(p => p.id === id) : null;
+  document.getElementById('prod-id').value = id || '';
+  document.getElementById('prod-nombre').value = prod ? prod.nombre : '';
+  document.getElementById('prod-cat').value = prod ? prod.cat : 'carnes';
+  document.getElementById('prod-unidad').value = prod ? prod.unidad : 'Unidad';
+  document.getElementById('prod-stock').value = prod ? prod.stock : 0;
+  document.getElementById('prod-precio').value = prod ? prod.precio : '';
+  document.getElementById('prod-min').value = prod ? prod.min : 1;
+  document.getElementById('prod-max').value = prod ? prod.max : 10;
+  document.getElementById('prod-prov').value = prod ? prod.prov : 'Granero Olivert';
+  document.getElementById('prod-obs').value = prod ? prod.obs : '';
+  document.getElementById('prod-en-conteo').checked = prod ? prod.enConteo : false;
+  document.getElementById('prod-tiene-estado').checked = prod ? prod.tieneEstado : false;
+  document.getElementById('prod-opcional').checked = prod ? prod.opcional : false;
+  document.getElementById('prod-estado-wrap').style.display = (prod && prod.enConteo) ? 'block' : 'none';
+  document.getElementById('prod-opcional-wrap').style.display = (prod && prod.enConteo) ? 'block' : 'none';
+  document.getElementById('modal-titulo').textContent = prod ? 'Editar: ' + prod.nombre : 'Nuevo Producto';
+  document.getElementById('btn-elim').style.display = prod ? 'block' : 'none';
+  document.getElementById('modal-prod').classList.add('visible');
+}
+
+function cerrarModal() { document.getElementById('modal-prod').classList.remove('visible'); }
+
+function guardarProd() {
+  const nombre = document.getElementById('prod-nombre').value.trim();
+  if (!nombre) { alert('El nombre es obligatorio.'); return; }
+
+  const enConteo = document.getElementById('prod-en-conteo').checked;
+  const enConteoActual = productos.filter(p => p.enConteo).length;
+  const id = parseInt(document.getElementById('prod-id').value);
+  const prodActual = id ? productos.find(p => p.id === id) : null;
+
+  if (enConteo && !prodActual?.enConteo && enConteoActual >= 10) {
+    alert('Ya tiene 10 productos en el conteo diario. Quite uno antes de agregar otro.');
+    return;
+  }
+
+  const datos = {
+    nombre,
+    cat: document.getElementById('prod-cat').value,
+    unidad: document.getElementById('prod-unidad').value,
+    stock: parseInt(document.getElementById('prod-stock').value) || 0,
+    precio: parseInt(document.getElementById('prod-precio').value) || 0,
+    min: parseInt(document.getElementById('prod-min').value) || 1,
+    max: parseInt(document.getElementById('prod-max').value) || 10,
+    prov: document.getElementById('prod-prov').value,
+    obs: document.getElementById('prod-obs').value,
+    enConteo,
+    tieneEstado: document.getElementById('prod-tiene-estado').checked,
+    opcional: document.getElementById('prod-opcional').checked,
+  };
+
+  if (id) {
+    const idx = productos.findIndex(p => p.id === id);
+    productos[idx] = { ...productos[idx], ...datos };
+  } else {
+    datos.id = Date.now();
+    datos.histPrecios = [];
+    productos.push(datos);
+  }
+
+  guardar();
+  cerrarModal();
+  renderProductos();
+  renderPanel();
+  renderConteoConfig();
+}
+
+function eliminarProd() {
+  const id = parseInt(document.getElementById('prod-id').value);
+  if (!confirm('¿Eliminar este producto?')) return;
+  productos = productos.filter(p => p.id !== id);
+  guardar();
+  cerrarModal();
+  renderProductos();
+  renderPanel();
+}
+
+// ===== RESUMEN WA =====
+function enviarResumenWA() {
+  const alertas = productos.filter(p => p.stock <= p.min && p.cat !== 'equipos');
+  const subidas = compras.filter(c => c.fecha > Date.now()-7*24*60*60*1000 && c.alertaPrecio);
+  let txt = `📊 *RESUMEN SEMANAL INVENTARIO*\n*Family Comidas Rápidas*\n📅 ${fechaHoy()}\n\n`;
+  if (alertas.length) {
+    txt += `⚠️ *COMPRAR PRONTO (${alertas.length}):*\n`;
+    alertas.forEach(p => txt += `• ${p.nombre}: ${p.stock} ${p.unidad}\n`);
+    txt += '\n';
+  }
+  if (subidas.length) {
+    txt += `🟡 *PRECIOS QUE SUBIERON:*\n`;
+    subidas.forEach(c => txt += `• ${c.nombre}: ${fp(c.precioAnterior)} → ${fp(c.precio)}\n`);
+    txt += '\n';
+  }
+  if (!alertas.length && !subidas.length) txt += '✅ Todo en orden esta semana.\n';
+  window.open('https://wa.me/' + _m + '?text=' + encodeURIComponent(txt), '_blank');
+}
+
+// ── Ir a compras desde panel ──
+function irACompras() {
+  const btn = document.querySelector('.tab:nth-child(3)');
+  cambiarTab('compras', btn);
+}
+
+// ===== TABS =====
+function cambiarTab(id, btn) {
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('activa');
+  btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'compras') renderCompras();
+  if (id === 'conteo') renderConteoConfig();
+}
+
+document.getElementById('modal-prod').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-prod')) cerrarModal();
+});
+
+// ===== INIT =====
+function iniciar() {
+  cargar();
+  renderProductos();
+  renderPanel();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recetario Restaurante · Family</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script>
+    // Verificar que Firebase cargó correctamente
+    window.addEventListener('load', function() {
+      if (typeof firebase === 'undefined') {
+        document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;text-align:center;"><h2>⚠️ Sin conexión a internet</h2><p>Este sistema necesita internet para funcionar con Firebase.<br>Conéctate y recarga la página.</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;background:#2E8A58;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer;">🔄 Recargar</button></div>';
+      }
+    });
+  </script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0f1923;--bg2:#16232f;--card:#1c2d3a;--card2:#223040;--naranja:#E07820;--naranja2:#F09040;--verde:#2E8A58;--verde2:#3AAA6A;--rojo:#C03030;--texto:#e8eef3;--muted:#8aabbf;--border:rgba(255,255,255,0.08)}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--texto);min-height:100vh}
+    .header{background:linear-gradient(135deg,#0a1520,#1a3040);border-bottom:2px solid var(--naranja);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .hl{display:flex;align-items:center;gap:12px}
+    .htit{font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--naranja2)}
+    .hsub{font-size:.72rem;color:var(--muted)}
+    .hr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .hbtn{background:var(--naranja);color:white;border:none;border-radius:10px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;transition:background .2s}
+    .hbtn:hover{background:var(--naranja2)}
+    .back-btn{text-decoration:none;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.78rem}
+    .sync-dot{width:8px;height:8px;border-radius:50%;background:#888;display:inline-block;margin-right:5px}
+    .sync-dot.ok{background:var(--verde2)}.sync-dot.err{background:#E08080}
+    .sbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;gap:12px}
+    .sbar input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 16px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.9rem;outline:none}
+    .sbar input:focus{border-color:var(--naranja)}
+    .sbar input::placeholder{color:var(--muted)}
+    .scnt{font-size:.8rem;color:var(--muted);white-space:nowrap}
+    .tabs{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:4px;overflow-x:auto}
+    .tab{background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.84rem;font-weight:600;padding:12px 16px;cursor:pointer;white-space:nowrap;transition:all .2s}
+    .tab:hover{color:var(--texto)}.tab.active{color:var(--naranja2);border-bottom-color:var(--naranja)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:18px;padding:20px}
+    .rcard{background:var(--card);border-radius:16px;overflow:hidden;border:1px solid var(--border);transition:transform .2s,box-shadow .2s}
+    .rcard:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.5)}
+    .rhead{padding:16px 18px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border)}
+    .rhl{flex:1}
+    .rcat{font-size:.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:2px 8px;border-radius:6px;display:inline-block;margin-bottom:8px}
+    .cdes{background:rgba(224,120,32,0.2);color:var(--naranja2)}
+    .calm{background:rgba(46,138,88,0.2);color:var(--verde2)}
+    .ccom{background:rgba(32,96,160,0.2);color:#60A0E0}
+    .cbeb{background:rgba(140,40,120,0.2);color:#C080D0}
+    .rnom{font-family:'DM Serif Display',serif;font-size:1.2rem}
+    .pbox{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-bottom:1px solid var(--border)}
+    .pcell{background:var(--card);padding:10px 12px;text-align:center}
+    .pval{font-size:.95rem;font-weight:700;line-height:1}
+    .petiq{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:3px}
+    .vcosto{color:#E08060}.vprecio{color:var(--naranja2)}
+    .mbadge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:.78rem;font-weight:700}
+    .mex{background:rgba(46,138,88,0.25);color:var(--verde2)}.mbu{background:rgba(80,160,80,0.2);color:#80C080}
+    .maj{background:rgba(200,160,0,0.2);color:#D0B040}.mten{background:rgba(192,48,48,0.2);color:#E08080}
+    .trow{padding:8px 18px 0;display:flex;justify-content:space-between;align-items:center}
+    .tbtn{background:none;border:1px solid var(--border);color:var(--muted);font-size:.75rem;padding:4px 12px;border-radius:8px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+    .tbtn:hover{border-color:var(--naranja);color:var(--naranja2)}
+    .tbtn.edit{border-color:rgba(46,138,88,0.4);color:var(--verde2)}
+    .tbtn.edit:hover{background:rgba(46,138,88,0.1)}
+    .rdet{display:none}
+    .rcard.exp .rdet{display:block}
+    .rbody{padding:14px 18px}
+    .stit{font-size:.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;margin-top:14px;display:flex;align-items:center;gap:6px}
+    .stit:first-child{margin-top:0}
+    .itab{width:100%;border-collapse:collapse}
+    .itab tr{border-bottom:1px solid rgba(255,255,255,0.04)}
+    .itab tr:last-child{border-bottom:none}
+    .itab td{padding:5px 0;font-size:.83rem;vertical-align:top}
+    .icant{color:var(--muted);text-align:right;padding-right:12px;white-space:nowrap}
+    .icosto{color:#E08060;text-align:right;font-weight:600;white-space:nowrap}
+    .plist{list-style:none}
+    .plist li{display:flex;gap:10px;font-size:.83rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.45}
+    .plist li:last-child{border-bottom:none}
+    .pnum{background:var(--naranja);color:white;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0;margin-top:1px}
+    .nota{background:rgba(224,120,32,0.1);border-left:3px solid var(--naranja);border-radius:0 8px 8px 0;padding:8px 12px;font-size:.8rem;color:var(--muted);margin-top:10px;line-height:1.45}
+    .wabtn{display:flex;align-items:center;justify-content:center;gap:6px;background:#25D366;color:white;border:none;border-radius:8px;padding:8px 0;width:100%;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;margin-top:12px}
+    .wabtn:hover{background:#1ebe5d}
+    .empty{text-align:center;padding:60px 24px;color:var(--muted);grid-column:1/-1}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+    .modal-overlay.open{display:flex}
+    .mbox{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:26px 22px;width:100%;max-width:560px;margin:auto}
+    .mbox h3{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--naranja2);margin-bottom:6px}
+    .mbox p{font-size:.83rem;color:var(--muted);margin-bottom:16px}
+    .mr{margin-bottom:12px}
+    .mr label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px}
+    .mr input,.mr select,.mr textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
+    .mr input:focus,.mr select:focus,.mr textarea:focus{border-color:var(--naranja)}
+    .mr input::placeholder,.mr textarea::placeholder{color:var(--muted)}
+    .stit2{font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+    .ingrow{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center}
+    .ingrow input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.83rem;outline:none;width:100%}
+    .ingrow input:focus{border-color:var(--naranja)}
+    .ingrow input::placeholder{color:var(--muted)}
+    .pasorow{display:grid;grid-template-columns:1fr auto;gap:6px;margin-bottom:6px;align-items:center}
+    .pasorow input{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.83rem;outline:none;width:100%}
+    .pasorow input:focus{border-color:var(--naranja)}
+    .pasorow input::placeholder{color:var(--muted)}
+    .badd{background:none;border:1px dashed var(--border);color:var(--muted);border-radius:8px;padding:7px 14px;font-family:'DM Sans',sans-serif;font-size:.8rem;cursor:pointer;width:100%;margin-top:4px}
+    .badd:hover{border-color:var(--naranja);color:var(--naranja2)}
+    .bdel{background:none;border:none;color:#E08080;cursor:pointer;font-size:1rem;padding:3px;flex-shrink:0}
+    .mbtns{display:flex;gap:8px;margin-top:20px}
+    .bcancel{flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:11px;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .bok{flex:2;background:var(--naranja);border:none;color:white;border-radius:10px;padding:11px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer}
+    .bok:hover{background:var(--naranja2)}
+    .bdanger{background:rgba(176,48,48,0.2);border:1px solid rgba(176,48,48,0.4);color:#E08080;border-radius:10px;padding:11px;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .flash{position:fixed;bottom:24px;right:24px;background:var(--naranja);color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:.88rem;box-shadow:0 4px 20px rgba(0,0,0,0.4);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:300}
+    .flash.show{opacity:1;transform:translateY(0)}
+    @media(max-width:600px){.grid{grid-template-columns:1fr;padding:14px}.ingrow{grid-template-columns:1fr 1fr auto}}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hl">
+    <span style="font-size:2rem">🍳</span>
+    <div><div class="htit">Recetario Restaurante</div><div class="hsub"><span class="sync-dot" id="sd"></span>Family · Menú Diurno · Guapi</div></div>
+  </div>
+  <div class="hr">
+    <button class="hbtn" onclick="openReceta(null)">+ Nueva receta</button>
+    <a href="index.html" class="back-btn">← Inicio</a>
+  </div>
+</div>
+
+<div class="sbar">
+  <input type="text" id="srch" placeholder="🔍 Buscar receta o ingrediente..." oninput="render()">
+  <span class="scnt" id="scnt"></span>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('',this)">Todas</button>
+  <button class="tab" onclick="setTab('desayuno',this)">🌅 Desayunos</button>
+  <button class="tab" onclick="setTab('almuerzo',this)">☀️ Almuerzos</button>
+  <button class="tab" onclick="setTab('complemento',this)">🍟 Complementos</button>
+  <button class="tab" onclick="setTab('bebida',this)">🥤 Bebidas</button>
+</div>
+
+<div class="grid" id="grid"></div>
+
+<!-- MODAL EDITOR -->
+<div class="modal-overlay" id="mRec">
+  <div class="mbox">
+    <h3 id="mTit">Nueva receta</h3>
+    <p>Los cambios se sincronizan en todos los dispositivos.</p>
+    <div style="display:grid;grid-template-columns:1fr 80px 1fr;gap:10px">
+      <div class="mr"><label>Nombre de la receta</label><input id="rNom" placeholder="Ej: Almuerzo Full"></div>
+      <div class="mr"><label>Emoji</label><input id="rEm" placeholder="🍗" maxlength="4"></div>
+      <div class="mr"><label>Categoría</label>
+        <select id="rCat">
+          <option value="desayuno">🌅 Desayuno</option>
+          <option value="almuerzo">☀️ Almuerzo</option>
+          <option value="complemento">🍟 Complemento</option>
+          <option value="bebida">🥤 Bebida</option>
+        </select></div>
+    </div>
+    <div class="mr"><label>Precio de venta ($)</label><input type="number" id="rPrecio" placeholder="0" min="0" step="500"></div>
+
+    <div class="stit2">🧺 Ingredientes</div>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:6px;margin-bottom:4px">
+      <span style="font-size:.7rem;color:var(--muted)">Ingrediente</span>
+      <span style="font-size:.7rem;color:var(--muted)">Cantidad</span>
+      <span style="font-size:.7rem;color:var(--muted)">Costo ($)</span>
+      <span></span>
+    </div>
+    <div id="ingList"></div>
+    <button class="badd" onclick="addIng()">+ Agregar ingrediente</button>
+
+    <div class="stit2">👩‍🍳 Pasos de preparación</div>
+    <div id="pasoList"></div>
+    <button class="badd" onclick="addPaso()">+ Agregar paso</button>
+
+    <div class="mr" style="margin-top:14px"><label>💡 Nota operativa (opcional)</label>
+      <textarea id="rNota" rows="2" placeholder="Ej: Si no hay pollo distribuidor, subir precio a $18.000"></textarea></div>
+
+    <div class="mbtns">
+      <button class="bcancel" onclick="cm('mRec')">Cancelar</button>
+      <button class="bdanger" id="bDelRec" onclick="delReceta()" style="display:none">🗑 Eliminar</button>
+      <button class="bok" onclick="saveReceta()">💾 Guardar receta</button>
+    </div>
+  </div>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyBcpPQLsMjnRthybaIMNdQG_kS0injYko0",
+  authDomain:"family-comidas-rapidas.firebaseapp.com",
+  databaseURL:"https://family-comidas-rapidas-default-rtdb.firebaseio.com",
+  projectId:"family-comidas-rapidas",
+  storageBucket:"family-comidas-rapidas.firebasestorage.app",
+  messagingSenderId:"326594164908",
+  appId:"1:326594164908:web:2e2aa9f71a7f457df54709"
+});
+const db=firebase.database();
+const R='restaurante/recetas';
+
+let recetas={},tabActual='',editId=null;
+
+const CATS={desayuno:{l:'Desayuno',c:'cdes'},almuerzo:{l:'Almuerzo',c:'calm'},complemento:{l:'Complemento',c:'ccom'},bebida:{l:'Bebida',c:'cbeb'}};
+
+const DEFAULTS={
+  'desayuno-basico':{nombre:'Desayuno Básico',categoria:'desayuno',emoji:'🍳',precio:8000,
+    ingredientes:[{nombre:'Huevos',cant:'2 und',costo:1400},{nombre:'Arepa o pan',cant:'1 und',costo:1000},{nombre:'Tinto/chocolate',cant:'1 taza',costo:400},{nombre:'Tomate, cebolla, sal',cant:'pizca',costo:200},{nombre:'Aceite + gas',cant:'c/s',costo:300}],
+    pasos:['Sofreír tomate y cebolla picada fina.','Batir huevos con sal, agregar al sofrito y revolver hasta cuajar.','Calentar arepa o pan en plancha.','Servir con tinto o chocolate.'],
+    nota:'Precio mínimo $8.000 para cubrir costos en Guapi.'},
+  'desayuno-casero':{nombre:'Desayuno Casero',categoria:'desayuno',emoji:'🍲',precio:10000,
+    ingredientes:[{nombre:'Huevos a la cazuela',cant:'2 und',costo:1400},{nombre:'Arroz blanco',cant:'1 porción',costo:750},{nombre:'Arepa',cant:'1 und',costo:1000},{nombre:'Bebida',cant:'1 taza',costo:400},{nombre:'Hogao (tomate, cebolla)',cant:'base',costo:300},{nombre:'Gas',cant:'—',costo:300}],
+    pasos:['Cocinar arroz (puede ser del día).','Preparar hogao: sofreír tomate y cebolla en aceite 3 min.','Romper huevos sobre el hogao, tapar y cocinar 3–4 min a fuego bajo.','Servir con arroz, arepa y bebida.'],
+    nota:'El arroz puede cocinarse en cantidad al inicio del turno.'},
+  'desayuno-salchicha':{nombre:'Desayuno Proteína · Salchicha',categoria:'desayuno',emoji:'🌭',precio:12000,
+    ingredientes:[{nombre:'Huevos pericos',cant:'2 und',costo:1400},{nombre:'Salchicha Ranchera',cant:'2 und',costo:3000},{nombre:'Arepa',cant:'1 und',costo:1000},{nombre:'Bebida',cant:'1 taza',costo:400},{nombre:'Tomate, cebolla, aceite',cant:'sofrito',costo:200},{nombre:'Gas',cant:'—',costo:250}],
+    pasos:['Dorar salchichas en sartén con aceite. Reservar.','En el mismo sartén sofreír tomate y cebolla.','Agregar huevos batidos y revolver hasta cuajar.','Servir con salchichas al lado, arepa y bebida.'],
+    nota:''},
+  'desayuno-carne':{nombre:'Desayuno Proteína · Carne',categoria:'desayuno',emoji:'🥩',precio:14000,
+    ingredientes:[{nombre:'Huevos pericos',cant:'2 und',costo:1400},{nombre:'Carne de res (bistec)',cant:'100 g',costo:2800},{nombre:'Arepa',cant:'1 und',costo:1000},{nombre:'Bebida',cant:'1 taza',costo:400},{nombre:'Tomate, cebolla, ajo',cant:'sofrito',costo:300},{nombre:'Gas',cant:'—',costo:300}],
+    pasos:['Marinar carne 15 min: sal, comino, ajo.','Sellar en sartén muy caliente 2–3 min por lado.','Sofreír tomate y cebolla en el mismo sartén.','Agregar huevos y revolver. Servir con carne, arepa y bebida.'],
+    nota:'Verificar costo de carne mensualmente con la distribuidora.'},
+  'almuerzo-corriente':{nombre:'Almuerzo Corriente',categoria:'almuerzo',emoji:'🍗',precio:16000,
+    ingredientes:[{nombre:'Pollo broaster ¼ presa',cant:'1 presa',costo:2750},{nombre:'Harina de broaster + condimentos',cant:'porción',costo:300},{nombre:'Aceite para freír',cant:'porción',costo:1500},{nombre:'Arroz blanco',cant:'1 porción',costo:750},{nombre:'Papa cocida',cant:'300 g',costo:870},{nombre:'Ensalada (col, tomate, zanahoria)',cant:'1 porción',costo:500},{nombre:'Agua de panela',cant:'1 vaso',costo:200},{nombre:'Gas',cant:'—',costo:400}],
+    pasos:['Mezclar harina con sal, pimienta, ajo en polvo y achiote.','Pasar presa por harina presionando bien.','Freír en aceite a 175°C durante 12–15 min.','Servir arroz + acompañante en plato grande.','Pollo al lado con ensalada en bowl aparte. Jugo con hielo.'],
+    nota:'Incluye agua de panela (no jugo) para mantener margen en 55% a $16.000. Si el cliente pide jugo, cobrar $4.000 adicionales.'},
+  'almuerzo-especial':{nombre:'Almuerzo Especial',categoria:'almuerzo',emoji:'⭐',precio:18000,
+    ingredientes:[{nombre:'Pollo broaster ¼ presa',cant:'1 presa',costo:2750},{nombre:'Harina de broaster',cant:'porción',costo:300},{nombre:'Aceite para freír',cant:'porción',costo:1800},{nombre:'Arroz blanco',cant:'1 porción',costo:750},{nombre:'Papas fritas',cant:'300 g',costo:870},{nombre:'Ensalada',cant:'1 porción',costo:500},{nombre:'Jugo natural',cant:'1 vaso',costo:1500},{nombre:'Gas',cant:'—',costo:400}],
+    pasos:['Preparar pollo broaster (mismos pasos que corriente).','Freír papas en bastones hasta dorar. Salar al salir.','Emplatar: arroz + pollo + papas. Ensalada en bowl aparte. Jugo.'],
+    nota:'Diferencia con el corriente: papas fritas. El precio diferencial de $2.000 cubre el aceite adicional.'},
+  'almuerzo-full':{nombre:'Almuerzo Full',categoria:'almuerzo',emoji:'🏆',precio:22000,
+    ingredientes:[{nombre:'Pollo broaster ¼ presa',cant:'1 presa',costo:2750},{nombre:'Harina de broaster',cant:'porción',costo:300},{nombre:'Aceite para freír',cant:'porción',costo:1800},{nombre:'Arroz blanco',cant:'1 porción',costo:750},{nombre:'Papas fritas',cant:'300 g',costo:870},{nombre:'Tajadas de maduro',cant:'3 tajadas (½ plátano)',costo:1500},{nombre:'Ensalada',cant:'1 porción',costo:500},{nombre:'Jugo natural',cant:'1 vaso',costo:1500},{nombre:'Gas',cant:'—',costo:500}],
+    pasos:['Preparar pollo broaster.','Cortar plátano maduro en diagonal y freír ~3 min por lado.','Freír papas hasta dorar.','Emplatar generosamente: arroz + pollo + papas + tajadas. Ensalada aparte. Jugo.'],
+    nota:'⭐ El más rentable del menú (~59% margen). Ofrecer siempre cuando pidan "especial".'},
+  'papas-fritas':{nombre:'Porción de Papas Fritas',categoria:'complemento',emoji:'🍟',precio:5000,
+    ingredientes:[{nombre:'Papa (bastones)',cant:'300 g',costo:870},{nombre:'Aceite para freír',cant:'porción',costo:800},{nombre:'Sal + condimento',cant:'c/s',costo:100},{nombre:'Gas',cant:'—',costo:150}],
+    pasos:['Pelar y cortar papa en bastones parejos.','Freír en aceite a 180°C durante 8–10 min.','Escurrir y salar inmediatamente.'],
+    nota:'⭐ Complemento más rentable (73% margen). Ofrecer siempre como adición.'},
+  'pollo-adicional':{nombre:'Porción de Pollo Adicional',categoria:'complemento',emoji:'🍗',precio:7000,
+    ingredientes:[{nombre:'Presa de pollo',cant:'1 presa',costo:2750},{nombre:'Harina de broaster',cant:'porción',costo:250},{nombre:'Aceite',cant:'porción',costo:800},{nombre:'Gas',cant:'—',costo:200}],
+    pasos:['Pasar por harina y freír 12–15 min igual que en los almuerzos.','Servir como presa adicional.'],
+    nota:''},
+  'queso-extra':{nombre:'Queso Extra',categoria:'complemento',emoji:'🧀',precio:2000,
+    ingredientes:[{nombre:'Queso costeño',cant:'30 g',costo:800}],
+    pasos:['Porcionar 30 g siempre igual (usar báscula o molde). Servir al lado del plato.'],
+    nota:''},
+  'tinto':{nombre:'Tinto',categoria:'bebida',emoji:'☕',precio:1000,
+    ingredientes:[{nombre:'Café molido',cant:'8–10 g',costo:200},{nombre:'Agua caliente',cant:'180 ml',costo:50},{nombre:'Azúcar (opcional)',cant:'al gusto',costo:30},{nombre:'Gas',cant:'—',costo:50}],
+    pasos:['Calentar agua antes del hervor.','Colar con colador de tela sobre taza.','Servir con azúcar aparte.'],
+    nota:'73% de margen. Café fresco: no usar café colado de más de 2 horas.'},
+  'chocolate':{nombre:'Chocolate',categoria:'bebida',emoji:'🍫',precio:2000,
+    ingredientes:[{nombre:'Chocolate en pastilla',cant:'¼ pastilla',costo:500},{nombre:'Agua o leche',cant:'200 ml',costo:200},{nombre:'Azúcar',cant:'al gusto',costo:50},{nombre:'Gas',cant:'—',costo:80}],
+    pasos:['Calentar agua o leche.','Agregar chocolate troceado, revolver hasta disolver.','Servir caliente en pocillo.'],
+    nota:'Con leche el costo sube ~$300. Precio con leche: $2.500.'},
+  'jugo':{nombre:'Jugo Natural',categoria:'bebida',emoji:'🥤',precio:4000,
+    ingredientes:[{nombre:'Pulpa de fruta',cant:'80–100 g',costo:1200},{nombre:'Agua',cant:'250 ml',costo:50},{nombre:'Azúcar',cant:'2 cdas',costo:100},{nombre:'Hielo (si hay)',cant:'al gusto',costo:50}],
+    pasos:['Mezclar pulpa + agua + azúcar.','Servir en vaso grande con hielo si está disponible.'],
+    nota:'Usar pulpa congelada para control de costos.'},
+  'gaseosa':{nombre:'Gaseosa',categoria:'bebida',emoji:'🥫',precio:4000,
+    ingredientes:[{nombre:'Gaseosa personal 300–400 ml',cant:'1 und',costo:1800}],
+    pasos:['Servir fría directo de nevera.'],
+    nota:'Precio puede variar $3.000–5.000 según tamaño.'},
+};
+
+function fp(v){return'$'+v.toLocaleString('es-CO')}
+function gid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+function flash(m,c){const e=document.getElementById('flash');e.textContent=m;e.style.background=c||'var(--naranja)';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
+function cm(id){document.getElementById(id).classList.remove('open')}
+function setSd(s){const d=document.getElementById('sd');d.className='sync-dot'+(s==='ok'?' ok':s==='err'?' err':'')}
+
+function costo(r){return(r.ingredientes||[]).reduce((s,i)=>s+(i.costo||0),0)}
+function margen(r){const c=costo(r);return r.precio?Math.round((r.precio-c)/r.precio*100):0}
+function mClass(p){if(p>=60)return'mex';if(p>=50)return'mbu';if(p>=40)return'maj';return'mten'}
+function mLabel(p){if(p>=60)return'✅ Excelente';if(p>=50)return'👍 Bueno';if(p>=40)return'⚠️ Ajustado';return'🔴 Tenso'}
+function catCls(c){return{desayuno:'cdes',almuerzo:'calm',complemento:'ccom',bebida:'cbeb'}[c]||''}
+function catLabel(c){return{desayuno:'Desayuno',almuerzo:'Almuerzo',complemento:'Complemento',bebida:'Bebida'}[c]||c}
+
+// FIREBASE
+db.ref(R).on('value',s=>{
+  const v=s.val();
+  if(!v){db.ref(R).set(DEFAULTS);recetas=DEFAULTS;}
+  else recetas=v;
+  setSd('ok');render();
+},()=>setSd('err'));
+
+function setTab(t,btn){
+  tabActual=t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  render();
+}
+
+function render(){
+  const q=(document.getElementById('srch').value||'').toLowerCase();
+  const ids=Object.keys(recetas).filter(id=>{
+    const r=recetas[id];
+    const catOk=!tabActual||r.categoria===tabActual;
+    const busOk=!q||r.nombre.toLowerCase().includes(q)||(r.ingredientes||[]).some(i=>i.nombre.toLowerCase().includes(q));
+    return catOk&&busOk;
+  });
+  document.getElementById('scnt').textContent=ids.length+' receta'+(ids.length!==1?'s':'');
+  const grid=document.getElementById('grid');
+  if(!ids.length){grid.innerHTML='<div class="empty"><div style="font-size:3rem;margin-bottom:12px">🔍</div><p>Sin recetas. Usa "+ Nueva receta" para agregar.</p></div>';return;}
+  grid.innerHTML=ids.map(id=>cardHtml(id,recetas[id])).join('');
+}
+
+function cardHtml(id,r){
+  const c=costo(r);const m=margen(r);
+  const ings=(r.ingredientes||[]).map(i=>`<tr><td>${i.nombre}</td><td class="icant">${i.cant||''}</td><td class="icosto">${fp(i.costo||0)}</td></tr>`).join('');
+  const pasos=(r.pasos||[]).map((p,i)=>`<li><div class="pnum">${i+1}</div><div>${p}</div></li>`).join('');
+  const nota=r.nota?`<div class="nota">💡 ${r.nota}</div>`:'';
+  const waMsg=encodeURIComponent(`*RECETA: ${r.nombre}*\nCosto: ${fp(c)} · Precio: ${fp(r.precio||0)} · Margen: ${m}%\n\nIngredientes:\n`+(r.ingredientes||[]).map(i=>`• ${i.nombre}: ${i.cant} (${fp(i.costo||0)})`).join('\n')+`\n\n_Restaurante Family · Guapi_`);
+  return`<div class="rcard" id="rc-${id}">
+    <div class="rhead">
+      <div class="rhl"><div class="rcat ${catCls(r.categoria)}">${catLabel(r.categoria)}</div><div class="rnom">${r.nombre}</div></div>
+      <span style="font-size:2rem">${r.emoji||'🍽'}</span>
+    </div>
+    <div class="pbox">
+      <div class="pcell"><div class="pval vcosto">${fp(c)}</div><div class="petiq">Costo</div></div>
+      <div class="pcell"><div class="pval vprecio">${fp(r.precio||0)}</div><div class="petiq">Precio venta</div></div>
+      <div class="pcell"><div class="pval"><span class="mbadge ${mClass(m)}">${m}% · ${mLabel(m)}</span></div><div class="petiq">Margen</div></div>
+    </div>
+    <div class="trow">
+      <button class="tbtn" onclick="toggle('${id}')">▼ Ver receta</button>
+      <button class="tbtn edit" onclick="openReceta('${id}')">✏️ Editar</button>
+    </div>
+    <div class="rdet">
+      <div class="rbody">
+        <div class="stit">🧺 Ingredientes</div>
+        <table class="itab"><tbody>${ings}</tbody></table>
+        <div class="stit">👩‍🍳 Preparación</div>
+        <ol class="plist">${pasos}</ol>
+        ${nota}
+        <a class="wabtn" href="https://wa.me/?text=${waMsg}" target="_blank">📲 Compartir por WhatsApp</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggle(id){
+  const c=document.getElementById('rc-'+id);
+  const btn=c.querySelector('.tbtn');
+  const open=c.classList.toggle('exp');
+  btn.textContent=open?'▲ Cerrar':'▼ Ver receta';
+}
+
+// EDITOR
+let ingCount=0,pasoCount=0;
+
+function openReceta(id){
+  editId=id;
+  const bd=document.getElementById('bDelRec');
+  if(id){
+    const r=recetas[id];
+    document.getElementById('mTit').textContent='Editar receta';
+    document.getElementById('rNom').value=r.nombre||'';
+    document.getElementById('rEm').value=r.emoji||'';
+    document.getElementById('rCat').value=r.categoria||'desayuno';
+    document.getElementById('rPrecio').value=r.precio||0;
+    document.getElementById('rNota').value=r.nota||'';
+    renderIngEdit(r.ingredientes||[]);
+    renderPasoEdit(r.pasos||[]);
+    bd.style.display='block';
+  } else {
+    document.getElementById('mTit').textContent='Nueva receta';
+    ['rNom','rEm','rNota'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('rCat').value='desayuno';
+    document.getElementById('rPrecio').value='';
+    renderIngEdit([{nombre:'',cant:'',costo:0}]);
+    renderPasoEdit(['']);
+    bd.style.display='none';
+  }
+  document.getElementById('mRec').classList.add('open');
+  setTimeout(()=>document.getElementById('rNom').focus(),200);
+}
+
+function renderIngEdit(ings){
+  ingCount=0;
+  document.getElementById('ingList').innerHTML='';
+  ings.forEach(i=>addIngRow(i));
+}
+
+function addIng(){addIngRow({nombre:'',cant:'',costo:0});}
+
+function addIngRow(i){
+  const n=ingCount++;
+  const div=document.createElement('div');
+  div.className='ingrow';div.id='ing-'+n;
+  div.innerHTML=`
+    <input type="text" placeholder="Ingrediente" value="${i.nombre||''}" id="in-${n}">
+    <input type="text" placeholder="Cantidad" value="${i.cant||''}" id="ic-${n}">
+    <input type="number" placeholder="Costo $" value="${i.costo||''}" id="ip-${n}" min="0">
+    <button class="bdel" onclick="this.parentNode.remove()">✕</button>`;
+  document.getElementById('ingList').appendChild(div);
+}
+
+function renderPasoEdit(pasos){
+  pasoCount=0;
+  document.getElementById('pasoList').innerHTML='';
+  pasos.forEach(p=>addPasoRow(p));
+}
+
+function addPaso(){addPasoRow('');}
+
+function addPasoRow(txt){
+  const n=pasoCount++;
+  const div=document.createElement('div');
+  div.className='pasorow';div.id='paso-'+n;
+  div.innerHTML=`
+    <input type="text" placeholder="Paso ${n+1}" value="${txt||''}" id="ps-${n}">
+    <button class="bdel" onclick="this.parentNode.remove()">✕</button>`;
+  document.getElementById('pasoList').appendChild(div);
+}
+
+function saveReceta(){
+  const nom=document.getElementById('rNom').value.trim();
+  const em=document.getElementById('rEm').value.trim();
+  const cat=document.getElementById('rCat').value;
+  const precio=parseInt(document.getElementById('rPrecio').value)||0;
+  const nota=document.getElementById('rNota').value.trim();
+  if(!nom){flash('Escribe el nombre de la receta','var(--rojo)');return;}
+
+  // Recolectar ingredientes
+  const ings=[];
+  document.querySelectorAll('#ingList .ingrow').forEach(row=>{
+    const id=row.id.replace('ing-','');
+    const n=document.getElementById('in-'+id)?.value.trim();
+    const c=document.getElementById('ic-'+id)?.value.trim();
+    const p=parseInt(document.getElementById('ip-'+id)?.value)||0;
+    if(n)ings.push({nombre:n,cant:c||'',costo:p});
+  });
+
+  // Recolectar pasos
+  const pasos=[];
+  document.querySelectorAll('#pasoList .pasorow').forEach(row=>{
+    const id=row.id.replace('paso-','');
+    const t=document.getElementById('ps-'+id)?.value.trim();
+    if(t)pasos.push(t);
+  });
+
+  const receta={nombre:nom,emoji:em||'🍽',categoria:cat,precio,ingredientes:ings,pasos,nota};
+  const rid=editId||gid();
+  db.ref(R+'/'+rid).set(receta)
+    .then(()=>{flash('✅ Receta guardada');cm('mRec');})
+    .catch(()=>flash('Error guardando','var(--rojo)'));
+}
+
+function delReceta(){
+  if(!editId)return;
+  const nom=recetas[editId]?.nombre||'esta receta';
+  if(!confirm(`¿Eliminar "${nom}"?`))return;
+  db.ref(R+'/'+editId).remove()
+    .then(()=>{flash('🗑 Receta eliminada');cm('mRec');})
+    .catch(()=>flash('Error','var(--rojo)'));
+}
+</script>
+</body>
+</html>

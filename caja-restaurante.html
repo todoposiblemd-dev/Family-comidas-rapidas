@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Caja Restaurante · Family</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <script>
+    // Verificar que Firebase cargó correctamente
+    window.addEventListener('load', function() {
+      if (typeof firebase === 'undefined') {
+        document.body.innerHTML = '<div style="font-family:sans-serif;padding:40px;text-align:center;"><h2>⚠️ Sin conexión a internet</h2><p>Este sistema necesita internet para funcionar con Firebase.<br>Conéctate y recarga la página.</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;background:#2E8A58;color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer;">🔄 Recargar</button></div>';
+      }
+    });
+  </script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{--bg:#0f1a10;--bg2:#141f15;--card:#1b2b1d;--card2:#223325;--verde:#2E8A58;--verde2:#3AAA6A;--naranja:#D07020;--naranja2:#E09040;--rojo:#B03030;--texto:#e4ede6;--muted:#7aa882;--border:rgba(255,255,255,0.08)}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--texto);min-height:100vh}
+    .header{background:linear-gradient(135deg,#0a150c,#182a1a);border-bottom:2px solid var(--verde);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .hl{display:flex;align-items:center;gap:10px}
+    .htit{font-family:'DM Serif Display',serif;font-size:1.3rem;color:var(--verde2)}
+    .hsub{font-size:.72rem;color:var(--muted)}
+    .hr{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .hinfo{background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:.75rem;color:var(--muted);text-align:right}
+    .hinfo strong{color:var(--verde2);display:block;font-size:.9rem}
+    .hbtn{background:var(--verde);color:white;border:none;border-radius:10px;padding:9px 14px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer}
+    .hbtn:hover{background:var(--verde2)}
+    .hbtn.sec{background:rgba(255,255,255,0.08);border:1px solid var(--border);color:var(--muted)}
+    .hbtn.sec:hover{background:rgba(255,255,255,0.15);color:var(--texto)}
+    .back-btn{text-decoration:none;background:rgba(255,255,255,0.07);border:1px solid var(--border);color:var(--muted);padding:7px 12px;border-radius:8px;font-size:.78rem}
+    .main-layout{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 64px)}
+    .pprod{border-right:1px solid var(--border);display:flex;flex-direction:column}
+    .codigo-bar{background:var(--bg2);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:10px}
+    .codigo-bar label{font-size:.8rem;color:var(--muted);white-space:nowrap}
+    .ci{width:80px;background:var(--card);border:2px solid var(--verde);border-radius:10px;padding:8px 12px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:1.1rem;font-weight:700;text-align:center;outline:none}
+    .cantI{width:60px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.9rem;text-align:center;outline:none}
+    .badd{background:var(--verde);color:white;border:none;border-radius:10px;padding:9px 16px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer}
+    .badd:hover{background:var(--verde2)}
+    .chint{font-size:.72rem;color:var(--muted)}
+    .tabs-cat{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;display:flex;gap:2px;overflow-x:auto}
+    .tcat{background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:600;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:all .2s}
+    .tcat:hover{color:var(--texto)}.tcat.active{color:var(--verde2);border-bottom-color:var(--verde)}
+    .pscroll{flex:1;overflow-y:auto;padding:14px 16px}
+    .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:10px}
+    .pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 10px;cursor:pointer;transition:all .18s;text-align:center;position:relative;user-select:none}
+    .pcard:hover{background:var(--card2);border-color:var(--verde);transform:translateY(-2px)}
+    .pcard:active{transform:scale(.97)}
+    .pcod{position:absolute;top:6px;left:8px;font-size:.65rem;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.06);padding:1px 5px;border-radius:5px}
+    .pem{font-size:1.6rem;margin-bottom:5px}
+    .pnom{font-size:.78rem;font-weight:600;line-height:1.3;margin-bottom:4px}
+    .ppr{font-size:.82rem;font-weight:700;color:var(--verde2)}
+    .ppedido{display:flex;flex-direction:column;background:var(--bg2)}
+    .pedhead{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .pedhead h3{font-family:'DM Serif Display',serif;font-size:1.1rem}
+    .blimp{background:none;border:1px solid rgba(180,60,60,0.4);color:#E08080;border-radius:8px;padding:5px 12px;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+    .pitems{flex:1;overflow-y:auto;padding:10px 14px}
+    .ivacio{text-align:center;padding:40px 16px;color:var(--muted);font-size:.85rem}
+    .ivacio .ico{font-size:2.5rem;margin-bottom:8px}
+    .pitem{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+    .iinfo{flex:1}
+    .inom{font-size:.84rem;font-weight:600}
+    .isub{font-size:.78rem;color:var(--verde2);font-weight:700;margin-top:2px}
+    .cctr{display:flex;align-items:center;gap:6px}
+    .cbtn{background:var(--card2);border:1px solid var(--border);color:var(--texto);width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .15s}
+    .cbtn:hover{background:var(--verde)}
+    .cnum{font-weight:700;font-size:.9rem;min-width:20px;text-align:center}
+    .bdel{background:none;border:none;color:#E08080;cursor:pointer;font-size:1rem;padding:2px;opacity:.7}
+    .bdel:hover{opacity:1}
+    .dest-row{padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg2)}
+    .dest-row label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:7px;font-weight:600;text-transform:uppercase;letter-spacing:.8px}
+    .dbtns{display:flex;flex-wrap:wrap;gap:5px}
+    .dbtn{background:var(--card2);border:2px solid var(--border);color:var(--texto);border-radius:8px;padding:5px 10px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+    .dbtn:hover{border-color:var(--verde)}.dbtn.selected{background:var(--verde);border-color:var(--verde2);color:white}
+    .dind{margin-top:7px;font-size:.78rem;color:var(--verde2);font-weight:700;min-height:18px}
+    .nota-row{padding:6px 14px;border-bottom:1px solid var(--border)}
+    .nota-input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 10px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.8rem;outline:none;resize:none}
+    .nota-input::placeholder{color:var(--muted)}
+    .resumen{padding:12px 14px;border-top:1px solid var(--border);background:var(--card)}
+    .rrow{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted);margin-bottom:4px}
+    .rtotal{display:flex;justify-content:space-between;font-size:1.2rem;font-weight:700;color:var(--texto);margin-top:8px;padding-top:8px;border-top:1px solid var(--border)}
+    .rtotal .monto{color:var(--verde2)}
+    .pago-row{padding:10px 14px;background:var(--card);border-top:1px solid var(--border)}
+    .pago-row label{font-size:.75rem;color:var(--muted);display:block;margin-bottom:6px}
+    .pbtns{display:flex;gap:6px}
+    .pbtn{flex:1;background:var(--card2);border:2px solid var(--border);color:var(--texto);border-radius:10px;padding:8px 6px;font-family:'DM Sans',sans-serif;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .18s;text-align:center}
+    .pbtn:hover{border-color:var(--verde)}.pbtn.sel{background:var(--verde);border-color:var(--verde2);color:white}
+    .vrow{padding:10px 14px;background:var(--card);border-top:1px solid var(--border)}
+    .vrow label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.8px}
+    .vir{display:flex;align-items:center;gap:8px}
+    .vinput{flex:1;background:var(--bg);border:2px solid var(--verde);border-radius:10px;padding:9px 12px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;outline:none}
+    .vres{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:9px 14px;font-size:.9rem;font-weight:700;white-space:nowrap;min-width:110px;text-align:center}
+    .vok{color:var(--verde2)}.verr{color:#E08080}
+    .ebtns{padding:10px 14px 14px;background:var(--card);display:flex;flex-direction:column;gap:8px}
+    .bcocina{background:var(--naranja);color:white;border:none;border-radius:12px;padding:13px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .bcocina:hover{background:var(--naranja2)}
+    .bconf{background:var(--verde);color:white;border:none;border-radius:12px;padding:13px;font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+    .bconf:hover{background:var(--verde2)}
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;padding:16px}
+    .modal-overlay.open{display:flex}
+    .mbox{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:26px 22px;width:100%;max-height:90vh;overflow-y:auto}
+    .mbox h3{font-family:'DM Serif Display',serif;font-size:1.25rem;color:var(--verde2);margin-bottom:6px}
+    .mbox p{font-size:.83rem;color:var(--muted);margin-bottom:16px}
+    .mr{margin-bottom:12px}
+    .mr label{font-size:.72rem;color:var(--muted);display:block;margin-bottom:4px}
+    .mr input,.mr select,.mr textarea{width:100%;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:9px 12px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.88rem;outline:none}
+    .mr input:focus,.mr select:focus{border-color:var(--verde)}
+    .mr input::placeholder{color:var(--muted)}
+    .mbtns{display:flex;gap:8px;margin-top:16px}
+    .bcancel{flex:1;background:none;border:1px solid var(--border);color:var(--muted);border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .bok{flex:2;background:var(--verde);border:none;color:white;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-weight:700;cursor:pointer}
+    .bok:hover{background:var(--verde2)}
+    .bdanger{background:rgba(176,48,48,0.2);border:1px solid rgba(176,48,48,0.4);color:#E08080;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;cursor:pointer}
+    .dom-item{background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:12px 16px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:10px;margin-bottom:8px}
+    .dom-item:hover{border-color:var(--verde)}.dom-item.sel{background:rgba(46,138,88,0.15);border-color:var(--verde2)}
+    .flash{position:fixed;bottom:24px;right:24px;background:var(--verde);color:white;padding:12px 20px;border-radius:12px;font-weight:600;font-size:.88rem;box-shadow:0 4px 20px rgba(0,0,0,0.4);opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:300}
+    .flash.show{opacity:1;transform:translateY(0)}
+    @media(max-width:720px){.main-layout{grid-template-columns:1fr}.pprod{border-right:none;border-bottom:1px solid var(--border);max-height:55vh}.ppedido{max-height:45vh}}
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="hl">
+    <span style="font-size:1.8rem">🍳</span>
+    <div><div class="htit">Caja Restaurante</div><div class="hsub">Family · Menú Diurno · Guapi</div></div>
+  </div>
+  <div class="hr">
+    <div class="hinfo"><strong id="cntPed">0 pedidos</strong><span id="fechaHoy"></span></div>
+    <button class="hbtn" onclick="openCierre()">📊 Cierre</button>
+    <button class="hbtn sec" onclick="openAdmin()">⚙️ Admin</button>
+    <a href="index.html" class="back-btn">← Inicio</a>
+  </div>
+</div>
+
+<div class="main-layout">
+  <div class="pprod">
+    <div class="codigo-bar">
+      <label>Código</label>
+      <input type="number" id="codigoI" class="ci" min="1" max="99" placeholder="01" onkeydown="if(event.key==='Enter')addByCodigo()">
+      <label>Cant.</label>
+      <input type="number" id="cantI" class="cantI" min="1" value="1" onkeydown="if(event.key==='Enter')addByCodigo()">
+      <button class="badd" onclick="addByCodigo()">+ Agregar</button>
+      <span class="chint">Enter</span>
+    </div>
+    <div class="tabs-cat">
+      <button class="tcat active" onclick="setCat('',this)">Todas</button>
+      <button class="tcat" onclick="setCat('desayuno',this)">🌅 Desayunos</button>
+      <button class="tcat" onclick="setCat('almuerzo',this)">☀️ Almuerzos</button>
+      <button class="tcat" onclick="setCat('complemento',this)">🍟 Complementos</button>
+      <button class="tcat" onclick="setCat('bebida',this)">🥤 Bebidas</button>
+    </div>
+    <div class="pscroll"><div class="pgrid" id="pgrid"></div></div>
+  </div>
+
+  <div class="ppedido">
+    <div class="pedhead">
+      <h3>🧾 Pedido actual</h3>
+      <button class="blimp" onclick="limpiar()">🗑 Limpiar</button>
+    </div>
+    <div class="pitems" id="pitems">
+      <div class="ivacio"><div class="ico">🍳</div><p>Agrega productos<br>desde el menú</p></div>
+    </div>
+    <div class="dest-row">
+      <label>📍 Destino del pedido</label>
+      <div class="dbtns" id="dbtns">
+        <button class="dbtn" onclick="setDest('Mesa 1')">M1</button>
+        <button class="dbtn" onclick="setDest('Mesa 2')">M2</button>
+        <button class="dbtn" onclick="setDest('Mesa 3')">M3</button>
+        <button class="dbtn" onclick="setDest('Mesa 4')">M4</button>
+        <button class="dbtn" onclick="setDest('Mesa 5')">M5</button>
+        <button class="dbtn" onclick="setDest('Mesa 6')">M6</button>
+        <button class="dbtn" onclick="setDest('Mesa 7')">M7</button>
+        <button class="dbtn" onclick="setDest('Mesa 8')">M8</button>
+        <button class="dbtn" onclick="setDest('Mesa 9')">M9</button>
+        <button class="dbtn" onclick="setDest('Mesa 10')">M10</button>
+        <button class="dbtn" onclick="setDest('Para llevar')">🛍 Llevar</button>
+        <button class="dbtn" onclick="setDest('Domicilio')">🛵 Domicilio</button>
+      </div>
+      <div class="dind" id="dind">Sin seleccionar</div>
+    </div>
+    <div class="nota-row">
+      <textarea class="nota-input" id="nota" rows="2" placeholder="Nota especial (sin cebolla…)"></textarea>
+    </div>
+    <div class="resumen" id="resumen" style="display:none">
+      <div class="rrow"><span>Items</span><span id="rItems"></span></div>
+      <div class="rtotal"><span>TOTAL</span><span class="monto" id="rTotal">$0</span></div>
+    </div>
+    <div class="pago-row">
+      <label>Método de pago</label>
+      <div class="pbtns">
+        <button class="pbtn sel" id="p-efectivo" onclick="setPago('efectivo')">💵 Efectivo</button>
+        <button class="pbtn" id="p-nequi" onclick="setPago('nequi')">📱 Nequi</button>
+        <button class="pbtn" id="p-credito" onclick="setPago('credito')">📒 Crédito</button>
+      </div>
+    </div>
+    <div class="vrow" id="vrow">
+      <label>💵 Cliente paga</label>
+      <div class="vir">
+        <input type="number" class="vinput" id="vinput" placeholder="$ recibido" oninput="calcVueltas()" min="0" step="1000">
+        <div class="vres" id="vres">Cambio: –</div>
+      </div>
+    </div>
+    <div class="ebtns">
+      <button class="bcocina" onclick="enviarCocina()">🍳 Enviar a Cocina (WhatsApp)</button>
+      <button class="bconf" onclick="confirmar()">✅ Confirmar venta</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DOMICILIARIO -->
+<div class="modal-overlay" id="mDom">
+  <div class="mbox" style="max-width:380px">
+    <h3>🛵 Confirmar domicilio</h3>
+    <p>El domiciliario selecciona su nombre e ingresa su PIN.</p>
+    <div id="domLista" style="margin-bottom:12px"></div>
+    <div class="mr"><label>PIN del domiciliario</label>
+      <input type="password" id="domPin" placeholder="••••" maxlength="6" onkeydown="if(event.key==='Enter')confirmarDom()"></div>
+    <div class="mbtns">
+      <button class="bcancel" onclick="cm('mDom')">Cancelar</button>
+      <button class="bok" onclick="confirmarDom()">✅ Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CIERRE -->
+<div class="modal-overlay" id="mCierre">
+  <div class="mbox" style="max-width:400px">
+    <h3>📊 Cierre del Día</h3>
+    <p>Ingresa los valores y el PIN para enviar el resumen a Miryam.</p>
+    <div class="mr"><label>Efectivo en caja ($)</label><input type="number" id="cEf" placeholder="0"></div>
+    <div class="mr"><label>Nequi ($)</label><input type="number" id="cNq" placeholder="0"></div>
+    <div class="mr"><label>Crédito ($)</label><input type="number" id="cCr" placeholder="0"></div>
+    <div class="mr"><label>PIN de admin</label><input type="password" id="cPin" placeholder="••••" maxlength="6"></div>
+    <div class="mbtns">
+      <button class="bcancel" onclick="cm('mCierre')">Cancelar</button>
+      <button class="bok" onclick="enviarCierre()">📲 Enviar cierre</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADMIN (PIN) -->
+<div class="modal-overlay" id="mAdminPin">
+  <div class="mbox" style="max-width:340px">
+    <h3>⚙️ Administración</h3>
+    <p>Ingresa el PIN para acceder.</p>
+    <div class="mr"><input type="password" id="apPin" placeholder="••••" maxlength="6" onkeydown="if(event.key==='Enter')checkAdminPin()"></div>
+    <div class="mbtns">
+      <button class="bcancel" onclick="cm('mAdminPin')">Cancelar</button>
+      <button class="bok" onclick="checkAdminPin()">Ingresar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADMIN PANEL -->
+<div class="modal-overlay" id="mAdmin">
+  <div class="mbox" style="max-width:500px">
+    <h3>⚙️ Administración</h3>
+    <p>Edita productos, WhatsApp de cocina y domiciliarios.</p>
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <button onclick="adminTab('productos')" id="atProd" style="flex:1;background:var(--verde);border:none;color:white;border-radius:8px;padding:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer">📋 Productos</button>
+      <button onclick="adminTab('config')" id="atConf" style="flex:1;background:var(--card2);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer">⚙️ Configuración</button>
+    </div>
+
+    <!-- TAB PRODUCTOS -->
+    <div id="adminProd">
+      <div id="adminProdList"></div>
+      <button onclick="openProd(null)" style="width:100%;background:none;border:1px dashed var(--border);color:var(--muted);border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:.83rem;cursor:pointer;margin-top:6px">+ Agregar producto</button>
+    </div>
+
+    <!-- TAB CONFIG -->
+    <div id="adminConf" style="display:none">
+      <div class="mr"><label>📱 WhatsApp Cocina (57 + número sin cero inicial)</label>
+        <input type="tel" id="cfgWa" placeholder="Ej: 573001234567"></div>
+      <div style="font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin:14px 0 8px">🛵 Domiciliarios</div>
+      <div id="cfgDomList"></div>
+      <button onclick="addDomCfg()" style="width:100%;background:none;border:1px dashed var(--border);color:var(--muted);border-radius:10px;padding:9px;font-family:'DM Sans',sans-serif;font-size:.83rem;cursor:pointer;margin-top:6px">+ Agregar domiciliario</button>
+      <div class="mbtns"><button class="bcancel" onclick="cm('mAdmin')">Cancelar</button><button class="bok" onclick="saveConfig()">💾 Guardar config</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div class="modal-overlay" id="mProd">
+  <div class="mbox" style="max-width:420px">
+    <h3 id="mProdTit">Nuevo producto</h3>
+    <p>Se actualiza en todos los dispositivos automáticamente.</p>
+    <div class="mr"><label>Nombre</label><input id="pNom" placeholder="Ej: Almuerzo Corriente"></div>
+    <div class="mr"><label>Emoji</label><input id="pEm" placeholder="🍗" maxlength="4"></div>
+    <div class="mr"><label>Código (número único 01–99)</label><input type="number" id="pCod" min="1" max="99" placeholder="05"></div>
+    <div class="mr"><label>Precio ($)</label><input type="number" id="pPr" placeholder="0" min="0" step="500"></div>
+    <div class="mr"><label>Categoría</label>
+      <select id="pCat">
+        <option value="desayuno">🌅 Desayuno</option>
+        <option value="almuerzo">☀️ Almuerzo</option>
+        <option value="complemento">🍟 Complemento</option>
+        <option value="bebida">🥤 Bebida</option>
+      </select></div>
+    <div class="mbtns">
+      <button class="bcancel" onclick="cm('mProd')">Cancelar</button>
+      <button class="bdanger" id="bDelProd" onclick="delProd()" style="display:none">🗑 Eliminar</button>
+      <button class="bok" onclick="saveProd()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyBcpPQLsMjnRthybaIMNdQG_kS0injYko0",
+  authDomain:"family-comidas-rapidas.firebaseapp.com",
+  databaseURL:"https://family-comidas-rapidas-default-rtdb.firebaseio.com",
+  projectId:"family-comidas-rapidas",
+  storageBucket:"family-comidas-rapidas.firebasestorage.app",
+  messagingSenderId:"326594164908",
+  appId:"1:326594164908:web:2e2aa9f71a7f457df54709"
+});
+const db=firebase.database();
+const R='restaurante/caja';
+const PIN='1234';
+const WA_MIR='573148038425';
+const HOY=new Date().toISOString().slice(0,10);
+
+// Estado
+let productos={},config={waCocina:'',domiciliarios:[]};
+let pedido=[],destino='',pagMetodo='efectivo',domSel=null,editProdId=null;
+let catActual='';
+
+const DEFAULTS_PROD={
+  p01:{codigo:'01',nombre:'Desayuno Básico',emoji:'🍳',precio:8000,cat:'desayuno',activo:true},
+  p02:{codigo:'02',nombre:'Desayuno Casero',emoji:'🍲',precio:10000,cat:'desayuno',activo:true},
+  p03:{codigo:'03',nombre:'Desayuno Proteína Salchicha',emoji:'🌭',precio:12000,cat:'desayuno',activo:true},
+  p04:{codigo:'04',nombre:'Desayuno Proteína Carne',emoji:'🥩',precio:14000,cat:'desayuno',activo:true},
+  p05:{codigo:'05',nombre:'Almuerzo Corriente',emoji:'🍗',precio:16000,cat:'almuerzo',activo:true},
+  p06:{codigo:'06',nombre:'Almuerzo Especial',emoji:'⭐',precio:18000,cat:'almuerzo',activo:true},
+  p07:{codigo:'07',nombre:'Almuerzo Full',emoji:'🏆',precio:22000,cat:'almuerzo',activo:true},
+  p08:{codigo:'08',nombre:'Porción de Papas',emoji:'🍟',precio:5000,cat:'complemento',activo:true},
+  p09:{codigo:'09',nombre:'Pollo Adicional',emoji:'🍗',precio:7000,cat:'complemento',activo:true},
+  p10:{codigo:'10',nombre:'Queso Extra',emoji:'🧀',precio:2000,cat:'complemento',activo:true},
+  p11:{codigo:'11',nombre:'Tinto',emoji:'☕',precio:1000,cat:'bebida',activo:true},
+  p12:{codigo:'12',nombre:'Chocolate',emoji:'🍫',precio:2000,cat:'bebida',activo:true},
+  p13:{codigo:'13',nombre:'Jugo Natural',emoji:'🥤',precio:4000,cat:'bebida',activo:true},
+  p14:{codigo:'14',nombre:'Gaseosa',emoji:'🥫',precio:4000,cat:'bebida',activo:true},
+};
+
+function fp(v){return'$'+v.toLocaleString('es-CO')}
+function gid(){return'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
+function flash(m,c){const e=document.getElementById('flash');e.textContent=m;e.style.background=c||'var(--verde)';e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)}
+function cm(id){document.getElementById(id).classList.remove('open')}
+
+// FECHA Y CONTADOR
+function getContador(){
+  const s=JSON.parse(localStorage.getItem('rest_cnt')||'{}');
+  return s.fecha===HOY?s.count||0:0;
+}
+function incContador(){
+  const c=getContador()+1;
+  localStorage.setItem('rest_cnt',JSON.stringify({fecha:HOY,count:c}));
+  document.getElementById('cntPed').textContent=c+(c===1?' pedido':' pedidos');
+}
+function initFecha(){
+  const d=new Date();
+  const dias=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  const mes=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  document.getElementById('fechaHoy').textContent=`${dias[d.getDay()]} ${d.getDate()} ${mes[d.getMonth()]}`;
+  document.getElementById('cntPed').textContent=getContador()+(getContador()===1?' pedido':' pedidos');
+}
+
+// FIREBASE LISTENERS
+db.ref(R+'/productos').on('value',s=>{
+  const v=s.val();
+  if(!v){db.ref(R+'/productos').set(DEFAULTS_PROD);productos=DEFAULTS_PROD;}
+  else productos=v;
+  renderGrid();
+});
+db.ref(R+'/config').on('value',s=>{
+  config=s.val()||{waCocina:'',domiciliarios:[]};
+  if(!Array.isArray(config.domiciliarios))config.domiciliarios=[];
+});
+
+// GRID
+function setCat(cat,btn){
+  catActual=cat;
+  document.querySelectorAll('.tcat').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function renderGrid(){
+  const list=Object.entries(productos)
+    .filter(([,p])=>p.activo&&(!catActual||p.cat===catActual))
+    .sort((a,b)=>parseInt(a[1].codigo)-parseInt(b[1].codigo));
+  document.getElementById('pgrid').innerHTML=list.map(([id,p])=>`
+    <div class="pcard" onclick="addProd('${id}',1)">
+      <span class="pcod">${p.codigo}</span>
+      <div class="pem">${p.emoji||'🍽'}</div>
+      <div class="pnom">${p.nombre}</div>
+      <div class="ppr">${fp(p.precio)}</div>
+    </div>`).join('');
+}
+
+// PEDIDO
+function addByCodigo(){
+  const cod=document.getElementById('codigoI').value.trim().padStart(2,'0');
+  const cant=parseInt(document.getElementById('cantI').value)||1;
+  const entry=Object.entries(productos).find(([,p])=>p.activo&&p.codigo===cod);
+  if(!entry){flash('Código no encontrado','var(--rojo)');return;}
+  addProd(entry[0],cant);
+  document.getElementById('codigoI').value='';
+  document.getElementById('cantI').value='1';
+  document.getElementById('codigoI').focus();
+}
+
+function addProd(id,cant){
+  const p=productos[id];if(!p)return;
+  const ex=pedido.find(x=>x.id===id);
+  if(ex)ex.cant+=cant;else pedido.push({id,p,cant});
+  renderPedido();
+  flash(`✔ ${p.nombre} ×${cant}`);
+}
+
+function cambiarCant(i,d){
+  pedido[i].cant+=d;
+  if(pedido[i].cant<=0)pedido.splice(i,1);
+  renderPedido();
+}
+
+function limpiar(){
+  if(!pedido.length)return;
+  if(!confirm('¿Limpiar el pedido?'))return;
+  pedido=[];destino='';
+  document.getElementById('nota').value='';
+  document.getElementById('vinput').value='';
+  document.getElementById('vres').textContent='Cambio: –';
+  document.getElementById('vres').className='vres';
+  document.getElementById('dind').textContent='Sin seleccionar';
+  document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('selected'));
+  renderPedido();
+}
+
+function renderPedido(){
+  const cont=document.getElementById('pitems');
+  const res=document.getElementById('resumen');
+  if(!pedido.length){
+    cont.innerHTML='<div class="ivacio"><div class="ico">🍳</div><p>Agrega productos<br>desde el menú</p></div>';
+    res.style.display='none';return;
+  }
+  cont.innerHTML=pedido.map((x,i)=>`
+    <div class="pitem">
+      <div style="font-size:1.3rem">${x.p.emoji||'🍽'}</div>
+      <div class="iinfo"><div class="inom">${x.p.nombre}</div><div class="isub">${fp(x.p.precio*x.cant)}</div></div>
+      <div class="cctr">
+        <button class="cbtn" onclick="cambiarCant(${i},-1)">−</button>
+        <span class="cnum">${x.cant}</span>
+        <button class="cbtn" onclick="cambiarCant(${i},1)">+</button>
+      </div>
+      <button class="bdel" onclick="pedido.splice(${i},1);renderPedido()">✕</button>
+    </div>`).join('');
+  const total=pedido.reduce((s,x)=>s+x.p.precio*x.cant,0);
+  const items=pedido.reduce((s,x)=>s+x.cant,0);
+  res.style.display='block';
+  document.getElementById('rItems').textContent=items+' producto'+(items!==1?'s':'');
+  document.getElementById('rTotal').textContent=fp(total);
+  calcVueltas();
+}
+
+function total(){return pedido.reduce((s,x)=>s+x.p.precio*x.cant,0)}
+
+// DESTINO
+function setDest(v){
+  destino=v;
+  document.querySelectorAll('.dbtn').forEach(b=>{
+    const bv=b.getAttribute('onclick').match(/'([^']+)'/)[1];
+    b.classList.toggle('selected',bv===v);
+  });
+  const em=v.startsWith('Mesa')?'🪑':v==='Para llevar'?'🛍':'🛵';
+  document.getElementById('dind').textContent=em+' '+v;
+}
+
+// PAGO
+function setPago(m){
+  pagMetodo=m;
+  ['efectivo','nequi','credito'].forEach(x=>document.getElementById('p-'+x).classList.toggle('sel',x===m));
+  document.getElementById('vrow').style.display=m==='efectivo'?'block':'none';
+  if(m!=='efectivo'){document.getElementById('vinput').value='';document.getElementById('vres').textContent='Cambio: –';document.getElementById('vres').className='vres';}
+}
+
+// VUELTAS
+function calcVueltas(){
+  const t=total();const r=parseInt(document.getElementById('vinput').value)||0;
+  const el=document.getElementById('vres');
+  if(!r){el.textContent='Cambio: –';el.className='vres';return;}
+  if(r<t){el.textContent='⚠ Falta '+fp(t-r);el.className='vres verr';}
+  else{el.textContent='Cambio: '+fp(r-t);el.className='vres vok';}
+}
+
+// COCINA
+function enviarCocina(){
+  if(!pedido.length){flash('El pedido está vacío','var(--rojo)');return;}
+  if(!destino){flash('Selecciona mesa o destino','var(--naranja)');return;}
+  const hora=new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  const num=getContador()+1;
+  const em=destino.startsWith('Mesa')?'🪑':destino==='Para llevar'?'🛍':'🛵';
+  const nota=document.getElementById('nota').value.trim();
+  let msg=`*🍳 PEDIDO #${num} — Restaurante Family*\n${em} *${destino}*\n🕐 ${hora}\n\n*Productos:*\n`;
+  pedido.forEach(x=>msg+=`• ${x.cant}× ${x.p.emoji||''} ${x.p.nombre}\n`);
+  if(nota)msg+=`\n📝 Nota: ${nota}`;
+  msg+=`\n\n_Restaurante Family · Guapi_`;
+  const wa=config.waCocina;
+  if(wa){window.open(`https://wa.me/${wa}?text=${encodeURIComponent(msg)}`,'_blank');}
+  else{navigator.clipboard.writeText(msg).then(()=>flash('📋 Pedido copiado — pégalo en el chat de cocina')).catch(()=>prompt('Copia y envía a cocina:',msg));}
+}
+
+// CONFIRMAR
+function confirmar(){
+  if(!pedido.length){flash('El pedido está vacío','var(--rojo)');return;}
+  if(!destino){flash('Selecciona mesa o destino','var(--naranja)');return;}
+  if(destino==='Domicilio'&&config.domiciliarios.length>0){abrirDom();return;}
+  ejecutarConfirmar(null);
+}
+
+function abrirDom(){
+  domSel=null;
+  document.getElementById('domPin').value='';
+  document.getElementById('domLista').innerHTML=config.domiciliarios.map((d,i)=>`
+    <div class="dom-item" id="dom-${i}" onclick="selDom(${i})">
+      <span style="font-size:1.4rem">🛵</span><span style="font-weight:700">${d.nombre}</span>
+    </div>`).join('');
+  document.getElementById('mDom').classList.add('open');
+  setTimeout(()=>document.getElementById('domPin').focus(),200);
+}
+
+function selDom(i){
+  domSel=i;
+  document.querySelectorAll('.dom-item').forEach((el,j)=>el.classList.toggle('sel',j===i));
+}
+
+function confirmarDom(){
+  if(domSel===null){flash('Selecciona el domiciliario','var(--naranja)');return;}
+  const dom=config.domiciliarios[domSel];
+  if(document.getElementById('domPin').value!==dom.pin){flash('PIN incorrecto','var(--rojo)');return;}
+  cm('mDom');ejecutarConfirmar(dom.nombre);
+}
+
+function ejecutarConfirmar(domNom){
+  const t=total();const num=getContador()+1;
+  // Guardar en Firebase
+  const upd={};
+  upd[R+'/ventas/'+HOY+'/pedidos']=(firebase.database.ServerValue||{INCREMENT:1});
+  db.ref(R+'/ventas/'+HOY+'/'+pagMetodo).transaction(v=>(v||0)+t);
+  db.ref(R+'/ventas/'+HOY+'/pedidos').transaction(v=>(v||0)+1);
+  incContador();
+  const domInfo=domNom?` · 🛵 ${domNom}`:'';
+  flash(`✅ Pedido #${num} · ${destino}${domInfo} · ${fp(t)}`);
+  pedido=[];destino='';
+  document.getElementById('nota').value='';
+  document.getElementById('vinput').value='';
+  document.getElementById('vres').textContent='Cambio: –';
+  document.getElementById('vres').className='vres';
+  document.getElementById('dind').textContent='Sin seleccionar';
+  document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('selected'));
+  renderPedido();
+}
+
+// CIERRE
+function openCierre(){document.getElementById('mCierre').classList.add('open');}
+function enviarCierre(){
+  if(document.getElementById('cPin').value!==PIN){flash('PIN incorrecto','var(--rojo)');return;}
+  const ef=parseInt(document.getElementById('cEf').value)||0;
+  const nq=parseInt(document.getElementById('cNq').value)||0;
+  const cr=parseInt(document.getElementById('cCr').value)||0;
+  const t=ef+nq+cr;
+  const cnt=getContador();
+  const d=new Date();
+  const fecha=d.toLocaleDateString('es-CO',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  let msg=`*📊 CIERRE — Restaurante Family*\n📅 ${fecha}\n\n*Pedidos registrados:* ${cnt}\n\n*Recaudo:*\n💵 Efectivo: ${fp(ef)}\n📱 Nequi: ${fp(nq)}\n📒 Crédito: ${fp(cr)}\n\n💰 *TOTAL: ${fp(t)}*\n\n_Restaurante Family · Guapi_`;
+  window.open(`https://wa.me/${WA_MIR}?text=${encodeURIComponent(msg)}`,'_blank');
+  cm('mCierre');
+}
+
+// ADMIN
+function openAdmin(){document.getElementById('apPin').value='';document.getElementById('mAdminPin').classList.add('open');setTimeout(()=>document.getElementById('apPin').focus(),200);}
+function checkAdminPin(){
+  if(document.getElementById('apPin').value!==PIN){flash('PIN incorrecto','var(--rojo)');return;}
+  cm('mAdminPin');abrirAdminPanel();
+}
+
+function abrirAdminPanel(){
+  adminTab('productos');
+  document.getElementById('mAdmin').classList.add('open');
+}
+
+function adminTab(tab){
+  document.getElementById('adminProd').style.display=tab==='productos'?'block':'none';
+  document.getElementById('adminConf').style.display=tab==='config'?'block':'none';
+  document.getElementById('atProd').style.background=tab==='productos'?'var(--verde)':'var(--card2)';
+  document.getElementById('atProd').style.color=tab==='productos'?'white':'var(--muted)';
+  document.getElementById('atProd').style.border=tab==='productos'?'none':'1px solid var(--border)';
+  document.getElementById('atConf').style.background=tab==='config'?'var(--verde)':'var(--card2)';
+  document.getElementById('atConf').style.color=tab==='config'?'white':'var(--muted)';
+  document.getElementById('atConf').style.border=tab==='config'?'none':'1px solid var(--border)';
+  if(tab==='productos')renderAdminProd();
+  if(tab==='config')renderAdminConf();
+}
+
+function renderAdminProd(){
+  const list=Object.entries(productos).sort((a,b)=>parseInt(a[1].codigo)-parseInt(b[1].codigo));
+  document.getElementById('adminProdList').innerHTML=list.map(([id,p])=>`
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:1.2rem">${p.emoji||'🍽'}</span>
+      <div style="flex:1"><div style="font-weight:700;font-size:.88rem">${p.nombre}</div>
+        <div style="font-size:.75rem;color:var(--muted)">${p.codigo} · ${fp(p.precio)} · ${p.cat}</div></div>
+      <button onclick="openProd('${id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:.9rem;padding:4px">✏️</button>
+      <label style="display:flex;align-items:center;gap:4px;font-size:.75rem;color:var(--muted);cursor:pointer">
+        <input type="checkbox" ${p.activo?'checked':''} onchange="toggleProd('${id}',this.checked)" style="width:auto"> Activo</label>
+    </div>`).join('');
+}
+
+function toggleProd(id,v){db.ref(R+'/productos/'+id+'/activo').set(v);}
+
+function openProd(id){
+  editProdId=id;
+  if(id){
+    const p=productos[id];
+    document.getElementById('mProdTit').textContent='Editar producto';
+    document.getElementById('pNom').value=p.nombre;
+    document.getElementById('pEm').value=p.emoji||'';
+    document.getElementById('pCod').value=p.codigo;
+    document.getElementById('pPr').value=p.precio;
+    document.getElementById('pCat').value=p.cat;
+    document.getElementById('bDelProd').style.display='block';
+  } else {
+    document.getElementById('mProdTit').textContent='Nuevo producto';
+    ['pNom','pEm','pCod','pPr'].forEach(x=>document.getElementById(x).value='');
+    document.getElementById('pCat').value='desayuno';
+    document.getElementById('bDelProd').style.display='none';
+  }
+  document.getElementById('mProd').classList.add('open');
+}
+
+function saveProd(){
+  const nom=document.getElementById('pNom').value.trim();
+  const em=document.getElementById('pEm').value.trim();
+  const cod=document.getElementById('pCod').value.toString().padStart(2,'0');
+  const pr=parseInt(document.getElementById('pPr').value)||0;
+  const cat=document.getElementById('pCat').value;
+  if(!nom||!cod||!pr){flash('Completa todos los campos','var(--rojo)');return;}
+  const id=editProdId||gid();
+  db.ref(R+'/productos/'+id).set({codigo:cod,nombre:nom,emoji:em||'🍽',precio:pr,cat,activo:true})
+    .then(()=>{flash('✅ Producto guardado');cm('mProd');renderAdminProd();})
+    .catch(()=>flash('Error guardando','var(--rojo)'));
+}
+
+function delProd(){
+  if(!editProdId)return;
+  if(!confirm('¿Eliminar este producto?'))return;
+  db.ref(R+'/productos/'+editProdId).remove()
+    .then(()=>{flash('🗑 Eliminado');cm('mProd');renderAdminProd();})
+    .catch(()=>flash('Error','var(--rojo)'));
+}
+
+function renderAdminConf(){
+  document.getElementById('cfgWa').value=config.waCocina||'';
+  renderDomCfg();
+}
+
+function renderDomCfg(){
+  const doms=config.domiciliarios||[];
+  document.getElementById('cfgDomList').innerHTML=doms.map((d,i)=>`
+    <div style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px">
+      <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+        <span style="color:var(--muted);font-size:.75rem;min-width:18px">#${i+1}</span>
+        <input type="text" value="${d.nombre}" id="dn-${i}" placeholder="Nombre"
+          style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none">
+        <button onclick="removeDom(${i})" style="background:none;border:none;color:#E08080;cursor:pointer;font-size:1rem">✕</button>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="min-width:18px"></span>
+        <input type="password" value="${d.pin}" id="dp-${i}" placeholder="PIN" maxlength="6"
+          style="width:140px;background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:7px 10px;color:var(--texto);font-family:'DM Sans',sans-serif;font-size:.85rem;letter-spacing:4px;outline:none">
+        <span style="font-size:.72rem;color:var(--muted)">PIN del domiciliario</span>
+      </div>
+    </div>`).join('');
+}
+
+function addDomCfg(){
+  config.domiciliarios=[...(config.domiciliarios||[]),{nombre:'Nuevo domiciliario',pin:'0000'}];
+  renderDomCfg();
+}
+
+function removeDom(i){
+  config.domiciliarios.splice(i,1);renderDomCfg();
+}
+
+function saveConfig(){
+  const wa=document.getElementById('cfgWa').value.trim().replace(/\D/g,'');
+  const doms=[];let i=0;
+  while(document.getElementById('dn-'+i)){
+    const n=document.getElementById('dn-'+i).value.trim();
+    const p=document.getElementById('dp-'+i).value.trim();
+    if(n)doms.push({nombre:n,pin:p||'0000'});i++;
+  }
+  db.ref(R+'/config').set({waCocina:wa,domiciliarios:doms})
+    .then(()=>{flash('✅ Configuración guardada');cm('mAdmin');})
+    .catch(()=>flash('Error guardando','var(--rojo)'));
+}
+
+initFecha();
+document.getElementById('codigoI').focus();
+</script>
+</body>
+</html>

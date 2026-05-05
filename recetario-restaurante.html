@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recetario Restaurante · Family Comidas Rápidas</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:       #0f1923;
+      --bg2:      #16232f;
+      --card:     #1c2d3a;
+      --card2:    #223040;
+      --naranja:  #E07820;
+      --naranja2: #F09040;
+      --verde:    #2E8A58;
+      --verde2:   #3AAA6A;
+      --rojo:     #C03030;
+      --azul:     #2060A0;
+      --texto:    #e8eef3;
+      --muted:    #8aabbf;
+      --border:   rgba(255,255,255,0.08);
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--texto);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      background: linear-gradient(135deg, #0a1520 0%, #1a3040 100%);
+      border-bottom: 2px solid var(--naranja);
+      padding: 20px 24px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .header-left { display: flex; align-items: center; gap: 14px; }
+    .header-logo { font-size: 2rem; }
+
+    .header-titles h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.5rem;
+      color: var(--naranja2);
+      line-height: 1.2;
+    }
+
+    .header-titles p {
+      font-size: .78rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: .82rem;
+      transition: all .2s;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.13); color: var(--texto); }
+
+    /* ── BUSQUEDA ── */
+    .search-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 16px;
+      color: var(--texto);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    .search-bar input:focus { border-color: var(--naranja); }
+    .search-bar input::placeholder { color: var(--muted); }
+
+    .search-count {
+      font-size: .8rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* ── TABS ── */
+    .tabs-row {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .84rem;
+      font-weight: 600;
+      padding: 12px 16px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .2s;
+    }
+
+    .tab-btn:hover { color: var(--texto); }
+    .tab-btn.active { color: var(--naranja2); border-bottom-color: var(--naranja); }
+
+    /* ── STATS MINI ── */
+    .mini-stats {
+      display: flex;
+      gap: 12px;
+      padding: 14px 24px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+    }
+
+    .mini-stat {
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 18px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .mini-stat .n {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--naranja2);
+      line-height: 1;
+    }
+
+    .mini-stat .l {
+      font-size: .68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    /* ── GRID RECETAS ── */
+    .recetas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+      padding: 22px 24px 40px;
+    }
+
+    /* ── CARD RECETA ── */
+    .receta-card {
+      background: var(--card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: transform .2s, box-shadow .2s;
+    }
+
+    .receta-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+    }
+
+    .receta-header {
+      padding: 18px 20px 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .receta-header-left { flex: 1; }
+
+    .receta-cat {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+
+    .cat-desayuno  { background: rgba(224,120,32,0.2); color: var(--naranja2); }
+    .cat-almuerzo  { background: rgba(46,138,88,0.2);  color: var(--verde2); }
+    .cat-complemento { background: rgba(32,96,160,0.2); color: #60A0E0; }
+    .cat-bebida    { background: rgba(140,40,120,0.2); color: #C080D0; }
+
+    .receta-nombre {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--texto);
+      line-height: 1.25;
+    }
+
+    .receta-emoji { font-size: 2rem; flex-shrink: 0; }
+
+    /* ── PRECIO BOX ── */
+    .precio-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .precio-cell {
+      background: var(--card);
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    .precio-cell .valor {
+      font-size: .95rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .precio-cell .etiq {
+      font-size: .64rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-top: 3px;
+    }
+
+    .v-costo  { color: var(--rojo); }
+    .v-precio { color: var(--naranja2); }
+    .v-margen { }
+
+    .margen-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: .78rem;
+      font-weight: 700;
+    }
+
+    .m-excelente { background: rgba(46,138,88,0.25); color: var(--verde2); }
+    .m-bueno     { background: rgba(80,160,80,0.2);  color: #80C080; }
+    .m-ajustado  { background: rgba(200,160,0,0.2);  color: #D0B040; }
+    .m-tenso     { background: rgba(192,48,48,0.2);  color: #E08080; }
+
+    /* ── BODY RECETA ── */
+    .receta-body { padding: 16px 20px; }
+
+    .section-titulo {
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .section-titulo:first-child { margin-top: 0; }
+
+    /* INGREDIENTES TABLE */
+    .ing-table { width: 100%; border-collapse: collapse; }
+
+    .ing-table tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .ing-table tr:last-child { border-bottom: none; }
+
+    .ing-table td {
+      padding: 5px 0;
+      font-size: .83rem;
+      vertical-align: top;
+    }
+
+    .ing-table .ing-nombre { color: var(--texto); flex: 1; }
+    .ing-table .ing-cant   { color: var(--muted); text-align: right; padding-right: 12px; white-space: nowrap; }
+    .ing-table .ing-costo  { color: #E08060; text-align: right; font-weight: 600; white-space: nowrap; }
+
+    /* PASOS */
+    .pasos-list { list-style: none; }
+
+    .pasos-list li {
+      display: flex;
+      gap: 10px;
+      font-size: .83rem;
+      color: var(--texto);
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      line-height: 1.45;
+    }
+
+    .pasos-list li:last-child { border-bottom: none; }
+
+    .paso-num {
+      background: var(--naranja);
+      color: white;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* NOTA */
+    .nota-box {
+      background: rgba(224,120,32,0.1);
+      border-left: 3px solid var(--naranja);
+      border-radius: 0 8px 8px 0;
+      padding: 8px 12px;
+      font-size: .8rem;
+      color: var(--muted);
+      margin-top: 10px;
+      line-height: 1.45;
+    }
+
+    /* WHATSAPP BTN */
+    .wa-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 0;
+      width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background .2s;
+      text-decoration: none;
+    }
+
+    .wa-btn:hover { background: #1ebe5d; }
+
+    /* ── CATEGORÍA HEADER ── */
+    .cat-header {
+      padding: 0 24px;
+      margin-top: 8px;
+      margin-bottom: -10px;
+    }
+
+    .cat-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--texto);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cat-divider {
+      height: 1px;
+      background: var(--border);
+      margin-top: 8px;
+    }
+
+    /* ── EMPTY ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--muted);
+      grid-column: 1 / -1;
+    }
+
+    .empty-state .empty-ico { font-size: 3rem; margin-bottom: 12px; }
+
+    /* ── EXPAND TOGGLE ── */
+    .toggle-row {
+      padding: 10px 20px 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .75rem;
+      padding: 4px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .2s;
+    }
+
+    .toggle-btn:hover { border-color: var(--naranja); color: var(--naranja2); }
+
+    .receta-detail { display: none; }
+    .receta-card.expanded .receta-detail { display: block; }
+
+    @media (max-width: 600px) {
+      .recetas-grid { grid-template-columns: 1fr; padding: 14px 14px 40px; }
+      .search-bar, .mini-stats, .tabs-row { padding-left: 14px; padding-right: 14px; }
+      .site-header { padding: 16px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="site-header">
+  <div class="header-left">
+    <div class="header-logo">🍳</div>
+    <div class="header-titles">
+      <h1>Recetario Restaurante</h1>
+      <p>Family Comidas Rápidas · Menú Diurno · Guapi, Cauca</p>
+    </div>
+  </div>
+  <a href="index.html" class="back-btn">← Inicio</a>
+</div>
+
+<!-- BÚSQUEDA -->
+<div class="search-bar">
+  <input type="text" id="searchInput" placeholder="🔍 Buscar receta..." oninput="filtrar()">
+  <span class="search-count" id="searchCount"></span>
+</div>
+
+<!-- TABS -->
+<div class="tabs-row">
+  <button class="tab-btn active" onclick="setTab('todo')">Todas</button>
+  <button class="tab-btn" onclick="setTab('desayuno')">🌅 Desayunos</button>
+  <button class="tab-btn" onclick="setTab('almuerzo')">☀️ Almuerzos</button>
+  <button class="tab-btn" onclick="setTab('complemento')">🍟 Complementos</button>
+  <button class="tab-btn" onclick="setTab('bebida')">🥤 Bebidas</button>
+</div>
+
+<!-- MINI STATS -->
+<div class="mini-stats">
+  <div class="mini-stat"><div class="n" style="color:#F09040;">12</div><div class="l">Recetas</div></div>
+  <div class="mini-stat"><div class="n" id="statCostoMin" style="color:#E08060;">–</div><div class="l">Costo mín.</div></div>
+  <div class="mini-stat"><div class="n" id="statCostoMax" style="color:#E08060;">–</div><div class="l">Costo máx.</div></div>
+  <div class="mini-stat"><div class="n" id="statMargenProm" style="color:#3AAA6A;">–</div><div class="l">Margen prom.</div></div>
+  <div class="mini-stat"><div class="n" style="color:#C080D0;">3</div><div class="l">Categorías</div></div>
+</div>
+
+<!-- GRID -->
+<div class="recetas-grid" id="grid"></div>
+
+<script>
+// ─── DATOS ───────────────────────────────────────────────
+const RECETAS = [
+
+  // ═══════════════════ DESAYUNOS ═══════════════════
+
+  {
+    id: 'desayuno-basico',
+    nombre: 'Desayuno Básico',
+    categoria: 'desayuno',
+    emoji: '🍳',
+    precio: 8000,
+    ingredientes: [
+      { nombre: 'Huevos',              cant: '2 unidades',  costo: 1400 },
+      { nombre: 'Arepa (o pan)',        cant: '1 unidad',    costo: 1000 },
+      { nombre: 'Café / tinto',         cant: '1 taza',      costo:  350 },
+      { nombre: 'Tomate + cebolla',     cant: 'pizca',       costo:  200 },
+      { nombre: 'Aceite + sal',         cant: 'c/s',         costo:  100 },
+      { nombre: 'Gas (estimado)',       cant: '–',           costo:  200 },
+    ],
+    pasos: [
+      'Calentar aceite en sartén a fuego medio.',
+      'Picar finamente tomate y cebolla larga. Sofreír 1 min.',
+      'Batir los huevos con sal y agregar al sofrito. Revolver hasta cuajar.',
+      'Calentar arepa en plancha o comal. Si es pan, tostar ligeramente.',
+      'Servir huevos + arepa/pan. Preparar tinto en colador con café molido.',
+    ],
+    nota: 'Con chocolate: reemplazar tinto por chocolate en agua o leche (+$250 en costo). Subir precio a $8.500.',
+  },
+
+  {
+    id: 'desayuno-casero',
+    nombre: 'Desayuno Casero',
+    categoria: 'desayuno',
+    emoji: '🍲',
+    precio: 10000,
+    ingredientes: [
+      { nombre: 'Huevos a la cazuela',  cant: '2 unidades',  costo: 1400 },
+      { nombre: 'Arroz blanco',         cant: '1 porción',   costo:  600 },
+      { nombre: 'Arepa',               cant: '1 unidad',    costo: 1000 },
+      { nombre: 'Bebida (tinto/choc)', cant: '1 taza',      costo:  400 },
+      { nombre: 'Tomate, cebolla, ajo', cant: 'base hogao',  costo:  300 },
+      { nombre: 'Aceite, sal, comino',  cant: 'c/s',         costo:  150 },
+      { nombre: 'Gas (estimado)',       cant: '–',           costo:  300 },
+    ],
+    pasos: [
+      'Cocinar arroz blanco con sal y aceite (puede ser del día, recalentado).',
+      'Preparar hogao base: sofreír tomate y cebolla en aceite caliente 3 min.',
+      'Agregar huevos sobre el hogao en sartén. Tapar y cocinar a fuego bajo 3–4 min hasta que la clara cuaje y la yema quede suave.',
+      'Calentar arepa en plancha.',
+      'Servir: huevos en su sartén individual (o plato) + arroz + arepa + bebida.',
+    ],
+    nota: 'Plato rendidor. El arroz puede cocinarse en cantidad al inicio del turno. Los huevos a la cazuela dan presentación más "restaurante" que revueltos.',
+  },
+
+  {
+    id: 'desayuno-proteina-salchicha',
+    nombre: 'Desayuno con Proteína · Salchicha',
+    categoria: 'desayuno',
+    emoji: '🌭',
+    precio: 12000,
+    ingredientes: [
+      { nombre: 'Huevos pericos',       cant: '2 unidades',  costo: 1400 },
+      { nombre: 'Salchicha',            cant: '2 unidades',  costo: 2500 },
+      { nombre: 'Arepa',               cant: '1 unidad',    costo: 1000 },
+      { nombre: 'Bebida',              cant: '1 taza',      costo:  400 },
+      { nombre: 'Tomate, cebolla',      cant: 'sofrito',     costo:  200 },
+      { nombre: 'Aceite, sal',          cant: 'c/s',         costo:  150 },
+      { nombre: 'Gas',                 cant: '–',           costo:  250 },
+    ],
+    pasos: [
+      'Dorar salchichas en sartén con un toque de aceite, dando vuelta para que queden parejas. Reservar.',
+      'En el mismo sartén sofreír tomate y cebolla picada fina.',
+      'Agregar huevos batidos con sal. Revolver hasta cuajar (pericos).',
+      'Calentar arepa en plancha.',
+      'Emplatar: huevos pericos + salchichas al lado + arepa + bebida.',
+    ],
+    nota: 'Variante carne: ver receta "Desayuno con Proteína · Carne". Precio diferente.',
+  },
+
+  {
+    id: 'desayuno-proteina-carne',
+    nombre: 'Desayuno con Proteína · Carne',
+    categoria: 'desayuno',
+    emoji: '🥩',
+    precio: 14000,
+    ingredientes: [
+      { nombre: 'Huevos pericos',       cant: '2 unidades',  costo: 1400 },
+      { nombre: 'Carne de res (bistec)',cant: '100 g',       costo: 4000 },
+      { nombre: 'Arepa',               cant: '1 unidad',    costo: 1000 },
+      { nombre: 'Bebida',              cant: '1 taza',      costo:  400 },
+      { nombre: 'Tomate, cebolla, ajo', cant: 'sofrito',     costo:  300 },
+      { nombre: 'Aceite, sal, comino',  cant: 'c/s',         costo:  200 },
+      { nombre: 'Gas',                 cant: '–',           costo:  300 },
+    ],
+    pasos: [
+      'Marinar carne 15 min mínimo: sal, comino, ajo machacado.',
+      'Sellar carne en sartén muy caliente con aceite, 2–3 min por lado (término medio). Retirar y dejar reposar.',
+      'En el mismo sartén sofreír tomate y cebolla.',
+      'Agregar huevos batidos, revolver hasta cuajar.',
+      'Cortar carne en tiras o servir entera. Emplatar con huevos + arepa + bebida.',
+    ],
+    nota: 'El costo de la carne varía según proveedor y corte. Verificar con la distribuidora del esposo mensualmente.',
+  },
+
+  // ═══════════════════ ALMUERZOS ═══════════════════
+
+  {
+    id: 'almuerzo-corriente',
+    nombre: 'Almuerzo Corriente',
+    categoria: 'almuerzo',
+    emoji: '🍗',
+    precio: 16000,
+    ingredientes: [
+      { nombre: 'Pollo broaster (1/4 presa) · distribuidor', cant: '1 presa', costo: 3500 },
+      { nombre: 'Harina de broaster + condimentos',           cant: 'porción', costo:  300 },
+      { nombre: 'Aceite para freír (amortizado)',             cant: '~100 ml', costo:  500 },
+      { nombre: 'Arroz blanco',                              cant: '1 porción',costo:  600 },
+      { nombre: 'Papa cocida o tajada de maduro',            cant: '1 porción',costo:  800 },
+      { nombre: 'Ensalada (col, tomate, zanahoria)',          cant: '1 porción',costo:  500 },
+      { nombre: 'Jugo natural (pulpa + agua + azúcar)',       cant: '1 vaso',   costo: 1500 },
+      { nombre: 'Gas (estimado)',                            cant: '–',        costo:  400 },
+    ],
+    pasos: [
+      'Mezclar harina de broaster con sal, pimienta, ajo en polvo y color (achiote) en un bowl.',
+      'Pasar la presa de pollo por la harina hasta cubrir bien. Presionar para que adhiera.',
+      'Calentar aceite a 175°C (una pizca de harina debe chisporrotear). Freír 12–15 min volteando a mitad de tiempo hasta dorar.',
+      'Servir arroz + acompañante (papa o tajada) en plato grande.',
+      'Emplatar el pollo encima o al lado, con ensalada en bowl pequeño.',
+      'Entregar jugo en vaso con hielo si hay.',
+    ],
+    nota: 'Precio con precio distribuidor de pollo. Si se compra al detal, el costo sube ~$1.500–2.000 por presa y el plato debe venderse a $18.000 mínimo.',
+  },
+
+  {
+    id: 'almuerzo-especial',
+    nombre: 'Almuerzo Especial',
+    categoria: 'almuerzo',
+    emoji: '⭐',
+    precio: 18000,
+    ingredientes: [
+      { nombre: 'Pollo broaster (1/4 presa) · distribuidor', cant: '1 presa', costo: 3500 },
+      { nombre: 'Harina de broaster + condimentos',           cant: 'porción', costo:  300 },
+      { nombre: 'Aceite para freír (amortizado)',             cant: '~120 ml', costo:  600 },
+      { nombre: 'Arroz blanco',                              cant: '1 porción',costo:  600 },
+      { nombre: 'Papas fritas (papa + aceite)',               cant: '1 porción',costo: 1200 },
+      { nombre: 'Ensalada (col, tomate, zanahoria)',          cant: '1 porción',costo:  500 },
+      { nombre: 'Jugo natural',                              cant: '1 vaso',   costo: 1500 },
+      { nombre: 'Gas',                                       cant: '–',        costo:  400 },
+    ],
+    pasos: [
+      'Igual que almuerzo corriente para el pollo broaster (pasos 1–3).',
+      'Pelar y cortar papa en bastones. Freír en aceite caliente 8–10 min. Escurrir y salar.',
+      'Servir arroz en plato. Colocar pollo y papas fritas al lado.',
+      'Ensalada en bowl aparte. Jugo en vaso con hielo.',
+    ],
+    nota: 'La diferencia con el corriente es papas fritas (vs papa cocida o tajada). Más costo de aceite. El precio diferencial de $2.000 cubre bien esa diferencia.',
+  },
+
+  {
+    id: 'almuerzo-full',
+    nombre: 'Almuerzo Full',
+    categoria: 'almuerzo',
+    emoji: '🏆',
+    precio: 22000,
+    ingredientes: [
+      { nombre: 'Pollo broaster (1/4 presa) · distribuidor', cant: '1 presa', costo: 3500 },
+      { nombre: 'Harina de broaster + condimentos',           cant: 'porción', costo:  300 },
+      { nombre: 'Aceite para freír (amortizado)',             cant: '~120 ml', costo:  600 },
+      { nombre: 'Arroz blanco',                              cant: '1 porción',costo:  600 },
+      { nombre: 'Papas fritas',                              cant: '1 porción',costo: 1200 },
+      { nombre: 'Tajadas de maduro frito',                   cant: '3 tajadas',costo:  600 },
+      { nombre: 'Ensalada',                                  cant: '1 porción',costo:  500 },
+      { nombre: 'Jugo natural',                              cant: '1 vaso',   costo: 1500 },
+      { nombre: 'Gas',                                       cant: '–',        costo:  500 },
+    ],
+    pasos: [
+      'Preparar pollo broaster según pasos del almuerzo corriente.',
+      'Cortar plátano maduro en tajadas diagonales. Freír en aceite caliente hasta dorar (~3 min por lado). Retirar y escurrir.',
+      'Freír papas en bastones hasta dorar. Salar al salir del aceite.',
+      'Emplatar en plato grande: arroz + pollo + papas + tajadas. Ensalada en bowl aparte.',
+      'Servir jugo. Es el plato más completo: asegurarse de una presentación generosa.',
+    ],
+    nota: '⭐ Plato más rentable del menú (margen ~59%). Promover siempre. Si el cliente pide "especial" ofrecer el full por $4.000 más.',
+  },
+
+  // ═══════════════════ COMPLEMENTOS ═══════════════════
+
+  {
+    id: 'porcion-papas',
+    nombre: 'Porción de Papas Fritas',
+    categoria: 'complemento',
+    emoji: '🍟',
+    precio: 5000,
+    ingredientes: [
+      { nombre: 'Papa (bastones)',       cant: '300 g',      costo:  700 },
+      { nombre: 'Aceite para freír',     cant: '~80 ml',     costo:  400 },
+      { nombre: 'Sal + condimento',      cant: 'c/s',        costo:  100 },
+      { nombre: 'Gas',                  cant: '–',          costo:  150 },
+    ],
+    pasos: [
+      'Pelar y cortar papa en bastones de tamaño parejo.',
+      'Calentar aceite a 180°C. Freír 8–10 min hasta dorar.',
+      'Escurrir sobre papel absorbente. Salar inmediatamente.',
+      'Servir en bolsa o recipiente. Opcional: salsa de tomate.',
+    ],
+    nota: '⭐ Complemento más rentable (margen ~73%). Ofrecerlo siempre como adición a cualquier almuerzo.',
+  },
+
+  {
+    id: 'porcion-pollo-extra',
+    nombre: 'Porción de Pollo Adicional',
+    categoria: 'complemento',
+    emoji: '🍗',
+    precio: 7000,
+    ingredientes: [
+      { nombre: 'Presa de pollo · distribuidor', cant: '1 presa', costo: 3000 },
+      { nombre: 'Harina de broaster',            cant: 'porción',  costo:  250 },
+      { nombre: 'Aceite (amortizado)',            cant: '~80 ml',   costo:  400 },
+      { nombre: 'Gas',                           cant: '–',        costo:  200 },
+    ],
+    pasos: [
+      'Igual que almuerzo: pasar por harina y freír 12–15 min.',
+      'Servir como presa adicional al plato del cliente.',
+    ],
+    nota: 'Presa puede ser muslo, contramuslo o ala según disponibilidad. Aclarar al cliente cuál hay.',
+  },
+
+  {
+    id: 'queso-extra',
+    nombre: 'Queso Extra',
+    categoria: 'complemento',
+    emoji: '🧀',
+    precio: 2000,
+    ingredientes: [
+      { nombre: 'Queso costeño o campesino', cant: '30 g', costo: 800 },
+    ],
+    pasos: [
+      'Porcionar 30 g de queso por pedido (usar báscula o molde estándar).',
+      'Servir al lado del plato o sobre el arroz caliente.',
+    ],
+    nota: 'Complemento sencillo. Asegurarse de porcionar siempre igual para no perder margen.',
+  },
+
+  // ═══════════════════ BEBIDAS ═══════════════════
+
+  {
+    id: 'tinto',
+    nombre: 'Tinto',
+    categoria: 'bebida',
+    emoji: '☕',
+    precio: 1000,
+    ingredientes: [
+      { nombre: 'Café molido (tinto negro)', cant: '8–10 g',  costo: 200 },
+      { nombre: 'Agua caliente',             cant: '180 ml',  costo:  50 },
+      { nombre: 'Azúcar (opcional)',         cant: 'al gusto', costo:  30 },
+      { nombre: 'Gas (agua caliente)',       cant: '–',       costo:  50 },
+    ],
+    pasos: [
+      'Calentar agua hasta antes del hervor.',
+      'Colar sobre taza usando colador de tela o filtro.',
+      'Servir con azúcar aparte o al gusto del cliente.',
+    ],
+    nota: 'Bebida con mejor margen del menú (73%). Mantener café fresco; no usar café que lleve más de 2 horas colado.',
+  },
+
+  {
+    id: 'chocolate',
+    nombre: 'Chocolate',
+    categoria: 'bebida',
+    emoji: '🍫',
+    precio: 2000,
+    ingredientes: [
+      { nombre: 'Chocolate en pastilla (Luker o similar)', cant: '1/4 pastilla', costo: 500 },
+      { nombre: 'Agua o leche',                            cant: '200 ml',       costo: 200 },
+      { nombre: 'Azúcar',                                 cant: 'al gusto',     costo:  50 },
+      { nombre: 'Gas',                                    cant: '–',            costo:  80 },
+    ],
+    pasos: [
+      'Calentar agua o leche a fuego medio.',
+      'Agregar la pastilla de chocolate troceada. Revolver con molinillo o cuchara hasta disolver.',
+      'Servir caliente en pocillo.',
+    ],
+    nota: 'Con leche el sabor es mejor pero el costo sube ~$300. Precio sugerido con leche: $2.500.',
+  },
+
+  {
+    id: 'jugo',
+    nombre: 'Jugo Natural',
+    categoria: 'bebida',
+    emoji: '🥤',
+    precio: 4000,
+    ingredientes: [
+      { nombre: 'Pulpa de fruta (maracuyá/guanábana/mango)', cant: '80–100 g', costo: 1200 },
+      { nombre: 'Agua',                                       cant: '250 ml',   costo:   50 },
+      { nombre: 'Azúcar',                                    cant: '2 cdas',   costo:  100 },
+      { nombre: 'Hielo (si hay)',                            cant: 'al gusto',  costo:   50 },
+    ],
+    pasos: [
+      'Mezclar pulpa + agua en licuadora o a mano con cuchara y vaso.',
+      'Endulzar con azúcar al gusto del restaurante (pre-medida para uniformidad).',
+      'Servir en vaso grande con hielo si está disponible.',
+    ],
+    nota: 'Usar pulpa congelada para control de costos. El precio de $4.000 aplica para jugo incluido en el almuerzo; suelto puede venderse a $4.000–5.000.',
+  },
+
+  {
+    id: 'gaseosa',
+    nombre: 'Gaseosa',
+    categoria: 'bebida',
+    emoji: '🥫',
+    precio: 4000,
+    ingredientes: [
+      { nombre: 'Gaseosa personal (300–400 ml)', cant: '1 und', costo: 1800 },
+    ],
+    pasos: [
+      'Servir fría directo de nevera.',
+      'Preguntar sabor al cliente si hay varias opciones.',
+    ],
+    nota: 'Precio puede variar $3.000–5.000 según tamaño y marca. Ajustar según proveedor.',
+  },
+
+];
+
+// ─── ESTADO ──────────────────────────────────────────────
+let tabActual = 'todo';
+let busqueda  = '';
+
+// ─── UTILIDADES ─────────────────────────────────────────
+function fmtPeso(v) {
+  return '$' + v.toLocaleString('es-CO');
+}
+
+function costoTotal(r) {
+  return r.ingredientes.reduce((s, i) => s + i.costo, 0);
+}
+
+function margen(r) {
+  const c = costoTotal(r);
+  return Math.round((r.precio - c) / r.precio * 100);
+}
+
+function margenClass(pct) {
+  if (pct >= 60) return 'm-excelente';
+  if (pct >= 50) return 'm-bueno';
+  if (pct >= 40) return 'm-ajustado';
+  return 'm-tenso';
+}
+
+function margenLabel(pct) {
+  if (pct >= 60) return '✅ Excelente';
+  if (pct >= 50) return '👍 Bueno';
+  if (pct >= 40) return '⚠️ Ajustado';
+  return '🔴 Tenso';
+}
+
+function catLabel(cat) {
+  const m = { desayuno:'Desayuno', almuerzo:'Almuerzo', complemento:'Complemento', bebida:'Bebida' };
+  return m[cat] || cat;
+}
+
+function catClass(cat) {
+  return 'cat-' + cat;
+}
+
+// ─── RENDER ──────────────────────────────────────────────
+function renderCard(r) {
+  const costo = costoTotal(r);
+  const pct   = margen(r);
+  const mClass= margenClass(pct);
+  const mLabel= margenLabel(pct);
+
+  const ings = r.ingredientes.map(i => `
+    <tr>
+      <td class="ing-nombre">${i.nombre}</td>
+      <td class="ing-cant">${i.cant}</td>
+      <td class="ing-costo">${fmtPeso(i.costo)}</td>
+    </tr>`).join('');
+
+  const pasos = r.pasos.map((p, idx) => `
+    <li><div class="paso-num">${idx+1}</div><div>${p}</div></li>`).join('');
+
+  const nota = r.nota ? `<div class="nota-box">💡 ${r.nota}</div>` : '';
+
+  const waText = encodeURIComponent(
+    `*RECETA: ${r.nombre}*\n` +
+    `Costo estimado: ${fmtPeso(costo)}\n` +
+    `Precio venta: ${fmtPeso(r.precio)}\n` +
+    `Margen: ${pct}%\n\n` +
+    `Ingredientes:\n` +
+    r.ingredientes.map(i => `• ${i.nombre}: ${i.cant} (${fmtPeso(i.costo)})`).join('\n') +
+    `\n\nFamiliy Restaurante · Guapi`
+  );
+
+  return `
+    <div class="receta-card" id="card-${r.id}" data-cat="${r.categoria}" data-nombre="${r.nombre.toLowerCase()}">
+      <div class="receta-header">
+        <div class="receta-header-left">
+          <div class="receta-cat ${catClass(r.categoria)}">${catLabel(r.categoria)}</div>
+          <div class="receta-nombre">${r.nombre}</div>
+        </div>
+        <div class="receta-emoji">${r.emoji}</div>
+      </div>
+
+      <div class="precio-box">
+        <div class="precio-cell">
+          <div class="valor v-costo">${fmtPeso(costo)}</div>
+          <div class="etiq">Costo</div>
+        </div>
+        <div class="precio-cell">
+          <div class="valor v-precio">${fmtPeso(r.precio)}</div>
+          <div class="etiq">Precio venta</div>
+        </div>
+        <div class="precio-cell">
+          <div class="valor v-margen"><span class="margen-badge ${mClass}">${pct}% · ${mLabel}</span></div>
+          <div class="etiq">Margen</div>
+        </div>
+      </div>
+
+      <div class="toggle-row">
+        <button class="toggle-btn" onclick="toggleCard('${r.id}')">▼ Ver receta</button>
+      </div>
+
+      <div class="receta-detail">
+        <div class="receta-body">
+          <div class="section-titulo">🧺 Ingredientes</div>
+          <table class="ing-table">
+            <tbody>${ings}</tbody>
+          </table>
+
+          <div class="section-titulo">👩‍🍳 Preparación</div>
+          <ol class="pasos-list">${pasos}</ol>
+
+          ${nota}
+
+          <a class="wa-btn" href="https://wa.me/?text=${waText}" target="_blank">
+            📲 Compartir receta por WhatsApp
+          </a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleCard(id) {
+  const card = document.getElementById('card-' + id);
+  const btn  = card.querySelector('.toggle-btn');
+  const open = card.classList.toggle('expanded');
+  btn.textContent = open ? '▲ Cerrar' : '▼ Ver receta';
+}
+
+function render() {
+  const grid = document.getElementById('grid');
+  const q    = busqueda.toLowerCase();
+
+  const filtradas = RECETAS.filter(r => {
+    const catOk = tabActual === 'todo' || r.categoria === tabActual;
+    const busOk = !q || r.nombre.toLowerCase().includes(q) ||
+                  r.ingredientes.some(i => i.nombre.toLowerCase().includes(q));
+    return catOk && busOk;
+  });
+
+  document.getElementById('searchCount').textContent =
+    filtradas.length + ' receta' + (filtradas.length !== 1 ? 's' : '');
+
+  if (filtradas.length === 0) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-ico">🔍</div>
+      <p>No hay recetas que coincidan con tu búsqueda.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtradas.map(renderCard).join('');
+}
+
+// ─── STATS ───────────────────────────────────────────────
+function calcStats() {
+  const costos  = RECETAS.map(costoTotal);
+  const margenes = RECETAS.map(margen);
+  document.getElementById('statCostoMin').textContent  = fmtPeso(Math.min(...costos));
+  document.getElementById('statCostoMax').textContent  = fmtPeso(Math.max(...costos));
+  const prom = Math.round(margenes.reduce((a,b)=>a+b,0) / margenes.length);
+  document.getElementById('statMargenProm').textContent = prom + '%';
+}
+
+// ─── EVENTOS ─────────────────────────────────────────────
+function setTab(cat) {
+  tabActual = cat;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  render();
+}
+
+function filtrar() {
+  busqueda = document.getElementById('searchInput').value;
+  render();
+}
+
+// ─── INIT ────────────────────────────────────────────────
+calcStats();
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario Restaurante · Family</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg:      #0f1a10;
+      --bg2:     #141f15;
+      --card:    #1b2b1d;
+      --card2:   #223325;
+      --verde:   #2E8A58;
+      --verde2:  #3AAA6A;
+      --naranja: #D07020;
+      --naranja2:#E09040;
+      --rojo:    #B03030;
+      --amarillo:#C08020;
+      --texto:   #e4ede6;
+      --muted:   #7aa882;
+      --border:  rgba(255,255,255,0.08);
+    }
+
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--texto); min-height:100vh; }
+
+    /* ── LOCK SCREEN ── */
+    .lock-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .lock-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 360px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .lock-ico { font-size: 3rem; margin-bottom: 12px; }
+    .lock-box h2 { font-family:'DM Serif Display',serif; font-size:1.4rem; color:var(--verde2); margin-bottom:6px; }
+    .lock-box p  { font-size:.84rem; color:var(--muted); margin-bottom:24px; }
+
+    .lock-input {
+      width: 100%;
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 13px;
+      color: var(--texto);
+      font-family:'DM Sans',sans-serif;
+      font-size: 1.3rem;
+      text-align: center;
+      letter-spacing: 6px;
+      outline: none;
+      margin-bottom: 14px;
+      transition: border-color .2s;
+    }
+    .lock-input:focus { border-color: var(--verde); }
+
+    .lock-btn {
+      width: 100%;
+      background: var(--verde);
+      border: none;
+      border-radius: 12px;
+      padding: 13px;
+      color: white;
+      font-family:'DM Sans',sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .lock-btn:hover { background:var(--verde2); }
+
+    .lock-error { color:#E08080; font-size:.82rem; margin-top:8px; min-height:18px; }
+
+    /* ── APP ── */
+    .app { display:none; }
+    .app.visible { display:block; }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg,#0a150c 0%,#182a1a 100%);
+      border-bottom: 2px solid var(--verde);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .header-left { display:flex; align-items:center; gap:12px; }
+    .header-logo { font-size:1.8rem; }
+    .header-title { font-family:'DM Serif Display',serif; font-size:1.3rem; color:var(--verde2); }
+    .header-sub   { font-size:.72rem; color:var(--muted); }
+    .back-btn { text-decoration:none; background:rgba(255,255,255,0.07); border:1px solid var(--border); color:var(--muted); padding:7px 12px; border-radius:8px; font-size:.78rem; }
+
+    /* ── TABS PRINCIPALES ── */
+    .main-tabs {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .main-tab {
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--muted);
+      font-family:'DM Sans',sans-serif;
+      font-size:.85rem;
+      font-weight:600;
+      padding: 13px 18px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all .2s;
+    }
+    .main-tab:hover { color:var(--texto); }
+    .main-tab.active { color:var(--verde2); border-bottom-color:var(--verde); }
+
+    /* ── PANELES ── */
+    .panel { display:none; padding:20px; }
+    .panel.active { display:block; }
+
+    /* ── PANEL STATS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .stat-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: center;
+    }
+
+    .stat-num  { font-family:'DM Serif Display',serif; font-size:2rem; line-height:1; margin-bottom:4px; }
+    .stat-label{ font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; }
+
+    /* ── ALERTAS ── */
+    .alertas-box {
+      background: rgba(192,48,48,0.1);
+      border: 1px solid rgba(192,48,48,0.3);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+
+    .alertas-box h3 { font-size:.9rem; color:#E08080; margin-bottom:10px; }
+
+    .alerta-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .84rem;
+      padding: 5px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .alerta-item:last-child { border-bottom:none; }
+    .alerta-nombre { color:var(--texto); }
+    .alerta-stock  { color:#E08080; font-weight:700; }
+
+    /* ── ACCIONES RAPIDAS ── */
+    .acciones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+      gap: 12px;
+    }
+
+    .accion-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: left;
+      font-family:'DM Sans',sans-serif;
+      color: var(--texto);
+    }
+    .accion-btn:hover { border-color:var(--verde); background:var(--card2); }
+    .accion-ico   { font-size:1.5rem; margin-bottom:6px; }
+    .accion-title { font-weight:700; font-size:.9rem; }
+    .accion-desc  { font-size:.75rem; color:var(--muted); margin-top:2px; }
+
+    /* ── TABLA PRODUCTOS ── */
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-input {
+      flex:1; min-width:180px;
+      background:var(--card); border:1px solid var(--border); border-radius:10px;
+      padding:9px 14px; color:var(--texto); font-family:'DM Sans',sans-serif;
+      font-size:.88rem; outline:none;
+    }
+    .search-input:focus { border-color:var(--verde); }
+    .search-input::placeholder { color:var(--muted); }
+
+    .filter-select {
+      background:var(--card); border:1px solid var(--border); border-radius:10px;
+      padding:9px 12px; color:var(--texto); font-family:'DM Sans',sans-serif;
+      font-size:.85rem; outline:none; cursor:pointer;
+    }
+
+    .productos-table { width:100%; border-collapse:collapse; }
+
+    .productos-table th {
+      text-align:left; font-size:.7rem; color:var(--muted);
+      text-transform:uppercase; letter-spacing:1px;
+      padding:8px 10px; border-bottom:1px solid var(--border);
+    }
+
+    .productos-table td {
+      padding:10px 10px; font-size:.85rem;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      vertical-align:middle;
+    }
+
+    .prod-nombre-cell { font-weight:600; color:var(--texto); }
+    .prod-cat-badge {
+      font-size:.65rem; font-weight:700; padding:2px 7px;
+      border-radius:6px; display:inline-block;
+    }
+
+    .badge-proteina    { background:rgba(192,48,48,0.2); color:#E08080; }
+    .badge-lacteos     { background:rgba(200,160,0,0.2);  color:#D0B040; }
+    .badge-verduras    { background:rgba(46,138,88,0.2);  color:var(--verde2); }
+    .badge-granos      { background:rgba(160,120,40,0.2); color:#C0A060; }
+    .badge-bebidas     { background:rgba(32,96,160,0.2);  color:#60A0E0; }
+    .badge-condimentos { background:rgba(140,40,120,0.2); color:#C080D0; }
+
+    .stock-cell { font-weight:700; }
+    .stock-ok   { color:var(--verde2); }
+    .stock-bajo { color:var(--naranja2); }
+    .stock-critico { color:#E08080; }
+
+    .stock-input {
+      width:70px; background:var(--bg); border:1px solid var(--border);
+      border-radius:7px; padding:5px 8px; color:var(--texto);
+      font-family:'DM Sans',sans-serif; font-size:.85rem; text-align:center; outline:none;
+    }
+    .stock-input:focus { border-color:var(--verde); }
+
+    .btn-guardar-stock {
+      background:var(--verde); color:white; border:none; border-radius:7px;
+      padding:5px 10px; font-size:.75rem; font-weight:700; cursor:pointer;
+      font-family:'DM Sans',sans-serif; transition:background .2s;
+    }
+    .btn-guardar-stock:hover { background:var(--verde2); }
+
+    /* ── COMPRAS ── */
+    .compra-form {
+      background:var(--card); border:1px solid var(--border); border-radius:14px;
+      padding:20px; margin-bottom:20px;
+    }
+
+    .compra-form h3 { font-size:1rem; color:var(--verde2); margin-bottom:16px; }
+
+    .form-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; margin-bottom:14px; }
+
+    .form-group label { font-size:.72rem; color:var(--muted); display:block; margin-bottom:5px; }
+
+    .form-input, .form-select {
+      width:100%; background:var(--bg); border:1px solid var(--border);
+      border-radius:9px; padding:9px 12px; color:var(--texto);
+      font-family:'DM Sans',sans-serif; font-size:.88rem; outline:none;
+    }
+    .form-input:focus, .form-select:focus { border-color:var(--verde); }
+    .form-input::placeholder { color:var(--muted); }
+
+    .btn-add-compra {
+      background:var(--verde); color:white; border:none; border-radius:10px;
+      padding:9px 18px; font-family:'DM Sans',sans-serif; font-weight:700;
+      font-size:.85rem; cursor:pointer; transition:background .2s;
+    }
+    .btn-add-compra:hover { background:var(--verde2); }
+
+    /* LISTA COMPRAS PENDIENTES */
+    .compras-pendientes {
+      background:var(--card2); border:1px solid var(--border); border-radius:12px;
+      padding:14px; margin-bottom:14px; display:none;
+    }
+    .compras-pendientes h4 { font-size:.82rem; color:var(--muted); margin-bottom:10px; }
+    .compra-item-row {
+      display:flex; align-items:center; justify-content:space-between;
+      font-size:.84rem; padding:6px 0; border-bottom:1px solid rgba(255,255,255,0.04);
+    }
+    .compra-item-row:last-child { border-bottom:none; }
+
+    .compra-total-row {
+      display:flex; justify-content:space-between;
+      font-weight:700; font-size:.92rem; margin-top:10px;
+      padding-top:10px; border-top:1px solid var(--border);
+      color:var(--verde2);
+    }
+
+    .btn-remove-item {
+      background:none; border:none; color:#E08080; cursor:pointer; font-size:.9rem;
+    }
+
+    .btn-enviar-compra {
+      background:#25D366; color:white; border:none; border-radius:12px;
+      padding:12px; font-family:'DM Sans',sans-serif; font-weight:700;
+      font-size:.9rem; cursor:pointer; transition:background .2s;
+      display:flex; align-items:center; justify-content:center; gap:6px; width:100%;
+    }
+    .btn-enviar-compra:hover { background:#1ebe5d; }
+
+    /* ── HISTORIAL COMPRAS ── */
+    .historial-titulo { font-size:.82rem; color:var(--muted); margin:16px 0 8px; font-weight:600; text-transform:uppercase; letter-spacing:1px; }
+
+    .historial-item {
+      background:var(--card); border:1px solid var(--border); border-radius:10px;
+      padding:12px 14px; margin-bottom:8px; font-size:.83rem;
+    }
+
+    .historial-header { display:flex; justify-content:space-between; margin-bottom:4px; }
+    .historial-prov   { font-weight:700; color:var(--verde2); }
+    .historial-fecha  { color:var(--muted); font-size:.75rem; }
+    .historial-total  { font-weight:700; color:var(--naranja2); }
+    .historial-items  { color:var(--muted); font-size:.78rem; margin-top:4px; }
+
+    /* ── CONTEO ── */
+    .conteo-header {
+      display:flex; justify-content:space-between; align-items:center;
+      margin-bottom:16px; flex-wrap:wrap; gap:10px;
+    }
+
+    .conteo-header h3 { font-family:'DM Serif Display',serif; font-size:1.1rem; color:var(--texto); }
+
+    .btn-wa-conteo {
+      background:#25D366; color:white; border:none; border-radius:10px;
+      padding:9px 16px; font-family:'DM Sans',sans-serif; font-weight:700;
+      font-size:.82rem; cursor:pointer; transition:background .2s;
+      display:flex; align-items:center; gap:6px;
+    }
+    .btn-wa-conteo:hover { background:#1ebe5d; }
+
+    .conteo-cat { margin-bottom:20px; }
+    .conteo-cat-title { font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; font-weight:700; }
+
+    .conteo-item {
+      background:var(--card); border:1px solid var(--border); border-radius:10px;
+      padding:12px 14px; margin-bottom:6px; display:flex;
+      align-items:center; gap:12px;
+    }
+
+    .conteo-nombre { flex:1; font-size:.88rem; font-weight:600; }
+    .conteo-unidad { font-size:.75rem; color:var(--muted); }
+
+    .conteo-value-input {
+      width:80px; background:var(--bg); border:1px solid var(--border);
+      border-radius:8px; padding:7px 10px; color:var(--texto);
+      font-family:'DM Sans',sans-serif; font-size:.9rem; text-align:center; outline:none;
+    }
+    .conteo-value-input:focus { border-color:var(--verde); }
+
+    /* ── FLASH ── */
+    .flash {
+      position:fixed; bottom:24px; right:24px;
+      background:var(--verde); color:white; padding:12px 20px;
+      border-radius:12px; font-weight:600; font-size:.88rem;
+      box-shadow:0 4px 20px rgba(0,0,0,0.4);
+      opacity:0; transform:translateY(10px); transition:all .3s;
+      pointer-events:none; z-index:99;
+    }
+    .flash.show { opacity:1; transform:translateY(0); }
+
+    @media(max-width:600px){
+      .panel { padding:14px; }
+      .form-grid { grid-template-columns:1fr; }
+      .header { padding:12px 14px; }
+      .main-tabs { padding:0 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lockScreen">
+  <div class="lock-box">
+    <div class="lock-ico">🔐</div>
+    <h2>Inventario Restaurante</h2>
+    <p>Sistema exclusivo de administración.<br>Ingresa el PIN de Miryam para continuar.</p>
+    <input type="password" class="lock-input" id="pinInput" placeholder="••••"
+           maxlength="6" onkeydown="if(event.key==='Enter')verificarPin()">
+    <button class="lock-btn" onclick="verificarPin()">Ingresar</button>
+    <div class="lock-error" id="pinError"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">📦</div>
+      <div>
+        <div class="header-title">Inventario Restaurante</div>
+        <div class="header-sub">Family · Admin Miryam · Guapi</div>
+      </div>
+    </div>
+    <a href="index.html" class="back-btn">← Inicio</a>
+  </div>
+
+  <!-- TABS -->
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="setTab('panel',this)">📊 Panel</button>
+    <button class="main-tab" onclick="setTab('productos',this)">📋 Productos</button>
+    <button class="main-tab" onclick="setTab('compras',this)">🛒 Compras</button>
+    <button class="main-tab" onclick="setTab('conteo',this)">🔢 Conteo</button>
+  </div>
+
+  <!-- PANEL -->
+  <div class="panel active" id="panel-panel">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="statTotal" style="color:var(--verde2)">–</div>
+        <div class="stat-label">Productos</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statBajos" style="color:var(--naranja2)">–</div>
+        <div class="stat-label">Stock bajo</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statCriticos" style="color:#E08080">–</div>
+        <div class="stat-label">Stock crítico</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="statComprasHoy" style="color:#60A0E0">–</div>
+        <div class="stat-label">Compras hoy</div>
+      </div>
+    </div>
+
+    <div class="alertas-box" id="alertasBox" style="display:none">
+      <h3>⚠️ Productos que necesitan reposición</h3>
+      <div id="alertasLista"></div>
+    </div>
+
+    <div class="acciones-grid">
+      <button class="accion-btn" onclick="setTab('compras',null)">
+        <div class="accion-ico">🛒</div>
+        <div class="accion-title">Registrar compra</div>
+        <div class="accion-desc">Agregar productos recibidos</div>
+      </button>
+      <button class="accion-btn" onclick="setTab('conteo',null)">
+        <div class="accion-ico">🔢</div>
+        <div class="accion-title">Hacer conteo</div>
+        <div class="accion-desc">Verificar stock actual</div>
+      </button>
+      <button class="accion-btn" onclick="enviarResumenSemanal()">
+        <div class="accion-ico">📊</div>
+        <div class="accion-title">Resumen semanal</div>
+        <div class="accion-desc">Enviar por WhatsApp a Miryam</div>
+      </button>
+      <button class="accion-btn" onclick="setTab('productos',null)">
+        <div class="accion-ico">📋</div>
+        <div class="accion-title">Ver todos los productos</div>
+        <div class="accion-desc">Lista completa con stock</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- PRODUCTOS -->
+  <div class="panel" id="panel-productos">
+    <div class="toolbar">
+      <input type="text" class="search-input" id="searchProd"
+             placeholder="🔍 Buscar producto..." oninput="renderTablaProductos()">
+      <select class="filter-select" id="filterCat" onchange="renderTablaProductos()">
+        <option value="">Todas las categorías</option>
+        <option value="proteina">🥩 Proteínas</option>
+        <option value="lacteos">🥚 Lácteos y Huevos</option>
+        <option value="verduras">🥦 Verduras</option>
+        <option value="granos">🌾 Granos y Carbohidratos</option>
+        <option value="bebidas">🥤 Bebidas</option>
+        <option value="condimentos">🧂 Condimentos y Aceites</option>
+      </select>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="productos-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Unidad</th>
+            <th>Stock mín.</th>
+            <th>Stock actual</th>
+            <th>Actualizar</th>
+          </tr>
+        </thead>
+        <tbody id="tablaProductos"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- COMPRAS -->
+  <div class="panel" id="panel-compras">
+    <div class="compra-form">
+      <h3>🛒 Registrar compra</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Producto</label>
+          <select class="form-select" id="compraProd">
+            <option value="">Seleccionar producto…</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Cantidad</label>
+          <input type="number" class="form-input" id="compraCant" min="0.1" step="0.1" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Precio total ($)</label>
+          <input type="number" class="form-input" id="compraPrecio" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label>Proveedor</label>
+          <input type="text" class="form-input" id="compraProv" placeholder="Nombre o tienda">
+        </div>
+      </div>
+      <button class="btn-add-compra" onclick="agregarItemCompra()">+ Agregar a la factura</button>
+    </div>
+
+    <!-- FACTURA PENDIENTE -->
+    <div class="compras-pendientes" id="comprasPendientes">
+      <h4>📝 Factura en progreso</h4>
+      <div id="listaItemsPendientes"></div>
+      <div class="compra-total-row">
+        <span>Total factura</span>
+        <span id="totalFactura">$0</span>
+      </div>
+      <br>
+      <button class="btn-enviar-compra" onclick="enviarCompraWA()">
+        📲 Confirmar y enviar por WhatsApp a Miryam
+      </button>
+    </div>
+
+    <!-- HISTORIAL -->
+    <div class="historial-titulo">Últimas compras registradas</div>
+    <div id="historialCompras"></div>
+  </div>
+
+  <!-- CONTEO -->
+  <div class="panel" id="panel-conteo">
+    <div class="conteo-header">
+      <h3>🔢 Conteo de inventario</h3>
+      <button class="btn-wa-conteo" onclick="enviarConteoWA()">
+        📲 Enviar conteo a Miryam
+      </button>
+    </div>
+    <div id="conteoContainer"></div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- FLASH -->
+<div class="flash" id="flash"></div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────
+const PIN_ADMIN = '1234';   // ← Cambiar al PIN real de Miryam
+const WA_MIRYAM = '573000000000'; // ← Número WhatsApp Miryam
+
+// ─── CATÁLOGO (embebido en código, no localStorage) ──────
+const PRODUCTOS = [
+  // Proteínas
+  { id:'pollo',      nombre:'Pollo (presas/kg)',     cat:'proteina',   unidad:'kg',    minStock:5   },
+  { id:'salchicha',  nombre:'Salchicha',              cat:'proteina',   unidad:'und',   minStock:20  },
+  { id:'carne',      nombre:'Carne de res',           cat:'proteina',   unidad:'kg',    minStock:2   },
+
+  // Lácteos y Huevos
+  { id:'huevos',     nombre:'Huevos',                cat:'lacteos',    unidad:'und',   minStock:24  },
+  { id:'queso',      nombre:'Queso costeño',         cat:'lacteos',    unidad:'kg',    minStock:1   },
+  { id:'leche',      nombre:'Leche',                 cat:'lacteos',    unidad:'lt',    minStock:1   },
+
+  // Verduras
+  { id:'tomate',     nombre:'Tomate',                cat:'verduras',   unidad:'kg',    minStock:2   },
+  { id:'cebolla',    nombre:'Cebolla larga',         cat:'verduras',   unidad:'atado', minStock:2   },
+  { id:'zanahoria',  nombre:'Zanahoria',             cat:'verduras',   unidad:'kg',    minStock:1   },
+  { id:'col',        nombre:'Col / repollo',         cat:'verduras',   unidad:'und',   minStock:1   },
+  { id:'ajo',        nombre:'Ajo',                   cat:'verduras',   unidad:'cabeza',minStock:3   },
+
+  // Granos y Carbohidratos
+  { id:'arroz',      nombre:'Arroz',                 cat:'granos',     unidad:'kg',    minStock:5   },
+  { id:'papa',       nombre:'Papa',                  cat:'granos',     unidad:'kg',    minStock:5   },
+  { id:'platano',    nombre:'Plátano maduro',        cat:'granos',     unidad:'und',   minStock:6   },
+  { id:'arepa',      nombre:'Arepa',                 cat:'granos',     unidad:'und',   minStock:20  },
+  { id:'pan',        nombre:'Pan',                   cat:'granos',     unidad:'und',   minStock:10  },
+  { id:'harina',     nombre:'Harina de broaster',   cat:'granos',     unidad:'kg',    minStock:2   },
+  { id:'azucar',     nombre:'Azúcar',                cat:'granos',     unidad:'kg',    minStock:2   },
+  { id:'pulpa',      nombre:'Pulpa de fruta',        cat:'granos',     unidad:'bolsa', minStock:5   },
+
+  // Bebidas
+  { id:'cafe',       nombre:'Café molido',           cat:'bebidas',    unidad:'libra', minStock:1   },
+  { id:'chocolate',  nombre:'Chocolate en pastilla', cat:'bebidas',    unidad:'pastilla',minStock:2 },
+  { id:'gaseosa',    nombre:'Gaseosa (unidades)',    cat:'bebidas',    unidad:'und',   minStock:12  },
+
+  // Condimentos y Aceites
+  { id:'aceite',     nombre:'Aceite vegetal',        cat:'condimentos',unidad:'lt',    minStock:3   },
+  { id:'sal',        nombre:'Sal',                   cat:'condimentos',unidad:'kg',    minStock:1   },
+  { id:'comino',     nombre:'Comino',                cat:'condimentos',unidad:'und',   minStock:2   },
+  { id:'color',      nombre:'Color/achiote',         cat:'condimentos',unidad:'und',   minStock:1   },
+];
+
+const CATS = {
+  proteina:   { label:'🥩 Proteínas',              cls:'badge-proteina'    },
+  lacteos:    { label:'🥚 Lácteos y Huevos',       cls:'badge-lacteos'     },
+  verduras:   { label:'🥦 Verduras',               cls:'badge-verduras'    },
+  granos:     { label:'🌾 Granos y Carbohidratos', cls:'badge-granos'      },
+  bebidas:    { label:'🥤 Bebidas',                cls:'badge-bebidas'     },
+  condimentos:{ label:'🧂 Condimentos',            cls:'badge-condimentos' },
+};
+
+// ─── STORAGE ─────────────────────────────────────────────
+const HOY = new Date().toDateString();
+const KEY_STOCK    = 'restr_stock';
+const KEY_HISTORIAL= 'restr_compras';
+const KEY_CONTEO   = 'restr_conteo_' + HOY;
+
+function getStock()    { return JSON.parse(localStorage.getItem(KEY_STOCK)    || '{}'); }
+function saveStock(s)  { localStorage.setItem(KEY_STOCK, JSON.stringify(s)); }
+function getHistorial(){ return JSON.parse(localStorage.getItem(KEY_HISTORIAL)|| '[]'); }
+function saveHistorial(h){ localStorage.setItem(KEY_HISTORIAL, JSON.stringify(h)); }
+function getConteo()   { return JSON.parse(localStorage.getItem(KEY_CONTEO)   || '{}'); }
+function saveConteo(c) { localStorage.setItem(KEY_CONTEO, JSON.stringify(c)); }
+
+function stockDe(id) {
+  const s = getStock();
+  return s[id] !== undefined ? s[id] : null;
+}
+
+function estadoStock(prod) {
+  const s = stockDe(prod.id);
+  if (s === null) return 'stock-ok';
+  if (s === 0)        return 'stock-critico';
+  if (s < prod.minStock * 0.5) return 'stock-critico';
+  if (s < prod.minStock)        return 'stock-bajo';
+  return 'stock-ok';
+}
+
+// ─── UTILIDADES ──────────────────────────────────────────
+function fmtPeso(v) { return '$' + v.toLocaleString('es-CO'); }
+
+function flash(msg, color) {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.style.background = color || 'var(--verde)';
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ─── PIN ─────────────────────────────────────────────────
+function verificarPin() {
+  const pin = document.getElementById('pinInput').value;
+  if (pin === PIN_ADMIN) {
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    initApp();
+  } else {
+    document.getElementById('pinError').textContent = 'PIN incorrecto. Intenta de nuevo.';
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinInput').focus();
+  }
+}
+document.getElementById('pinInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') verificarPin();
+});
+
+// ─── TABS ────────────────────────────────────────────────
+function setTab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (btn) {
+    document.querySelectorAll('.main-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  } else {
+    document.querySelectorAll('.main-tab').forEach(b => {
+      b.classList.toggle('active', b.textContent.toLowerCase().includes(id.split('-')[0]));
+    });
+  }
+  if (id === 'productos') renderTablaProductos();
+  if (id === 'conteo')    renderConteo();
+  if (id === 'compras')   renderHistorial();
+  if (id === 'panel')     renderPanel();
+}
+
+// ─── PANEL ───────────────────────────────────────────────
+function renderPanel() {
+  const stock = getStock();
+  const hist  = getHistorial();
+  const hoy   = hist.filter(c => c.fecha === HOY);
+
+  let bajos = 0, criticos = 0;
+  PRODUCTOS.forEach(p => {
+    const e = estadoStock(p);
+    if (e === 'stock-bajo')    bajos++;
+    if (e === 'stock-critico') criticos++;
+  });
+
+  document.getElementById('statTotal').textContent     = PRODUCTOS.length;
+  document.getElementById('statBajos').textContent     = bajos;
+  document.getElementById('statCriticos').textContent  = criticos;
+  document.getElementById('statComprasHoy').textContent= hoy.length;
+
+  const alertasBox = document.getElementById('alertasBox');
+  const alertasLista = document.getElementById('alertasLista');
+  const problemáticos = PRODUCTOS.filter(p =>
+    estadoStock(p) === 'stock-bajo' || estadoStock(p) === 'stock-critico'
+  );
+
+  if (problemáticos.length > 0) {
+    alertasBox.style.display = 'block';
+    alertasLista.innerHTML = problemáticos.map(p => {
+      const s = stockDe(p.id);
+      const e = estadoStock(p);
+      return `<div class="alerta-item">
+        <span class="alerta-nombre">${p.nombre}</span>
+        <span class="alerta-stock">${s !== null ? s + ' ' + p.unidad : 'Sin datos'} · mín ${p.minStock}</span>
+      </div>`;
+    }).join('');
+  } else {
+    alertasBox.style.display = 'none';
+  }
+}
+
+// ─── TABLA PRODUCTOS ─────────────────────────────────────
+function renderTablaProductos() {
+  const q   = (document.getElementById('searchProd').value || '').toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+
+  const filtrados = PRODUCTOS.filter(p =>
+    (!q   || p.nombre.toLowerCase().includes(q)) &&
+    (!cat || p.cat === cat)
+  );
+
+  const stock = getStock();
+
+  document.getElementById('tablaProductos').innerHTML = filtrados.map(p => {
+    const s = stockDe(p.id);
+    const e = estadoStock(p);
+    const catInfo = CATS[p.cat];
+    const sText = s !== null ? s + ' ' + p.unidad : '–';
+    return `<tr>
+      <td class="prod-nombre-cell">${p.nombre}</td>
+      <td><span class="prod-cat-badge ${catInfo.cls}">${catInfo.label}</span></td>
+      <td>${p.unidad}</td>
+      <td style="color:var(--muted)">${p.minStock} ${p.unidad}</td>
+      <td class="stock-cell ${e}">${sText}</td>
+      <td>
+        <input type="number" class="stock-input" id="si-${p.id}"
+               value="${s !== null ? s : ''}" placeholder="–" min="0" step="0.1">
+        <button class="btn-guardar-stock" onclick="guardarStock('${p.id}')">✓</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function guardarStock(id) {
+  const val = parseFloat(document.getElementById('si-' + id).value);
+  if (isNaN(val) || val < 0) { flash('Cantidad inválida', 'var(--rojo)'); return; }
+  const s = getStock();
+  s[id] = val;
+  saveStock(s);
+  flash('✓ Stock guardado');
+  renderTablaProductos();
+  renderPanel();
+}
+
+// ─── COMPRAS ─────────────────────────────────────────────
+let itemsPendientes = [];
+
+function initSelectProductos() {
+  const sel = document.getElementById('compraProd');
+  PRODUCTOS.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.nombre} (${p.unidad})`;
+    sel.appendChild(opt);
+  });
+}
+
+function agregarItemCompra() {
+  const prodId  = document.getElementById('compraProd').value;
+  const cant    = parseFloat(document.getElementById('compraCant').value);
+  const precio  = parseInt(document.getElementById('compraPrecio').value);
+  const prov    = document.getElementById('compraProv').value.trim();
+
+  if (!prodId)         { flash('Selecciona un producto', 'var(--rojo)'); return; }
+  if (!cant || cant<=0){ flash('Cantidad inválida', 'var(--rojo)'); return; }
+  if (!precio || precio<=0){ flash('Precio inválido', 'var(--rojo)'); return; }
+
+  const prod = PRODUCTOS.find(p => p.id === prodId);
+  itemsPendientes.push({ prod, cant, precio, prov: prov || 'Sin especificar' });
+
+  // Reset
+  document.getElementById('compraProd').value = '';
+  document.getElementById('compraCant').value = '';
+  document.getElementById('compraPrecio').value = '';
+
+  renderItemsPendientes();
+  flash(`✔ ${prod.nombre} agregado a la factura`);
+}
+
+function renderItemsPendientes() {
+  const box = document.getElementById('comprasPendientes');
+  const lista= document.getElementById('listaItemsPendientes');
+  const totalEl = document.getElementById('totalFactura');
+
+  if (itemsPendientes.length === 0) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+
+  let total = 0;
+  lista.innerHTML = itemsPendientes.map((item, idx) => {
+    total += item.precio;
+    return `<div class="compra-item-row">
+      <span>${item.prod.nombre} · ${item.cant} ${item.prod.unidad}</span>
+      <span style="display:flex;align-items:center;gap:8px;">
+        <span style="color:var(--verde2);font-weight:700">${fmtPeso(item.precio)}</span>
+        <button class="btn-remove-item" onclick="quitarItemPendiente(${idx})">✕</button>
+      </span>
+    </div>`;
+  }).join('');
+
+  totalEl.textContent = fmtPeso(total);
+}
+
+function quitarItemPendiente(idx) {
+  itemsPendientes.splice(idx, 1);
+  renderItemsPendientes();
+}
+
+function enviarCompraWA() {
+  if (itemsPendientes.length === 0) return;
+
+  const hora   = new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+  const fecha  = new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long'});
+  const prov   = itemsPendientes[0].prov;
+  const total  = itemsPendientes.reduce((s,i) => s + i.precio, 0);
+
+  let msg = `*📦 COMPRA REGISTRADA — Restaurante Family*\n`;
+  msg += `📅 ${fecha} · ${hora}\n`;
+  msg += `🏪 Proveedor: ${prov}\n\n`;
+  msg += `*Productos:*\n`;
+  itemsPendientes.forEach(i => {
+    msg += `• ${i.prod.nombre}: ${i.cant} ${i.prod.unidad} → ${fmtPeso(i.precio)}\n`;
+  });
+  msg += `\n💰 *TOTAL: ${fmtPeso(total)}*`;
+
+  // Guardar en historial
+  const hist = getHistorial();
+  hist.unshift({
+    fecha: HOY, hora, proveedor: prov,
+    items: itemsPendientes.map(i => ({
+      nombre: i.prod.nombre, cant: i.cant, unidad: i.prod.unidad, precio: i.precio
+    })),
+    total
+  });
+  if (hist.length > 50) hist.pop();
+  saveHistorial(hist);
+
+  // Actualizar stock
+  const stock = getStock();
+  itemsPendientes.forEach(i => {
+    stock[i.prod.id] = (stock[i.prod.id] || 0) + i.cant;
+  });
+  saveStock(stock);
+
+  const url = `https://wa.me/${WA_MIRYAM}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+
+  itemsPendientes = [];
+  renderItemsPendientes();
+  renderHistorial();
+  renderPanel();
+  flash('✅ Compra registrada y stock actualizado');
+}
+
+function renderHistorial() {
+  const hist = getHistorial().slice(0, 10);
+  const el   = document.getElementById('historialCompras');
+  if (hist.length === 0) {
+    el.innerHTML = `<div style="color:var(--muted);font-size:.84rem;padding:16px 0">No hay compras registradas aún.</div>`;
+    return;
+  }
+  el.innerHTML = hist.map(c => `
+    <div class="historial-item">
+      <div class="historial-header">
+        <span class="historial-prov">🏪 ${c.proveedor}</span>
+        <span class="historial-total">${fmtPeso(c.total)}</span>
+      </div>
+      <div class="historial-fecha">${c.fecha} · ${c.hora}</div>
+      <div class="historial-items">${c.items.map(i=>`${i.nombre} ×${i.cant}`).join(' · ')}</div>
+    </div>
+  `).join('');
+}
+
+// ─── CONTEO ──────────────────────────────────────────────
+function renderConteo() {
+  const conteo = getConteo();
+  const catNames = Object.keys(CATS);
+  let html = '';
+
+  catNames.forEach(cat => {
+    const prods = PRODUCTOS.filter(p => p.cat === cat);
+    const catInfo = CATS[cat];
+    html += `<div class="conteo-cat">
+      <div class="conteo-cat-title">${catInfo.label}</div>`;
+    prods.forEach(p => {
+      const val = conteo[p.id] !== undefined ? conteo[p.id] : '';
+      html += `<div class="conteo-item">
+        <div>
+          <div class="conteo-nombre">${p.nombre}</div>
+          <div class="conteo-unidad">Unidad: ${p.unidad} · Mín: ${p.minStock}</div>
+        </div>
+        <input type="number" class="conteo-value-input" id="cnt-${p.id}"
+               value="${val}" placeholder="0" min="0" step="0.1"
+               onchange="guardarConteoItem('${p.id}')">
+      </div>`;
+    });
+    html += `</div>`;
+  });
+
+  document.getElementById('conteoContainer').innerHTML = html;
+}
+
+function guardarConteoItem(id) {
+  const val = parseFloat(document.getElementById('cnt-' + id).value);
+  if (isNaN(val)) return;
+  const c = getConteo();
+  c[id] = val;
+  saveConteo(c);
+  // También actualizar stock
+  const s = getStock();
+  s[id] = val;
+  saveStock(s);
+}
+
+function enviarConteoWA() {
+  const conteo = getConteo();
+  const completados = Object.keys(conteo).length;
+  if (completados === 0) { flash('No hay conteo registrado aún', 'var(--rojo)'); return; }
+
+  const fecha = new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+  const hora  = new Date().toLocaleTimeString('es-CO',{hour:'2-digit',minute:'2-digit'});
+
+  let msg = `*🔢 CONTEO DE INVENTARIO — Restaurante Family*\n`;
+  msg += `📅 ${fecha} · ${hora}\n\n`;
+
+  Object.keys(CATS).forEach(cat => {
+    const prods = PRODUCTOS.filter(p => p.cat === cat && conteo[p.id] !== undefined);
+    if (prods.length === 0) return;
+    msg += `*${CATS[cat].label}*\n`;
+    prods.forEach(p => {
+      const s = conteo[p.id];
+      const alerta = s < p.minStock ? ' ⚠️' : '';
+      msg += `• ${p.nombre}: ${s} ${p.unidad}${alerta}\n`;
+    });
+    msg += '\n';
+  });
+
+  const alertas = PRODUCTOS.filter(p => conteo[p.id] !== undefined && conteo[p.id] < p.minStock);
+  if (alertas.length > 0) {
+    msg += `*⚠️ Necesitan reposición:*\n`;
+    alertas.forEach(p => msg += `• ${p.nombre}\n`);
+  }
+
+  const url = `https://wa.me/${WA_MIRYAM}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+// ─── RESUMEN SEMANAL ──────────────────────────────────────
+function enviarResumenSemanal() {
+  const hist  = getHistorial();
+  const stock = getStock();
+
+  const fecha = new Date().toLocaleDateString('es-CO',{weekday:'long',day:'numeric',month:'long'});
+
+  let msg = `*📊 RESUMEN SEMANAL — Inventario Restaurante Family*\n`;
+  msg += `📅 ${fecha}\n\n`;
+
+  // Stock actual
+  msg += `*📦 Stock actual destacado:*\n`;
+  PRODUCTOS.slice(0, 8).forEach(p => {
+    const s = stockDe(p.id);
+    if (s !== null) msg += `• ${p.nombre}: ${s} ${p.unidad}\n`;
+  });
+
+  // Alertas
+  const alertas = PRODUCTOS.filter(p => estadoStock(p) !== 'stock-ok');
+  if (alertas.length > 0) {
+    msg += `\n*⚠️ Reponer urgente:*\n`;
+    alertas.forEach(p => msg += `• ${p.nombre}\n`);
+  }
+
+  // Compras recientes
+  const recientes = hist.slice(0, 5);
+  if (recientes.length > 0) {
+    const totalCompras = recientes.reduce((s,c) => s+c.total, 0);
+    msg += `\n*🛒 Compras recientes (${recientes.length}): ${fmtPeso(totalCompras)}*\n`;
+  }
+
+  msg += `\n_Restaurante Family · Guapi_`;
+
+  const url = `https://wa.me/${WA_MIRYAM}?text=${encodeURIComponent(msg)}`;
+  window.open(url, '_blank');
+}
+
+// ─── INIT ────────────────────────────────────────────────
+function initApp() {
+  initSelectProductos();
+  renderPanel();
+  renderHistorial();
+}
+</script>
+</body>
+</html>

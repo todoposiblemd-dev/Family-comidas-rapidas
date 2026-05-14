@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Costos & Precios — Family Comidas Rápidas</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(145deg, #1a1a2e 0%, #2C1810 50%, #1a1a2e 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 16px 48px;
+    }
+    .container { max-width: 720px; width: 100%; }
+    header { text-align: center; color: white; margin-bottom: 32px; }
+    .logo { font-size: 2.8rem; margin-bottom: 10px; }
+    header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 4px; }
+    header p { font-size: .9rem; opacity: .7; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.65); font-size: .82rem;
+      text-decoration: none; margin-bottom: 20px;
+      padding: 6px 12px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.15); transition: all .2s;
+    }
+    .back-btn:hover { color: white; border-color: rgba(255,255,255,.35); }
+    .section-label {
+      color: rgba(255,255,255,.5); font-size: .68rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; margin: 24px 0 10px;
+    }
+    .card {
+      background: white; border-radius: 16px;
+      padding: 20px 22px; margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.22);
+    }
+    .card-title {
+      font-size: .78rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #999; margin-bottom: 14px;
+    }
+
+    /* ── PRESETS ── */
+    .presets-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 10px;
+      margin-bottom: 14px;
+    }
+    .preset-card {
+      border-radius: 14px; padding: 14px 16px; cursor: pointer;
+      transition: all .2s; border: 2px solid transparent;
+      position: relative; overflow: hidden;
+    }
+    .preset-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+    .preset-card.active { border-color: white; }
+    .preset-nombre { font-size: .9rem; font-weight: 700; color: white; margin-bottom: 4px; }
+    .preset-precio-venta { font-size: .78rem; color: rgba(255,255,255,.75); }
+    .preset-badge {
+      position: absolute; top: 10px; right: 10px;
+      font-size: .6rem; font-weight: 700; letter-spacing: 1px;
+      background: rgba(255,255,255,.2); color: white;
+      padding: 2px 7px; border-radius: 8px; text-transform: uppercase;
+    }
+    .preset-btn-limpiar {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; padding: 10px; background: none;
+      border: 1.5px dashed rgba(255,255,255,.25); border-radius: 12px;
+      color: rgba(255,255,255,.5); font-family: 'DM Sans',sans-serif;
+      font-size: .82rem; cursor: pointer; transition: all .2s; margin-top: 4px;
+    }
+    .preset-btn-limpiar:hover { border-color: rgba(255,255,255,.5); color: rgba(255,255,255,.8); }
+
+    /* ── TABLA REF ── */
+    .ref-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .ref-table th { color:#aaa; font-weight:500; font-size:.75rem; text-align:left; padding:0 0 8px; border-bottom:1.5px solid #f0f0f0; }
+    .ref-table th:last-child { text-align:right; }
+    .ref-table td { padding:9px 0; border-bottom:.5px solid #f5f5f5; color:#333; vertical-align:middle; }
+    .ref-table td:last-child { text-align:right; font-weight:600; color:#C41E3A; }
+    .ref-table tr:last-child td { border-bottom:none; }
+    .est-tag { font-size:.62rem; background:#FFF3E0; color:#E65100; padding:1px 5px; border-radius:4px; margin-left:4px; }
+
+    /* ── PAPA ── */
+    .base-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+    .base-option {
+      border:1.5px solid #e8e8e8; border-radius:10px;
+      padding:10px 6px; cursor:pointer; transition:all .15s; text-align:center;
+    }
+    .base-option.active { border-color:#C41E3A; background:#FFF5F5; }
+    .base-option .b-grams { font-size:.88rem; font-weight:700; color:#C41E3A; }
+    .base-option .b-label { font-size:.65rem; color:#888; margin-top:2px; }
+    .base-option .b-cost { font-size:.72rem; color:#555; margin-top:3px; font-weight:600; }
+
+    /* ── TOPPINGS ── */
+    .calc-row {
+      display:flex; align-items:center; gap:10px;
+      padding:10px 0; border-bottom:.5px solid #f5f5f5;
+    }
+    .calc-row:last-child { border-bottom:none; }
+    .calc-check { width:18px; height:18px; cursor:pointer; flex-shrink:0; accent-color:#C41E3A; }
+    .calc-name { flex:1; font-size:.88rem; color:#333; }
+    .calc-name.dim { color:#bbb; }
+    .gram-input {
+      width:72px; font-size:.85rem; font-weight:600; color:#C41E3A;
+      border:1px solid #e8e8e8; border-radius:8px; padding:5px 8px;
+      text-align:right; background:#fafafa; font-family:'DM Sans',sans-serif;
+    }
+    .gram-input:focus { outline:none; border-color:#C41E3A; }
+    .gram-unit { font-size:.75rem; color:#aaa; flex-shrink:0; }
+    .calc-cost { font-size:.88rem; font-weight:600; color:#C41E3A; min-width:68px; text-align:right; }
+    .calc-cost.off { color:#ddd; }
+
+    /* ── EXTRAS ── */
+    .extra-row {
+      display:flex; align-items:center; gap:8px;
+      padding:8px 0; border-bottom:.5px solid #f5f5f5;
+    }
+    .extra-nombre {
+      flex:1; font-size:.88rem; color:#333;
+      border:none; background:transparent;
+      font-family:'DM Sans',sans-serif; padding:4px 0; outline:none;
+    }
+    .extra-nombre:focus { color:#C41E3A; border-bottom:1px solid #C41E3A; }
+    .extra-nombre::placeholder { color:#ccc; }
+    .extra-valor {
+      width:100px; font-size:.88rem; font-weight:600; color:#C41E3A;
+      border:1px solid #e8e8e8; border-radius:8px; padding:5px 8px;
+      text-align:right; background:#fafafa; font-family:'DM Sans',sans-serif;
+    }
+    .extra-valor:focus { outline:none; border-color:#C41E3A; }
+    .btn-delete {
+      background:none; border:none; cursor:pointer;
+      font-size:1rem; color:#ddd; padding:4px; border-radius:6px; transition:all .15s;
+    }
+    .btn-delete:hover { color:#C41E3A; background:#FFF5F5; }
+    .btn-agregar {
+      display:flex; align-items:center; gap:6px;
+      background:none; border:1.5px dashed #ddd; border-radius:10px;
+      padding:10px 14px; width:100%; font-family:'DM Sans',sans-serif;
+      font-size:.85rem; color:#aaa; cursor:pointer; transition:all .2s; margin-top:12px;
+    }
+    .btn-agregar:hover { border-color:#C41E3A; color:#C41E3A; background:#FFF5F5; }
+    .extras-subtotal-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:12px 0 0; margin-top:10px; border-top:1.5px solid #f0f0f0;
+    }
+    .extras-subtotal-label { font-size:.85rem; color:#888; font-weight:500; }
+    .extras-subtotal-val { font-size:.95rem; font-weight:700; color:#333; }
+
+    /* ── RESUMEN ── */
+    .resumen-card {
+      background:linear-gradient(135deg,#3D1F08 0%,#6B3A1F 100%);
+      border-radius:16px; padding:20px 22px; margin-bottom:14px; color:white;
+    }
+    .resumen-title {
+      font-size:.72rem; font-weight:700; letter-spacing:2px;
+      text-transform:uppercase; opacity:.6; margin-bottom:16px;
+    }
+    .r-linea {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:7px 0; font-size:.87rem; border-bottom:.5px solid rgba(255,255,255,.1);
+    }
+    .r-linea:last-child { border-bottom:none; }
+    .r-linea.sub { padding-left:14px; font-size:.8rem; opacity:.65; }
+    .resumen-total {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 0 0; margin-top:8px; border-top:1.5px solid rgba(255,255,255,.2);
+    }
+    .resumen-total .label { font-size:.88rem; opacity:.75; }
+    .resumen-total .valor { font-family:'DM Serif Display',serif; font-size:1.9rem; color:#F07830; }
+
+    /* ── ALERTA MARGEN ── */
+    .alerta-margen {
+      background: #FFF3F3; border-left: 3px solid #C41E3A;
+      border-radius: 0 10px 10px 0; padding: 10px 14px;
+      font-size: .82rem; color: #8B0000; margin-top: 10px; line-height: 1.5;
+      display: none;
+    }
+    .alerta-margen.show { display: block; }
+
+    /* ── PRECIOS ── */
+    .precio-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+    .precio-box {
+      background:white; border-radius:12px; padding:14px 12px; text-align:center;
+      box-shadow:0 4px 14px rgba(0,0,0,.18);
+    }
+    .precio-box.destacado { border:2px solid #F07830; }
+    .precio-margen { font-size:.68rem; color:#aaa; font-weight:600; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+    .precio-valor { font-family:'DM Serif Display',serif; font-size:1.3rem; color:#C41E3A; }
+    .precio-tag { font-size:.65rem; background:#F07830; color:white; border-radius:6px; padding:1px 6px; margin-top:4px; display:inline-block; }
+    .precio-actual { font-size:.65rem; color:#aaa; margin-top:3px; }
+
+    /* ── WA ── */
+    .wa-btn {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      width:100%; padding:16px; background:#25D366; color:white;
+      border:none; border-radius:14px; font-family:'DM Sans',sans-serif;
+      font-size:1rem; font-weight:600; cursor:pointer; transition:all .2s; margin-bottom:10px;
+    }
+    .wa-btn:hover { background:#20b857; transform:translateY(-2px); }
+
+    .aviso {
+      background:#FFF8E1; border-left:3px solid #FFA000;
+      border-radius:0 10px 10px 0; padding:10px 14px;
+      font-size:.8rem; color:#7A5800; margin-top:10px; line-height:1.5;
+    }
+    footer { text-align:center; color:rgba(255,255,255,.35); font-size:.75rem; margin-top:16px; line-height:1.7; }
+
+    @media (max-width:480px) {
+      .precio-grid { grid-template-columns:1fr; }
+      .base-grid { grid-template-columns:repeat(3,1fr); }
+      .presets-grid { grid-template-columns:1fr; }
+      header h1 { font-size:1.7rem; }
+      .extra-valor { width:85px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <a href="index.html" class="back-btn">← Volver al inicio</a>
+
+  <header>
+    <div class="logo">📊</div>
+    <h1>Costos & Precios</h1>
+    <p>Calculadora de rentabilidad por plato · Family Comidas Rápidas</p>
+  </header>
+
+  <!-- PRESETS -->
+  <p class="section-label">Cargar desde el recetario</p>
+  <div class="presets-grid" id="presets-grid"></div>
+  <button class="preset-btn-limpiar" onclick="limpiarPreset()">✕ Limpiar y empezar desde cero</button>
+
+  <!-- REF -->
+  <p class="section-label">Referencia de costos</p>
+  <div class="card">
+    <div class="card-title">💰 Costo por ingrediente</div>
+    <table class="ref-table">
+      <thead><tr><th>Ingrediente</th><th style="text-align:center">Compra</th><th>$/gramo</th></tr></thead>
+      <tbody id="ref-body"></tbody>
+    </table>
+    <div class="aviso">⚠️ Chorizo y ranchera usan peso estimado por unidad. Pesá uno real para afinar el cálculo.</div>
+  </div>
+
+  <!-- PAPA -->
+  <p class="section-label">1 · Papa base</p>
+  <div class="card">
+    <div class="card-title">🥔 Tamaño de la porción (cruda)</div>
+    <div class="base-grid" id="papa-grid"></div>
+  </div>
+
+  <!-- TOPPINGS -->
+  <p class="section-label">2 · Toppings</p>
+  <div class="card">
+    <div class="card-title">🍖 Ingredientes adicionales — ingresá los gramos libres</div>
+    <div id="toppings-container"></div>
+  </div>
+
+  <!-- EXTRAS -->
+  <p class="section-label">3 · Otros costos por plato</p>
+  <div class="card">
+    <div class="card-title">⚙️ Editá, agregá o eliminá según el plato</div>
+    <div id="extras-list"></div>
+    <button class="btn-agregar" onclick="agregarExtra()">+ Agregar costo</button>
+    <div class="extras-subtotal-row">
+      <span class="extras-subtotal-label">Total otros costos</span>
+      <span class="extras-subtotal-val" id="extras-subtotal">$0</span>
+    </div>
+  </div>
+
+  <!-- RESUMEN -->
+  <p class="section-label">Resumen del plato</p>
+  <div class="resumen-card">
+    <div class="resumen-title">Desglose completo</div>
+    <div id="resumen-cuerpo"></div>
+    <div class="resumen-total">
+      <span class="label">Costo total del plato</span>
+      <span class="valor" id="r-total">—</span>
+    </div>
+  </div>
+
+  <!-- PRECIOS -->
+  <p class="section-label">Precio de venta sugerido</p>
+  <div class="precio-grid">
+    <div class="precio-box">
+      <div class="precio-margen">40% margen</div>
+      <div class="precio-valor" id="p-40">—</div>
+      <div class="precio-actual" id="ref-40"></div>
+    </div>
+    <div class="precio-box destacado">
+      <div class="precio-margen">50% margen</div>
+      <div class="precio-valor" id="p-50">—</div>
+      <div class="precio-tag">✓ Recomendado</div>
+      <div class="precio-actual" id="ref-50"></div>
+    </div>
+    <div class="precio-box">
+      <div class="precio-margen">60% margen</div>
+      <div class="precio-valor" id="p-60">—</div>
+      <div class="precio-actual" id="ref-60"></div>
+    </div>
+  </div>
+  <div class="alerta-margen" id="alerta-margen"></div>
+
+  <button class="wa-btn" onclick="enviarWhatsApp()">📲 Enviar análisis por WhatsApp</button>
+
+  <footer>
+    <p>Family Comidas Rápidas · Sistema de Gestión v4.2</p>
+    <p>Rentabilidad por plato · No incluye nómina total ni arriendo</p>
+  </footer>
+
+</div>
+<script>
+const LB = 453.6;
+
+/* ─── INGREDIENTES ─── */
+const INGREDIENTES_REF = [
+  { id:'papa',     nombre:'Papa',              compra:'Bulto 90 lb — $140.000',  pxg: 140000/(90*LB) },
+  { id:'pollo',    nombre:'Pollo desmechado',  compra:'Libra — $10.000',          pxg: 10000/LB },
+  { id:'queso',    nombre:'Queso',             compra:'2.500g — $60.000',         pxg: 60000/2500 },
+  { id:'costilla', nombre:'Costilla de cerdo', compra:'Libra — $12.000',          pxg: 12000/LB },
+  { id:'chicha',   nombre:'Chicharrón',        compra:'Libra — $15.000',          pxg: 15000/LB },
+  { id:'carne',    nombre:'Carne desmechada',  compra:'Libra — $18.000',          pxg: 18000/LB },
+  { id:'molida',   nombre:'Carne molida',      compra:'Libra — $18.000',          pxg: 18000/LB },
+  { id:'chorizo',  nombre:'Chorizo',           compra:'Unidad — $3.000',          pxg: 3000/70,  est:true, pesoEst:70 },
+  { id:'ranchera', nombre:'Salchicha ranchera',compra:'Pack×5 — $7.500',          pxg: 1500/65,  est:true, pesoEst:65 },
+];
+const TOPPINGS  = INGREDIENTES_REF.filter(i => i.id !== 'papa');
+const PAPA_PXG  = 140000 / (90 * LB);
+
+const PAPA_OPTS = [
+  { g:120, label:'Personal' },
+  { g:200, label:'Porción' },
+  { g:400, label:'Mediana' },
+  { g:800, label:'Familiar' },
+  { g:1200,label:'Extra' },
+  { g:1600,label:'Jumbo' },
+];
+
+/* ─── PRESETS DESDE RECETARIO ─── */
+const PRESETS = [
+  {
+    nombre: 'Salchipapa Personal',
+    precio: 15000,
+    color: 'linear-gradient(135deg,#C41E3A,#8B0000)',
+    papaG: 200,
+    toppings: { ranchera:30, queso:50, pollo:30 }
+  },
+  {
+    nombre: 'Salchicostilla',
+    precio: 28000,
+    color: 'linear-gradient(135deg,#C85A0A,#8B3A00)',
+    papaG: 200,
+    toppings: { ranchera:90, costilla:100, pollo:50, queso:100 }
+  },
+  {
+    nombre: 'Salchiburguer',
+    precio: 30000,
+    color: 'linear-gradient(135deg,#2196F3,#0D47A1)',
+    papaG: 200,
+    toppings: { ranchera:130, molida:80, pollo:50 }
+  },
+  {
+    nombre: 'Salchipapa Familiar',
+    precio: 40000,
+    color: 'linear-gradient(135deg,#2E8A58,#1B5E35)',
+    papaG: 800,
+    toppings: { ranchera:60, pollo:50, queso:150 }
+  },
+];
+
+/* ─── ESTADO ─── */
+let papaG = 200;
+const checkedMap = {};
+const gramMap = {};
+TOPPINGS.forEach(t => { checkedMap[t.id]=false; gramMap[t.id]=50; });
+
+let activePreset = null;
+
+let extras = [
+  { id:'e1', nombre:'Aceite',       valor:200 },
+  { id:'e2', nombre:'Condimentos',  valor:150 },
+  { id:'e3', nombre:'Salsas',       valor:200 },
+  { id:'e4', nombre:'Empaque',      valor:500 },
+  { id:'e5', nombre:'Mano de obra', valor:500 },
+];
+let eCount = extras.length;
+
+const fmt = n => '$' + Math.round(n).toLocaleString('es-CO');
+
+/* ─── PRESETS ─── */
+function renderPresets() {
+  document.getElementById('presets-grid').innerHTML = PRESETS.map((p,i) => `
+    <div class="preset-card ${activePreset===i?'active':''}"
+         style="background:${p.color}" onclick="cargarPreset(${i})">
+      <div class="preset-nombre">${p.nombre}</div>
+      <div class="preset-precio-venta">Precio actual: ${fmt(p.precio)}</div>
+      <span class="preset-badge">Recetario</span>
+    </div>
+  `).join('');
+}
+
+function cargarPreset(i) {
+  const p = PRESETS[i];
+  activePreset = i;
+  papaG = p.papaG;
+  TOPPINGS.forEach(t => {
+    checkedMap[t.id] = t.id in p.toppings;
+    gramMap[t.id]    = p.toppings[t.id] || 50;
+  });
+  renderPresets();
+  renderPapa();
+  renderToppings();
+  recalc();
+}
+
+function limpiarPreset() {
+  activePreset = null;
+  papaG = 200;
+  TOPPINGS.forEach(t => { checkedMap[t.id]=false; gramMap[t.id]=50; });
+  renderPresets();
+  renderPapa();
+  renderToppings();
+  recalc();
+}
+
+/* ─── REFERENCIA ─── */
+function renderRef() {
+  document.getElementById('ref-body').innerHTML = INGREDIENTES_REF.map(i => {
+    const tag = i.est ? `<span class="est-tag">est. ${i.pesoEst}g/ud</span>` : '';
+    return `<tr><td>${i.nombre}${tag}</td>
+      <td style="color:#888;font-size:.78rem;text-align:center">${i.compra}</td>
+      <td>${fmt(i.pxg)}</td></tr>`;
+  }).join('');
+}
+
+/* ─── PAPA ─── */
+function renderPapa() {
+  document.getElementById('papa-grid').innerHTML = PAPA_OPTS.map(op =>
+    `<div class="base-option ${op.g===papaG?'active':''}" onclick="selPapa(${op.g})">
+      <div class="b-grams">${op.g}g</div>
+      <div class="b-label">${op.label}</div>
+      <div class="b-cost">${fmt(op.g*PAPA_PXG)}</div>
+    </div>`).join('');
+}
+function selPapa(g) { papaG=g; activePreset=null; renderPapa(); renderPresets(); recalc(); }
+
+/* ─── TOPPINGS ─── */
+function renderToppings() {
+  document.getElementById('toppings-container').innerHTML = TOPPINGS.map(t => {
+    const on = checkedMap[t.id];
+    const tag = t.est ? `<span class="est-tag">est.</span>` : '';
+    return `<div class="calc-row">
+      <input type="checkbox" class="calc-check" ${on?'checked':''}
+        onchange="toggleTop('${t.id}',this.checked)">
+      <span class="calc-name ${on?'':'dim'}">${t.nombre}${tag}</span>
+      <input type="number" class="gram-input" value="${gramMap[t.id]}" min="0" step="5"
+        oninput="cambiarGramos('${t.id}',this.value)" ${on?'':'disabled'}>
+      <span class="gram-unit">g</span>
+      <span class="calc-cost ${on?'':'off'}" id="tc-${t.id}">
+        ${on ? fmt(t.pxg * gramMap[t.id]) : '—'}
+      </span>
+    </div>`;
+  }).join('');
+}
+function toggleTop(id,val) {
+  checkedMap[id]=val;
+  activePreset=null;
+  renderToppings(); renderPresets(); recalc();
+}
+function cambiarGramos(id,val) {
+  gramMap[id]=+val||0;
+  const t=TOPPINGS.find(x=>x.id===id);
+  const el=document.getElementById('tc-'+id);
+  if(el&&t) el.textContent = checkedMap[id] ? fmt(t.pxg*(+val||0)) : '—';
+  if(checkedMap[id]) recalc();
+}
+
+/* ─── EXTRAS ─── */
+function renderExtras() {
+  document.getElementById('extras-list').innerHTML = extras.map(e =>
+    `<div class="extra-row">
+      <input class="extra-nombre" type="text" value="${e.nombre}" placeholder="Nombre del costo"
+        oninput="editNombre('${e.id}',this.value)">
+      <input class="extra-valor" type="number" value="${e.valor}" min="0" step="50"
+        oninput="editValor('${e.id}',this.value)">
+      <button class="btn-delete" onclick="eliminarExtra('${e.id}')">✕</button>
+    </div>`
+  ).join('');
+  updateSubtotal();
+}
+function editNombre(id,val) { const e=extras.find(x=>x.id===id); if(e){e.nombre=val; recalc();} }
+function editValor(id,val)  { const e=extras.find(x=>x.id===id); if(e){e.valor=+val||0; updateSubtotal(); recalc();} }
+function eliminarExtra(id)  { extras=extras.filter(e=>e.id!==id); renderExtras(); recalc(); }
+function agregarExtra() {
+  extras.push({id:'e'+(++eCount), nombre:'', valor:0});
+  renderExtras();
+  const inputs=document.querySelectorAll('.extra-nombre');
+  if(inputs.length) inputs[inputs.length-1].focus();
+}
+function updateSubtotal() {
+  const t=extras.reduce((s,e)=>s+(e.valor||0),0);
+  const el=document.getElementById('extras-subtotal');
+  if(el) el.textContent=fmt(t);
+}
+
+/* ─── RECALC ─── */
+function recalc() {
+  const costoPapa   = papaG * PAPA_PXG;
+  const costoExtras = extras.reduce((s,e)=>s+(e.valor||0),0);
+  let costoTops=0;
+  const lineasTop=[];
+  TOPPINGS.forEach(t => {
+    if(checkedMap[t.id]&&gramMap[t.id]>0) {
+      const c=t.pxg*gramMap[t.id];
+      costoTops+=c;
+      lineasTop.push({nombre:`${t.nombre} (${gramMap[t.id]}g)`, costo:c});
+    }
+  });
+  const total=costoPapa+costoTops+costoExtras;
+
+  let html=`<div class="r-linea"><span>🥔 Papa base (${papaG}g)</span><span>${fmt(costoPapa)}</span></div>`;
+  if(lineasTop.length) {
+    html+=`<div class="r-linea"><span>🍖 Toppings</span><span>${fmt(costoTops)}</span></div>`;
+    lineasTop.forEach(l=>{html+=`<div class="r-linea sub"><span>${l.nombre}</span><span>${fmt(l.costo)}</span></div>`;});
+  }
+  const extActivos=extras.filter(e=>e.valor>0&&e.nombre);
+  if(extActivos.length) {
+    html+=`<div class="r-linea"><span>⚙️ Otros costos</span><span>${fmt(costoExtras)}</span></div>`;
+    extActivos.forEach(e=>{html+=`<div class="r-linea sub"><span>${e.nombre}</span><span>${fmt(e.valor)}</span></div>`;});
+  }
+
+  document.getElementById('resumen-cuerpo').innerHTML=html;
+  document.getElementById('r-total').textContent=fmt(total);
+
+  const p40=total/0.60, p50=total/0.50, p60=total/0.40;
+  document.getElementById('p-40').textContent=fmt(p40);
+  document.getElementById('p-50').textContent=fmt(p50);
+  document.getElementById('p-60').textContent=fmt(p60);
+
+  // Comparación con precio actual del recetario
+  if(activePreset!==null) {
+    const precioActual=PRESETS[activePreset].precio;
+    const margenReal=((precioActual-total)/precioActual)*100;
+    const refTexto=`Precio actual recetario: ${fmt(precioActual)}`;
+    ['ref-40','ref-50','ref-60'].forEach(id=>{
+      document.getElementById(id).textContent=refTexto;
+    });
+    const alerta=document.getElementById('alerta-margen');
+    if(margenReal<30) {
+      alerta.className='alerta-margen show';
+      alerta.innerHTML=`⚠️ <strong>Atención:</strong> Con el precio actual de ${fmt(precioActual)}, el margen real es solo <strong>${margenReal.toFixed(0)}%</strong>. Se recomienda revisar el precio de venta.`;
+    } else {
+      alerta.className='alerta-margen';
+      alerta.innerHTML='';
+    }
+  } else {
+    ['ref-40','ref-50','ref-60'].forEach(id=>{ document.getElementById(id).textContent=''; });
+    document.getElementById('alerta-margen').className='alerta-margen';
+  }
+
+  window._res={costoPapa,costoTops,costoExtras,total,p40,p50,p60,lineasTop};
+}
+
+/* ─── WHATSAPP ─── */
+function enviarWhatsApp() {
+  if(!window._res) return;
+  const r=window._res;
+  const topsStr=r.lineasTop.map(l=>`  • ${l.nombre}: ${fmt(l.costo)}`).join('\n');
+  const extStr=extras.filter(e=>e.valor>0&&e.nombre).map(e=>`  • ${e.nombre}: ${fmt(e.valor)}`).join('\n');
+  const presetInfo=activePreset!==null
+    ? `📋 Receta: ${PRESETS[activePreset].nombre} (precio actual: ${fmt(PRESETS[activePreset].precio)})\n` : '';
+  const msg=
+    `📊 *ANÁLISIS DE COSTOS — Family*\n`+
+    (presetInfo)+
+    `━━━━━━━━━━━━━━━\n`+
+    `🥔 Papa base (${papaG}g): ${fmt(r.costoPapa)}\n`+
+    (topsStr?`🍖 Toppings:\n${topsStr}\n`:'')+
+    (extStr?`⚙️ Otros costos:\n${extStr}\n`:'')+
+    `━━━━━━━━━━━━━━━\n`+
+    `💰 *COSTO TOTAL: ${fmt(r.total)}*\n\n`+
+    `📈 Precio de venta sugerido:\n`+
+    `  • 40% margen → ${fmt(r.p40)}\n`+
+    `  • 50% margen → ${fmt(r.p50)} ✓\n`+
+    `  • 60% margen → ${fmt(r.p60)}\n\n`+
+    `_Rentabilidad por plato · No incluye nómina total ni arriendo_`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+/* ─── INIT ─── */
+renderRef(); renderPresets(); renderPapa(); renderToppings(); renderExtras(); recalc();
+</script>
+</body>
+</html>

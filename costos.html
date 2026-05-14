@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Costos & Precios — Family Comidas Rápidas</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(145deg, #1a1a2e 0%, #2C1810 50%, #1a1a2e 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 28px 16px 48px;
+    }
+    .container { max-width: 720px; width: 100%; }
+    header { text-align: center; color: white; margin-bottom: 32px; }
+    .logo { font-size: 2.8rem; margin-bottom: 10px; }
+    header h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; margin-bottom: 4px; }
+    header p { font-size: .9rem; opacity: .7; }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.65); font-size: .82rem;
+      text-decoration: none; margin-bottom: 20px;
+      padding: 6px 12px; border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.15); transition: all .2s;
+    }
+    .back-btn:hover { color: white; border-color: rgba(255,255,255,.35); }
+    .section-label {
+      color: rgba(255,255,255,.5); font-size: .68rem; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase; margin: 24px 0 10px;
+    }
+    .card {
+      background: white; border-radius: 16px;
+      padding: 20px 22px; margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.22);
+    }
+    .card-title {
+      font-size: .78rem; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: #999; margin-bottom: 14px;
+    }
+
+    /* TABLA REF */
+    .ref-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .ref-table th {
+      color: #aaa; font-weight: 500; font-size: .75rem;
+      text-align: left; padding: 0 0 8px; border-bottom: 1.5px solid #f0f0f0;
+    }
+    .ref-table th:last-child { text-align: right; }
+    .ref-table td { padding: 9px 0; border-bottom: .5px solid #f5f5f5; color: #333; vertical-align: middle; }
+    .ref-table td:last-child { text-align: right; font-weight: 600; color: #C41E3A; }
+    .ref-table tr:last-child td { border-bottom: none; }
+    .est-tag { font-size: .62rem; background: #FFF3E0; color: #E65100; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+
+    /* PAPA */
+    .base-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .base-option {
+      border: 1.5px solid #e8e8e8; border-radius: 10px;
+      padding: 10px 6px; cursor: pointer; transition: all .15s; text-align: center;
+    }
+    .base-option.active { border-color: #C41E3A; background: #FFF5F5; }
+    .base-option .b-grams { font-size: .95rem; font-weight: 700; color: #C41E3A; }
+    .base-option .b-label { font-size: .68rem; color: #888; margin-top: 2px; }
+    .base-option .b-cost { font-size: .75rem; color: #555; margin-top: 3px; font-weight: 600; }
+
+    /* TOPPINGS */
+    .calc-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 0; border-bottom: .5px solid #f5f5f5;
+    }
+    .calc-row:last-child { border-bottom: none; }
+    .calc-check { width: 18px; height: 18px; cursor: pointer; flex-shrink: 0; accent-color: #C41E3A; }
+    .calc-name { flex: 1; font-size: .88rem; color: #333; }
+    .calc-name.dim { color: #bbb; }
+    .gram-select {
+      font-size: .82rem; padding: 5px 8px;
+      border: 1px solid #e0e0e0; border-radius: 8px;
+      background: #fafafa; color: #333; min-width: 80px;
+    }
+    .gram-select:focus { outline: none; border-color: #C41E3A; }
+    .calc-cost { font-size: .88rem; font-weight: 600; color: #C41E3A; min-width: 70px; text-align: right; }
+    .calc-cost.off { color: #ddd; }
+
+    /* EXTRAS */
+    .extra-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 0; border-bottom: .5px solid #f5f5f5;
+    }
+    .extra-nombre {
+      flex: 1; font-size: .88rem; color: #333;
+      border: none; background: transparent;
+      font-family: 'DM Sans', sans-serif; padding: 4px 0; outline: none;
+    }
+    .extra-nombre:focus { color: #C41E3A; border-bottom: 1px solid #C41E3A; }
+    .extra-nombre::placeholder { color: #ccc; }
+    .extra-valor {
+      width: 100px; font-size: .88rem; font-weight: 600; color: #C41E3A;
+      border: 1px solid #e8e8e8; border-radius: 8px;
+      padding: 5px 8px; text-align: right;
+      background: #fafafa; font-family: 'DM Sans', sans-serif;
+    }
+    .extra-valor:focus { outline: none; border-color: #C41E3A; }
+    .btn-delete {
+      background: none; border: none; cursor: pointer;
+      font-size: 1rem; color: #ddd; padding: 4px; border-radius: 6px; transition: all .15s;
+    }
+    .btn-delete:hover { color: #C41E3A; background: #FFF5F5; }
+    .btn-agregar {
+      display: flex; align-items: center; gap: 6px;
+      background: none; border: 1.5px dashed #ddd; border-radius: 10px;
+      padding: 10px 14px; width: 100%; font-family: 'DM Sans', sans-serif;
+      font-size: .85rem; color: #aaa; cursor: pointer; transition: all .2s; margin-top: 12px;
+    }
+    .btn-agregar:hover { border-color: #C41E3A; color: #C41E3A; background: #FFF5F5; }
+    .extras-subtotal-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0 0; margin-top: 10px; border-top: 1.5px solid #f0f0f0;
+    }
+    .extras-subtotal-label { font-size: .85rem; color: #888; font-weight: 500; }
+    .extras-subtotal-val { font-size: .95rem; font-weight: 700; color: #333; }
+
+    /* RESUMEN */
+    .resumen-card {
+      background: linear-gradient(135deg, #3D1F08 0%, #6B3A1F 100%);
+      border-radius: 16px; padding: 20px 22px; margin-bottom: 14px; color: white;
+    }
+    .resumen-title {
+      font-size: .72rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; opacity: .6; margin-bottom: 16px;
+    }
+    .r-linea {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 7px 0; font-size: .87rem; border-bottom: .5px solid rgba(255,255,255,.1);
+    }
+    .r-linea:last-child { border-bottom: none; }
+    .r-linea.sub { padding-left: 14px; font-size: .8rem; opacity: .65; }
+    .resumen-total {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 0 0; margin-top: 8px; border-top: 1.5px solid rgba(255,255,255,.2);
+    }
+    .resumen-total .label { font-size: .88rem; opacity: .75; }
+    .resumen-total .valor { font-family: 'DM Serif Display', serif; font-size: 1.9rem; color: #F07830; }
+
+    /* PRECIOS */
+    .precio-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 14px; }
+    .precio-box {
+      background: white; border-radius: 12px; padding: 14px 12px; text-align: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,.18);
+    }
+    .precio-box.destacado { border: 2px solid #F07830; }
+    .precio-margen { font-size: .68rem; color: #aaa; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+    .precio-valor { font-family: 'DM Serif Display', serif; font-size: 1.3rem; color: #C41E3A; }
+    .precio-tag { font-size: .65rem; background: #F07830; color: white; border-radius: 6px; padding: 1px 6px; margin-top: 4px; display: inline-block; }
+
+    /* WA */
+    .wa-btn {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; padding: 16px; background: #25D366; color: white;
+      border: none; border-radius: 14px; font-family: 'DM Sans', sans-serif;
+      font-size: 1rem; font-weight: 600; cursor: pointer; transition: all .2s; margin-bottom: 10px;
+    }
+    .wa-btn:hover { background: #20b857; transform: translateY(-2px); }
+
+    .aviso {
+      background: #FFF8E1; border-left: 3px solid #FFA000;
+      border-radius: 0 10px 10px 0; padding: 10px 14px;
+      font-size: .8rem; color: #7A5800; margin-top: 10px; line-height: 1.5;
+    }
+
+    footer { text-align: center; color: rgba(255,255,255,.35); font-size: .75rem; margin-top: 16px; line-height: 1.7; }
+
+    @media (max-width: 480px) {
+      .precio-grid { grid-template-columns: 1fr; }
+      .base-grid { grid-template-columns: repeat(2,1fr); }
+      header h1 { font-size: 1.7rem; }
+      .extra-valor { width: 85px; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <a href="index.html" class="back-btn">← Volver al inicio</a>
+
+  <header>
+    <div class="logo">📊</div>
+    <h1>Costos & Precios</h1>
+    <p>Calculadora de rentabilidad por plato · Family Comidas Rápidas</p>
+  </header>
+
+  <p class="section-label">Referencia de costos</p>
+  <div class="card">
+    <div class="card-title">💰 Costo por ingrediente</div>
+    <table class="ref-table">
+      <thead><tr><th>Ingrediente</th><th style="text-align:center">Compra</th><th>$/gramo</th></tr></thead>
+      <tbody id="ref-body"></tbody>
+    </table>
+    <div class="aviso">⚠️ Chorizo y ranchera usan peso estimado por unidad. Pesá uno real para afinar el cálculo.</div>
+  </div>
+
+  <p class="section-label">1 · Papa base</p>
+  <div class="card">
+    <div class="card-title">🥔 Tamaño de la porción (cruda)</div>
+    <div class="base-grid" id="papa-grid"></div>
+  </div>
+
+  <p class="section-label">2 · Toppings</p>
+  <div class="card">
+    <div class="card-title">🍖 Ingredientes adicionales</div>
+    <div id="toppings-container"></div>
+  </div>
+
+  <p class="section-label">3 · Otros costos por plato</p>
+  <div class="card">
+    <div class="card-title">⚙️ Editá, agregá o eliminá según el plato</div>
+    <div id="extras-list"></div>
+    <button class="btn-agregar" onclick="agregarExtra()">+ Agregar costo</button>
+    <div class="extras-subtotal-row">
+      <span class="extras-subtotal-label">Total otros costos</span>
+      <span class="extras-subtotal-val" id="extras-subtotal">$0</span>
+    </div>
+  </div>
+
+  <p class="section-label">Resumen del plato</p>
+  <div class="resumen-card">
+    <div class="resumen-title">Desglose completo</div>
+    <div id="resumen-cuerpo"></div>
+    <div class="resumen-total">
+      <span class="label">Costo total del plato</span>
+      <span class="valor" id="r-total">—</span>
+    </div>
+  </div>
+
+  <p class="section-label">Precio de venta sugerido</p>
+  <div class="precio-grid">
+    <div class="precio-box">
+      <div class="precio-margen">40% margen</div>
+      <div class="precio-valor" id="p-40">—</div>
+    </div>
+    <div class="precio-box destacado">
+      <div class="precio-margen">50% margen</div>
+      <div class="precio-valor" id="p-50">—</div>
+      <div class="precio-tag">✓ Recomendado</div>
+    </div>
+    <div class="precio-box">
+      <div class="precio-margen">60% margen</div>
+      <div class="precio-valor" id="p-60">—</div>
+    </div>
+  </div>
+
+  <button class="wa-btn" onclick="enviarWhatsApp()">📲 Enviar análisis por WhatsApp</button>
+
+  <footer>
+    <p>Family Comidas Rápidas · Sistema de Gestión v4.2</p>
+    <p>Rentabilidad por plato · No incluye nómina total ni arriendo</p>
+  </footer>
+
+</div>
+<script>
+const LB = 453.6;
+const INGREDIENTES_REF = [
+  { id:'papa',     nombre:'Papa',              compra:'Bulto 90 lb — $140.000', pxg: 140000/(90*LB) },
+  { id:'pollo',    nombre:'Pollo',             compra:'Libra — $10.000',         pxg: 10000/LB },
+  { id:'queso',    nombre:'Queso',             compra:'2.500g — $60.000',        pxg: 60000/2500 },
+  { id:'costilla', nombre:'Costilla',          compra:'Libra — $12.000',         pxg: 12000/LB },
+  { id:'chicha',   nombre:'Chicharrón',        compra:'Libra — $15.000',         pxg: 15000/LB },
+  { id:'carne',    nombre:'Carne en trozos',   compra:'Libra — $18.000',         pxg: 18000/LB },
+  { id:'molida',   nombre:'Carne molida',      compra:'Libra — $18.000',         pxg: 18000/LB },
+  { id:'chorizo',  nombre:'Chorizo',           compra:'Unidad — $3.000',         pxg: 3000/70,  est:true, pesoEst:70 },
+  { id:'ranchera', nombre:'Ranchera (salch.)', compra:'Pack×5 — $7.500',         pxg: 1500/65,  est:true, pesoEst:65 },
+];
+const TOPPINGS  = INGREDIENTES_REF.filter(i => i.id !== 'papa');
+const PAPA_PXG  = 140000 / (90 * LB);
+const PAPA_OPTS = [
+  { g:80,  label:'Pequeña' },
+  { g:120, label:'Normal' },
+  { g:160, label:'Grande' },
+  { g:200, label:'Familiar' },
+];
+const GRAM_OPTS = [25, 50, 75, 100];
+
+let papaG = 120;
+const checkedMap = {};
+const gramMap    = {};
+TOPPINGS.forEach(t => { checkedMap[t.id] = false; gramMap[t.id] = 50; });
+
+let extras = [
+  { id:'e1', nombre:'Aceite',       valor:200 },
+  { id:'e2', nombre:'Condimentos',  valor:150 },
+  { id:'e3', nombre:'Salsas',       valor:200 },
+  { id:'e4', nombre:'Empaque',      valor:500 },
+  { id:'e5', nombre:'Mano de obra', valor:500 },
+];
+let eCount = extras.length;
+
+const fmt = n => '$' + Math.round(n).toLocaleString('es-CO');
+
+/* ─ REFERENCIA ─ */
+function renderRef() {
+  document.getElementById('ref-body').innerHTML = INGREDIENTES_REF.map(i => {
+    const tag = i.est ? `<span class="est-tag">est. ${i.pesoEst}g/ud</span>` : '';
+    return `<tr><td>${i.nombre}${tag}</td>
+      <td style="color:#888;font-size:.78rem;text-align:center">${i.compra}</td>
+      <td>${fmt(i.pxg)}</td></tr>`;
+  }).join('');
+}
+
+/* ─ PAPA ─ */
+function renderPapa() {
+  document.getElementById('papa-grid').innerHTML = PAPA_OPTS.map(op =>
+    `<div class="base-option ${op.g===papaG?'active':''}" onclick="selPapa(${op.g})">
+      <div class="b-grams">${op.g}g</div>
+      <div class="b-label">${op.label}</div>
+      <div class="b-cost">${fmt(op.g*PAPA_PXG)}</div>
+    </div>`).join('');
+}
+function selPapa(g) { papaG=g; renderPapa(); recalc(); }
+
+/* ─ TOPPINGS ─ */
+function renderToppings() {
+  document.getElementById('toppings-container').innerHTML = TOPPINGS.map(t => {
+    const on = checkedMap[t.id];
+    const tag = t.est ? `<span class="est-tag">est.</span>` : '';
+    const opts = GRAM_OPTS.map(g =>
+      `<option value="${g}" ${g===gramMap[t.id]?'selected':''}>${g}g</option>`).join('');
+    return `<div class="calc-row">
+      <input type="checkbox" class="calc-check" ${on?'checked':''} onchange="toggleTop('${t.id}',this.checked)">
+      <span class="calc-name ${on?'':'dim'}">${t.nombre}${tag}</span>
+      <select class="gram-select" onchange="cambiarGramos('${t.id}',this.value)">${opts}</select>
+      <span class="calc-cost ${on?'':'off'}" id="tc-${t.id}">${on?fmt(t.pxg*gramMap[t.id]):'—'}</span>
+    </div>`;
+  }).join('');
+}
+function toggleTop(id,val) { checkedMap[id]=val; renderToppings(); recalc(); }
+function cambiarGramos(id,val) {
+  gramMap[id]=+val;
+  const t=TOPPINGS.find(x=>x.id===id);
+  const el=document.getElementById('tc-'+id);
+  if(el&&t) el.textContent = checkedMap[id] ? fmt(t.pxg*+val) : '—';
+  if(checkedMap[id]) recalc();
+}
+
+/* ─ EXTRAS ─ */
+function renderExtras() {
+  document.getElementById('extras-list').innerHTML = extras.map(e =>
+    `<div class="extra-row">
+      <input class="extra-nombre" type="text" value="${e.nombre}" placeholder="Nombre del costo"
+        oninput="editNombre('${e.id}',this.value)">
+      <input class="extra-valor" type="number" value="${e.valor}" min="0" step="50"
+        oninput="editValor('${e.id}',this.value)">
+      <button class="btn-delete" onclick="eliminarExtra('${e.id}')">✕</button>
+    </div>`
+  ).join('');
+  updateSubtotal();
+}
+function editNombre(id,val) { const e=extras.find(x=>x.id===id); if(e){e.nombre=val; recalc();} }
+function editValor(id,val)  { const e=extras.find(x=>x.id===id); if(e){e.valor=+val||0; updateSubtotal(); recalc();} }
+function eliminarExtra(id)  { extras=extras.filter(e=>e.id!==id); renderExtras(); recalc(); }
+function agregarExtra() {
+  const newId = 'e'+(++eCount);
+  extras.push({id:newId, nombre:'', valor:0});
+  renderExtras();
+  const inputs = document.querySelectorAll('.extra-nombre');
+  if(inputs.length) inputs[inputs.length-1].focus();
+}
+function updateSubtotal() {
+  const t = extras.reduce((s,e)=>s+(e.valor||0),0);
+  const el = document.getElementById('extras-subtotal');
+  if(el) el.textContent = fmt(t);
+}
+
+/* ─ RECALC ─ */
+function recalc() {
+  const costoPapa   = papaG * PAPA_PXG;
+  const costoExtras = extras.reduce((s,e)=>s+(e.valor||0),0);
+  let costoTops = 0;
+  const lineasTop = [];
+  TOPPINGS.forEach(t => {
+    if(checkedMap[t.id]) {
+      const c = t.pxg * gramMap[t.id];
+      costoTops += c;
+      lineasTop.push({nombre:`${t.nombre} (${gramMap[t.id]}g)`, costo:c});
+    }
+  });
+  const total = costoPapa + costoTops + costoExtras;
+
+  let html = `<div class="r-linea"><span>🥔 Papa base (${papaG}g)</span><span>${fmt(costoPapa)}</span></div>`;
+  if(lineasTop.length) {
+    html += `<div class="r-linea"><span>🍖 Toppings</span><span>${fmt(costoTops)}</span></div>`;
+    lineasTop.forEach(l => {
+      html += `<div class="r-linea sub"><span>${l.nombre}</span><span>${fmt(l.costo)}</span></div>`;
+    });
+  }
+  const extrasActivos = extras.filter(e=>e.valor>0&&e.nombre);
+  if(extrasActivos.length) {
+    html += `<div class="r-linea"><span>⚙️ Otros costos</span><span>${fmt(costoExtras)}</span></div>`;
+    extrasActivos.forEach(e => {
+      html += `<div class="r-linea sub"><span>${e.nombre}</span><span>${fmt(e.valor)}</span></div>`;
+    });
+  }
+  document.getElementById('resumen-cuerpo').innerHTML = html;
+  document.getElementById('r-total').textContent = fmt(total);
+  document.getElementById('p-40').textContent = fmt(total/0.60);
+  document.getElementById('p-50').textContent = fmt(total/0.50);
+  document.getElementById('p-60').textContent = fmt(total/0.40);
+
+  window._res = { costoPapa, costoTops, costoExtras, total,
+    p40:total/0.60, p50:total/0.50, p60:total/0.40, lineasTop };
+}
+
+/* ─ WHATSAPP ─ */
+function enviarWhatsApp() {
+  if(!window._res) return;
+  const r = window._res;
+  const topsStr = r.lineasTop.map(l=>`  • ${l.nombre}: ${fmt(l.costo)}`).join('\n');
+  const extStr  = extras.filter(e=>e.valor>0&&e.nombre).map(e=>`  • ${e.nombre}: ${fmt(e.valor)}`).join('\n');
+  const msg =
+    `📊 *ANÁLISIS DE COSTOS — Family*\n` +
+    `━━━━━━━━━━━━━━━\n` +
+    `🥔 Papa base (${papaG}g): ${fmt(r.costoPapa)}\n` +
+    (topsStr ? `🍖 Toppings:\n${topsStr}\n` : '') +
+    (extStr  ? `⚙️ Otros costos:\n${extStr}\n` : '') +
+    `━━━━━━━━━━━━━━━\n` +
+    `💰 *COSTO TOTAL: ${fmt(r.total)}*\n\n` +
+    `📈 Precio de venta sugerido:\n` +
+    `  • 40% margen → ${fmt(r.p40)}\n` +
+    `  • 50% margen → ${fmt(r.p50)} ✓\n` +
+    `  • 60% margen → ${fmt(r.p60)}\n\n` +
+    `_Rentabilidad por plato · No incluye nómina total ni arriendo_`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+/* ─ INIT ─ */
+renderRef(); renderPapa(); renderToppings(); renderExtras(); recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventario · Family Comidas Rápidas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--n:#FF6B2B;--v:#00C48C;--v2:#00A87A;--r:#FF3B5C;--am:#E6A800;--az:#1A73E8;
+ --g1:#F7F7F5;--g2:#EBEBEB;--g3:#BDBDBD;--g4:#757575;--ne:#1A1A1A;--bl:#FFFFFF;
+ --cf:#FF6B2B;--cr:#1A73E8;--ca:#7C3AED;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--g1);color:var(--ne);font-size:15px;}
+.pant{display:none;} .pant.on{display:block;}
+
+/* LOGIN */
+.lw{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;gap:14px;background:var(--ne);}
+.lt{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:#fff;text-align:center;line-height:1.2;}
+.ls{color:var(--g3);font-size:14px;text-align:center;margin-bottom:6px;}
+.lo{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;}
+.bl-{padding:18px;border-radius:14px;border:none;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:12px;transition:transform .15s;width:100%;}
+.bl-:active{transform:scale(.97);}
+.bla{background:var(--n);color:#fff;}
+.blt{background:#fff;color:var(--ne);}
+.bli{font-size:22px;}
+.bll{font-size:15px;font-weight:700;text-align:left;}
+.bld{font-size:12px;opacity:.6;font-family:'DM Sans',sans-serif;font-weight:400;text-align:left;}
+
+/* PIN */
+.pw{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px;}
+.pb{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:320px;text-align:center;}
+.pt{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px;}
+.ps{font-size:13px;color:var(--g4);margin-bottom:20px;}
+.pd{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.pdot{width:14px;height:14px;border-radius:50%;border:2px solid var(--g3);background:transparent;transition:all .15s;}
+.pdot.on{background:var(--n);border-color:var(--n);}
+.ptec{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.ptk{padding:16px;border-radius:12px;border:none;background:var(--g1);font-family:'Syne',sans-serif;font-size:20px;font-weight:700;cursor:pointer;}
+.ptk:active{background:var(--g2);}
+.ptk.bor{font-size:16px;} .ptk.vac{visibility:hidden;}
+.perr{color:var(--r);font-size:13px;margin-top:10px;min-height:18px;}
+
+/* TURNO */
+.tw{min-height:100vh;background:var(--ne);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:14px;}
+.tit{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;text-align:center;margin-bottom:8px;}
+.tbo{display:flex;flex-direction:column;gap:12px;width:100%;max-width:340px;}
+.tb{padding:20px;border-radius:14px;border:none;cursor:pointer;display:flex;align-items:center;gap:14px;transition:transform .15s;width:100%;}
+.tb:active{transform:scale(.97);}
+.tb-icon{font-size:26px;} .tb-lab{font-size:15px;font-weight:700;font-family:'Syne',sans-serif;text-align:left;}
+.tb-hora{font-size:12px;opacity:.7;font-family:'DM Sans',sans-serif;text-align:left;}
+.tb-rest{background:#E8F0FE;color:#1A73E8;} .tb-emp{background:#FFF3E0;color:#E65100;} .tb-fam{background:#FFF8E1;color:#F57F17;}
+.tb-back{color:var(--g3);font-size:13px;cursor:pointer;margin-top:8px;}
+
+/* HEADER */
+.hdr{background:var(--ne);color:#fff;padding:14px 16px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;}
+.hlo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;}
+.hsu{font-size:11px;color:var(--g3);}
+.hbg{background:var(--r);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;display:none;font-family:'Syne',sans-serif;}
+.hsal{background:none;border:none;color:var(--g3);cursor:pointer;font-size:13px;}
+
+/* TABS */
+.tabw{background:#fff;border-bottom:1px solid var(--g2);overflow-x:auto;white-space:nowrap;padding:0 10px;-webkit-overflow-scrolling:touch;}
+.tabw::-webkit-scrollbar{display:none;}
+.tbtn{display:inline-block;padding:13px 14px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--g4);border-bottom:2px solid transparent;cursor:pointer;background:none;border-top:none;border-left:none;border-right:none;transition:all .15s;}
+.tbtn.on{color:var(--n);border-bottom-color:var(--n);}
+.tcon{display:none;padding:14px;} .tcon.on{display:block;}
+
+/* CARD */
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.09);}
+.ctit{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+
+/* ALERTAS */
+.ali{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--g2);}
+.ali:last-child{border-bottom:none;}
+.aldot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.aldot.r{background:var(--r);} .aldot.a{background:var(--am);}
+.alnom{font-weight:600;font-size:14px;flex:1;}
+.alinf{font-size:12px;color:var(--g4);}
+
+/* TAGS */
+.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;font-family:'Syne',sans-serif;white-space:nowrap;}
+.tf{background:#FFF0E8;color:var(--cf);} .tr{background:#E8F0FE;color:var(--cr);} .ta{background:#F3E8FF;color:var(--ca);}
+
+/* PRODUCTO */
+.pit{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.09);display:flex;align-items:center;gap:10px;}
+.pinf{flex:1;min-width:0;}
+.pnom{font-weight:600;font-size:14px;}
+.pdet{font-size:12px;color:var(--g4);margin-top:3px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.pstk{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;text-align:right;min-width:54px;}
+.sok{color:var(--v);} .sbj{color:var(--am);} .scr{color:var(--r);}
+.pac{display:flex;gap:6px;}
+.bmi{padding:7px 10px;border-radius:8px;border:none;font-size:13px;cursor:pointer;}
+.bme{background:var(--g1);color:var(--ne);} .bmd{background:#FFF0F0;color:var(--r);}
+
+/* FILTRO */
+.filw{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.filb{padding:7px 14px;border-radius:20px;border:2px solid var(--g2);font-size:12px;font-weight:600;cursor:pointer;background:#fff;font-family:'Syne',sans-serif;transition:all .15s;}
+.filb.on{border-color:var(--n);background:var(--n);color:#fff;}
+
+/* FORM */
+.fg{margin-bottom:14px;}
+.fl{font-size:12px;font-weight:600;color:var(--g4);margin-bottom:5px;display:block;}
+.fi,.fs{width:100%;padding:12px 13px;border-radius:10px;border:1.5px solid var(--g2);font-family:'DM Sans',sans-serif;font-size:14px;background:#fff;color:var(--ne);transition:border-color .15s;}
+.fi:focus,.fs:focus{outline:none;border-color:var(--n);}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* BOTONES */
+.btn{padding:14px 20px;border-radius:12px;border:none;font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s;width:100%;display:block;text-align:center;margin-bottom:8px;}
+.btn:active{transform:scale(.97);} .btn:last-child{margin-bottom:0;}
+.bp{background:var(--n);color:#fff;} .bs{background:var(--g2);color:var(--ne);} .bv{background:var(--v);color:#fff;}
+
+/* CONTEO */
+.cw{padding:16px;max-width:480px;margin:0 auto;}
+.ch{background:var(--ne);color:#fff;border-radius:16px;padding:18px;margin-bottom:14px;text-align:center;}
+.cti{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;}
+.cfe{font-size:12px;color:var(--g3);margin-top:3px;}
+.cni{width:100%;padding:11px;border-radius:10px;border:1.5px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;margin-top:12px;text-align:center;}
+.cni::placeholder{color:rgba(255,255,255,.4);}
+.cpr{background:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.09);display:flex;align-items:center;gap:12px;}
+.cpri{flex:1;}
+.cpn{font-weight:600;font-size:15px;}
+.cpu{font-size:12px;color:var(--g4);margin-top:2px;}
+.cin{width:85px;padding:10px;border-radius:10px;border:2px solid var(--g2);font-family:'Syne',sans-serif;font-size:18px;font-weight:700;text-align:center;color:var(--ne);background:var(--g1);transition:border-color .15s;}
+.cin:focus{outline:none;border-color:var(--n);background:#fff;}
+.cok{background:var(--v);color:#fff;border-radius:16px;padding:28px;text-align:center;margin-top:20px;}
+.coki{font-size:48px;margin-bottom:12px;}
+.cokt{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.coks{font-size:14px;opacity:.85;margin-top:6px;}
+
+/* BASE */
+.sc{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.09);}
+.sch{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.scn{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.sce{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;font-family:'Syne',sans-serif;}
+.ep{background:var(--g2);color:var(--g4);} .el{background:#E8F6F0;color:var(--v2);}
+.scm{font-size:12px;color:var(--g4);margin-bottom:8px;}
+.sbg{background:var(--g2);border-radius:20px;height:5px;margin-bottom:10px;}
+.sbb{background:var(--v);border-radius:20px;height:5px;transition:width .3s;}
+.scb{display:flex;gap:6px;flex-wrap:wrap;}
+
+/* TRASLADO */
+.tri{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.09);display:flex;gap:10px;align-items:flex-start;}
+.trd{font-weight:600;font-size:14px;}
+.trm{font-size:12px;color:var(--g4);margin-top:3px;}
+
+/* HISTORIAL */
+.hi{padding:11px 0;border-bottom:1px solid var(--g2);display:flex;gap:8px;align-items:flex-start;}
+.hi:last-child{border-bottom:none;}
+.ht{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-family:'Syne',sans-serif;}
+.htc{background:#E8F0FE;color:#1A73E8;} .htt{background:#FFF3E0;color:#E65100;} .hta{background:#F3E8FF;color:var(--ca);}
+.hd{font-size:13px;flex:1;}
+.hh{font-size:11px;color:var(--g4);white-space:nowrap;}
+
+/* RESUMEN */
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.rc{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.09);text-align:center;}
+.rv{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--n);}
+.rl{font-size:11px;color:var(--g4);margin-top:4px;}
+
+/* DIFF */
+.di{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 2px 12px rgba(0,0,0,.09);}
+.dih{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.din{font-weight:600;font-size:14px;}
+.div{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;}
+.dok{color:var(--v);} .dma{color:var(--r);}
+.dbg{background:var(--g2);border-radius:20px;height:5px;}
+.db{border-radius:20px;height:5px;}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:flex;align-items:flex-end;justify-content:center;}
+.mb{background:#fff;border-radius:20px 20px 0 0;padding:22px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;}
+.mti{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.mcr{cursor:pointer;opacity:.5;font-size:20px;background:none;border:none;}
+
+/* UTILS */
+.stit{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--g4);letter-spacing:1px;text-transform:uppercase;margin:16px 0 8px;}
+.sep{height:1px;background:var(--g2);margin:12px 0;}
+.emp{text-align:center;padding:36px 20px;color:var(--g4);}
+.empi{font-size:36px;margin-bottom:8px;}
+.empt{font-size:14px;}
+.lod{text-align:center;padding:36px;color:var(--g4);font-size:14px;}
+.tg{color:var(--g4);font-size:13px;}
+.tv{color:var(--v2);font-weight:600;font-size:13px;}
+.tr2{color:var(--r);font-weight:600;font-size:13px;}
+.mb12{margin-bottom:12px;} .mb16{margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="p-login" class="pant on">
+  <div class="lw">
+    <div style="font-size:44px">📦</div>
+    <div class="lt">Inventario<br>Family</div>
+    <div class="ls">¿Cómo vas a ingresar?</div>
+    <div class="lo">
+      <button class="bl- bla" onclick="mostrarPin()">
+        <span class="bli">🔐</span>
+        <div><div class="bll">Soy Miryam</div><div class="bld">Vista completa · requiere PIN</div></div>
+      </button>
+      <button class="bl- blt" onclick="mostrarSelTurno()">
+        <span class="bli">📋</span>
+        <div><div class="bll">Voy a hacer un conteo</div><div class="bld">Encargada de turno · sin PIN</div></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PIN -->
+<div id="p-pin" class="pant">
+  <div class="pw">
+    <div class="pb">
+      <div class="pt">🔐 PIN de Miryam</div>
+      <div class="ps">Ingresa tu PIN de 4 dígitos</div>
+      <div class="pd">
+        <div class="pdot" id="d0"></div><div class="pdot" id="d1"></div>
+        <div class="pdot" id="d2"></div><div class="pdot" id="d3"></div>
+      </div>
+      <div class="ptec">
+        <button class="ptk" onclick="pT('1')">1</button><button class="ptk" onclick="pT('2')">2</button><button class="ptk" onclick="pT('3')">3</button>
+        <button class="ptk" onclick="pT('4')">4</button><button class="ptk" onclick="pT('5')">5</button><button class="ptk" onclick="pT('6')">6</button>
+        <button class="ptk" onclick="pT('7')">7</button><button class="ptk" onclick="pT('8')">8</button><button class="ptk" onclick="pT('9')">9</button>
+        <button class="ptk vac"></button><button class="ptk" onclick="pT('0')">0</button><button class="ptk bor" onclick="pB()">⌫</button>
+      </div>
+      <div id="perr" class="perr"></div>
+      <button class="btn bs" style="margin-top:14px;" onclick="irLogin()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TURNO -->
+<div id="p-turno" class="pant">
+  <div class="tw">
+    <div class="tit">¿Cuál es tu turno?</div>
+    <div class="tbo">
+      <button class="tb tb-rest" onclick="entrarConteo('apertura-rest')">
+        <span class="tb-icon">🍳</span><div><div class="tb-lab">Restaurante</div><div class="tb-hora">Apertura 6:00am · Cierre 3:00pm</div></div>
+      </button>
+      <button class="tb tb-fam" onclick="entrarConteo('cierre-family')">
+        <span class="tb-icon">🍔</span><div><div class="tb-lab">Family</div><div class="tb-hora">Apertura 5:00pm · Cierre 12:00am</div></div>
+      </button>
+      <button class="tb tb-emp" onclick="entrarConteo('empalme')">
+        <span class="tb-icon">🔄</span><div><div class="tb-lab">Empalme / Compartidos</div><div class="tb-hora">Solo insumos que comparten los dos turnos</div></div>
+      </button>
+    </div>
+    <div class="tb-back" onclick="irLogin()">← Volver</div>
+  </div>
+</div>
+
+<!-- CONTEO TURNO -->
+<div id="p-conteo" class="pant">
+  <div class="cw">
+    <div class="ch">
+      <div class="cti" id="cnt-tit"></div>
+      <div class="cfe" id="cnt-fec"></div>
+      <input class="cni" id="cnt-nom" placeholder="Tu nombre (ej: Ana, María...)">
+    </div>
+    <div id="cnt-lst"></div>
+    <div id="cnt-btn" style="display:none;margin-top:14px;">
+      <button class="btn bp" onclick="enviarConteo()">✅ Enviar conteo</button>
+    </div>
+    <div id="cnt-ok" style="display:none;">
+      <div class="cok"><div class="coki">✅</div><div class="cokt">¡Conteo enviado!</div><div class="coks">Miryam ya lo puede ver.</div></div>
+      <button class="btn bs" style="margin-top:14px;" onclick="irLogin()">Volver al inicio</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="p-admin" class="pant">
+  <div class="hdr">
+    <div><div class="hlo">📦 Inventario</div><div class="hsu">Family Comidas Rápidas</div></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span class="hbg" id="hbg"></span>
+      <button class="hsal" onclick="irLogin()">Salir</button>
+    </div>
+  </div>
+  <div class="tabw">
+    <button class="tbtn on" onclick="cambiarTab('res',this)">📊 Resumen</button>
+    <button class="tbtn" onclick="cambiarTab('cat',this)">📦 Catálogo</button>
+    <button class="tbtn" onclick="cambiarTab('con',this)">📋 Conteos</button>
+    <button class="tbtn" onclick="cambiarTab('tra',this)">🔄 Traslados</button>
+    <button class="tbtn" onclick="cambiarTab('bas',this)">🎯 Conteo base</button>
+    <button class="tbtn" onclick="cambiarTab('his',this)">📜 Historial</button>
+  </div>
+
+  <div id="tab-res" class="tcon on">
+    <div id="res-ale"></div>
+    <div class="rg" id="res-sta"></div>
+    <div class="card"><div class="ctit">⚖️ Diferencias del día</div><div id="res-dif"></div></div>
+  </div>
+
+  <div id="tab-cat" class="tcon">
+    <div class="filw">
+      <button class="filb on" onclick="fil('todos',this)">Todos</button>
+      <button class="filb" onclick="fil('family',this)">🍔 Family</button>
+      <button class="filb" onclick="fil('restaurante',this)">🍳 Restaurante</button>
+      <button class="filb" onclick="fil('ambos',this)">🔗 Ambos</button>
+    </div>
+    <button class="btn bp mb16" onclick="abrirProd(null)">+ Agregar producto</button>
+    <div id="cat-lst"></div>
+  </div>
+
+  <div id="tab-con" class="tcon">
+    <div class="stit">Conteos de hoy</div><div id="con-hoy"></div>
+    <div class="stit">Anteriores</div><div id="con-ant"></div>
+  </div>
+
+  <div id="tab-tra" class="tcon">
+    <button class="btn bp mb16" onclick="abrirTraslado()">+ Registrar traslado</button>
+    <div id="tra-lst"></div>
+  </div>
+
+  <div id="tab-bas" class="tcon">
+    <div class="card">
+      <div class="ctit">🎯 Conteo base</div>
+      <p class="tg mb12">Es el conteo inicial donde se cuenta TODO lo que hay. Sin este número el sistema no puede detectar diferencias ni alertas.</p>
+      <div id="bas-est"></div>
+    </div>
+    <div id="bas-secs"></div>
+    <div id="bas-act" style="display:none;margin-bottom:10px;">
+      <button class="btn bv" onclick="activarBase()">✅ Activar sistema con estos números</button>
+    </div>
+    <button class="btn bs mb12" onclick="abrirNuevaSec()">+ Nueva sección de conteo</button>
+    <div id="mig-wrap">
+      <div class="card" style="border:2px dashed var(--n);">
+        <div class="ctit">⬆️ Cargar productos existentes</div>
+        <p class="tg mb12">Importa los 66 productos de los inventarios actuales de Family y Restaurante. Solo se hace una vez.</p>
+        <button class="btn bp" onclick="migrar()" id="btn-mig">⬆️ Importar productos ahora</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-his" class="tcon">
+    <div class="card"><div class="ctit">📜 Movimientos</div><div id="his-lst"></div></div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCTO -->
+<div id="mod-prod" class="mo" style="display:none;" onclick="cerrarSF(event,'mod-prod')">
+  <div class="mb">
+    <div class="mti"><span id="mod-prod-tit">Producto</span><button class="mcr" onclick="cerrar('mod-prod')">✕</button></div>
+    <input type="hidden" id="p-id">
+    <div class="fg"><label class="fl">Nombre</label><input class="fi" id="p-nom" placeholder="Ej: Aceite vegetal"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Unidad</label>
+        <select class="fs" id="p-uni">
+          <option value="unidades">Unidades</option><option value="kg">Kg</option><option value="g">Gramos</option>
+          <option value="litros">Litros</option><option value="lt">Litros (lt)</option><option value="ml">Mililitros</option>
+          <option value="Libra">Libra</option><option value="Paquete">Paquete</option><option value="Bulto">Bulto</option>
+          <option value="Galón">Galón</option><option value="und">Unidad (und)</option><option value="bolsa">Bolsa</option>
+          <option value="atado">Atado</option><option value="cabeza">Cabeza</option><option value="pastilla">Pastilla</option>
+          <option value="Unidad">Unidad</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Servicio</label>
+        <select class="fs" id="p-ser">
+          <option value="family">🍔 Family</option><option value="restaurante">🍳 Restaurante</option><option value="ambos">🔗 Ambos</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Mínimo (alerta)</label><input class="fi" id="p-min" type="number" min="0" placeholder="2"></div>
+      <div class="fg"><label class="fl">Precio por unidad ($)</label><input class="fi" id="p-pre" type="number" min="0" placeholder="8500"></div>
+    </div>
+    <div class="fg"><label class="fl">Categoría</label><input class="fi" id="p-cat" placeholder="Ej: Carnes, Empaques, Bebidas..."></div>
+    <button class="btn bp" onclick="guardarProd()">Guardar</button>
+  </div>
+</div>
+
+<!-- MODAL TRASLADO -->
+<div id="mod-tras" class="mo" style="display:none;" onclick="cerrarSF(event,'mod-tras')">
+  <div class="mb">
+    <div class="mti"><span>🔄 Registrar traslado</span><button class="mcr" onclick="cerrar('mod-tras')">✕</button></div>
+    <div class="fg"><label class="fl">Producto</label><select class="fs" id="t-prod" onchange="updUniTras()"></select></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Cantidad</label><input class="fi" id="t-cant" type="number" min="0.1" step="0.1" placeholder="0"></div>
+      <div class="fg"><label class="fl">Unidad</label><input class="fi" id="t-uni" readonly></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="fl">De</label><select class="fs" id="t-de"><option value="family">🍔 Family</option><option value="restaurante">🍳 Restaurante</option></select></div>
+      <div class="fg"><label class="fl">Para</label><select class="fs" id="t-pa"><option value="restaurante">🍳 Restaurante</option><option value="family">🍔 Family</option></select></div>
+    </div>
+    <div class="fg"><label class="fl">¿Quién lo mueve?</label><input class="fi" id="t-qui" placeholder="Nombre de la encargada"></div>
+    <button class="btn bp" onclick="guardarTraslado()">Registrar traslado</button>
+  </div>
+</div>
+
+<!-- MODAL SECCIÓN -->
+<div id="mod-sec" class="mo" style="display:none;" onclick="cerrarSF(event,'mod-sec')">
+  <div class="mb">
+    <div class="mti"><span>+ Nueva sección</span><button class="mcr" onclick="cerrar('mod-sec')">✕</button></div>
+    <div class="fg"><label class="fl">Nombre de la sección</label><input class="fi" id="s-nom" placeholder="Ej: Carnes y proteínas"></div>
+    <div class="fg"><label class="fl">Categoría de productos que incluye</label><input class="fi" id="s-cat" placeholder="Debe coincidir con la categoría del producto"></div>
+    <button class="btn bp" onclick="guardarSec()">Crear sección</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@9.23.0/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyBcpPQLsMjnRthybaIMNdQG_kS0injYko0",
+  authDomain:"family-comidas-rapidas.firebaseapp.com",
+  databaseURL:"https://family-comidas-rapidas-default-rtdb.firebaseio.com",
+  projectId:"family-comidas-rapidas",
+  storageBucket:"family-comidas-rapidas.firebasestorage.app",
+  messagingSenderId:"326594164908",
+  appId:"1:326594164908:web:2e2aa9f71a7f457df54709"
+});
+const db=firebase.database(), P="family-inventario-v2", WSP="573148038425", PIN="1234";
+let prods={},conteos={},traslados={},secciones={},baseOn=false,turno="",filtro="todos",pin="",cProds=[];
+
+// NAVEGACION
+const $=id=>document.getElementById(id);
+function sp(id){document.querySelectorAll(".pant").forEach(p=>p.classList.remove("on"));$(id).classList.add("on");}
+function irLogin(){sp("p-login");pin="";uDots();}
+function mostrarPin(){sp("p-pin");pin="";uDots();$("perr").textContent="";}
+function mostrarSelTurno(){sp("p-turno");}
+function entrarConteo(t){turno=t;sp("p-conteo");loadConteo(t);}
+window.irLogin=irLogin;window.mostrarPin=mostrarPin;window.mostrarSelTurno=mostrarSelTurno;window.entrarConteo=entrarConteo;
+
+// PIN
+function uDots(){for(let i=0;i<4;i++)$("d"+i).classList.toggle("on",i<pin.length);}
+function pT(d){
+  if(pin.length>=4)return; pin+=d; uDots();
+  if(pin.length===4)setTimeout(()=>{
+    if(pin===PIN){sp("p-admin");loadAdmin();}
+    else{$("perr").textContent="PIN incorrecto";pin="";uDots();}
+  },300);
+}
+function pB(){pin=pin.slice(0,-1);uDots();$("perr").textContent="";}
+window.pT=pT;window.pB=pB;
+
+// TABS
+function cambiarTab(t,btn){
+  document.querySelectorAll(".tbtn").forEach(b=>b.classList.remove("on"));
+  document.querySelectorAll(".tcon").forEach(c=>c.classList.remove("on"));
+  btn.classList.add("on");$("tab-"+t).classList.add("on");
+  ({cat:rCat,con:rCon,tra:rTra,bas:rBas,his:rHis})[t]?.();
+}
+window.cambiarTab=cambiarTab;
+
+// ADMIN
+function loadAdmin(){
+  db.ref(P+"/productos").on("value",s=>{prods=s.val()||{};rRes();rCat();rBas();});
+  db.ref(P+"/conteos").on("value",s=>{conteos=s.val()||{};rCon();rRes();});
+  db.ref(P+"/traslados").on("value",s=>{traslados=s.val()||{};rTra();});
+  db.ref(P+"/secciones").on("value",s=>{secciones=s.val()||{};rBas();});
+  db.ref(P+"/config/baseActiva").on("value",s=>{baseOn=!!s.val();});
+}
+
+// RESUMEN
+function rRes(){
+  const arr=Object.values(prods);
+  const crit=arr.filter(p=>p.stock<=0),baj=arr.filter(p=>p.stock>0&&p.stock<=(p.minimo||0));
+  const tot=crit.length+baj.length;
+  const bg=$("hbg"); bg.style.display=tot>0?"inline":"none"; bg.textContent=tot+(tot===1?" alerta":" alertas");
+  let h="";
+  if(tot>0){
+    h=`<div class="card"><div class="ctit">⚠️ Alertas activas</div>`;
+    crit.forEach(p=>{h+=`<div class="ali"><div class="aldot r"></div><div class="alnom">${p.nombre}</div><span class="tag ${tC(p.servicio)}">${lS(p.servicio)}</span><div class="alinf">Sin stock</div></div>`;});
+    baj.forEach(p=>{h+=`<div class="ali"><div class="aldot a"></div><div class="alnom">${p.nombre}</div><span class="tag ${tC(p.servicio)}">${lS(p.servicio)}</span><div class="alinf">${p.stock} ${p.unidad} (mín:${p.minimo})</div></div>`;});
+    h+="</div>";
+  }
+  $("res-ale").innerHTML=h;
+  $("res-sta").innerHTML=`<div class="rc"><div class="rv">${arr.length}</div><div class="rl">Productos</div></div><div class="rc"><div class="rv" style="color:var(--r)">${tot}</div><div class="rl">Alertas</div></div><div class="rc"><div class="rv" style="color:var(--cf)">${arr.filter(p=>p.servicio==="family"||p.servicio==="ambos").length}</div><div class="rl">Family</div></div><div class="rc"><div class="rv" style="color:var(--cr)">${arr.filter(p=>p.servicio==="restaurante"||p.servicio==="ambos").length}</div><div class="rl">Restaurante</div></div>`;
+  rDif();
+}
+
+function rDif(){
+  const hoy=fHoy(),ch=Object.values(conteos).filter(c=>c.fecha===hoy);
+  const ap=ch.find(c=>c.tipo==="apertura-rest"),em=ch.find(c=>c.tipo==="empalme");
+  if(!ap||!em){$("res-dif").innerHTML=`<div class="emp"><div class="empt">Haz apertura y empalme para ver diferencias</div></div>`;return;}
+  let h="";
+  Object.keys(ap.items||{}).forEach(pid=>{
+    const p=prods[pid];if(!p)return;
+    const a=parseFloat(ap.items[pid])||0,e=parseFloat((em.items||{})[pid])||0,d=e-a;
+    const pct=a>0?Math.min(Math.round(Math.abs(d)/a*100),100):0,col=d>=0?"var(--v)":"var(--r)";
+    h+=`<div class="di"><div class="dih"><div class="din">${p.nombre}</div><div class="div ${d>=0?"dok":"dma"}">${d>=0?"+":""}${d.toFixed(1)} ${p.unidad}</div></div><div class="dbg"><div class="db" style="width:${pct}%;background:${col};"></div></div><div class="tg" style="margin-top:4px;">Apertura: ${a} · Empalme: ${e}</div></div>`;
+  });
+  $("res-dif").innerHTML=h||`<div class="emp"><div class="empt">Sin datos</div></div>`;
+}
+
+// CATALOGO
+function fil(f,btn){filtro=f;document.querySelectorAll(".filb").forEach(b=>b.classList.remove("on"));btn.classList.add("on");rCat();}
+window.fil=fil;
+function rCat(){
+  const lista=Object.entries(prods).filter(([,p])=>filtro==="todos"||p.servicio===filtro).sort((a,b)=>(a[1].nombre||"").localeCompare(b[1].nombre||""));
+  if(!lista.length){$("cat-lst").innerHTML=`<div class="emp"><div class="empi">📦</div><div class="empt">No hay productos.<br>Agrega el primero o importa.</div></div>`;return;}
+  const g={};
+  lista.forEach(([id,p])=>{const c=p.categoria||"Sin categoría";(g[c]=g[c]||[]).push([id,p]);});
+  let h="";
+  Object.entries(g).sort().forEach(([cat,items])=>{
+    h+=`<div class="stit">${cat}</div>`;
+    items.forEach(([id,p])=>{
+      const sc=p.stock<=0?"scr":p.stock<=(p.minimo||0)?"sbj":"sok";
+      h+=`<div class="pit"><div class="pinf"><div class="pnom">${p.nombre}</div><div class="pdet"><span class="tag ${tC(p.servicio)}">${lS(p.servicio)}</span> · ${p.unidad} · mín:${p.minimo||0}${p.precio?" · $"+Number(p.precio).toLocaleString("es-CO"):""}</div></div><div class="pstk ${sc}">${p.stock||0}<br><span style="font-size:10px;font-weight:400;">${p.unidad}</span></div><div class="pac"><button class="bmi bme" onclick="abrirProd('${id}')">✏️</button><button class="bmi bmd" onclick="elimProd('${id}')">🗑</button></div></div>`;
+    });
+  });
+  $("cat-lst").innerHTML=h;
+}
+
+// PRODUCTO CRUD
+function abrirProd(id){
+  $("p-id").value=id||"";const p=id&&prods[id];
+  $("mod-prod-tit").textContent=p?"Editar producto":"Nuevo producto";
+  $("p-nom").value=p?p.nombre:"";$("p-uni").value=p?p.unidad:"unidades";
+  $("p-ser").value=p?p.servicio:"family";$("p-min").value=p&&p.minimo?p.minimo:"";
+  $("p-pre").value=p&&p.precio?p.precio:"";$("p-cat").value=p?p.categoria:"";
+  $("mod-prod").style.display="flex";
+}
+window.abrirProd=abrirProd;
+async function guardarProd(){
+  const nom=$("p-nom").value.trim();if(!nom){alert("Escribe el nombre");return;}
+  const id=$("p-id").value;
+  const data={nombre:nom,unidad:$("p-uni").value,servicio:$("p-ser").value,minimo:parseFloat($("p-min").value)||0,precio:parseFloat($("p-pre").value)||0,categoria:$("p-cat").value.trim()||"Sin categoría",stock:id&&prods[id]?prods[id].stock||0:0,updAt:Date.now()};
+  if(id)await db.ref(P+"/productos/"+id).update(data);
+  else await db.ref(P+"/productos").push(data);
+  cerrar("mod-prod");addH("ajuste","Producto "+(id?"editado":"creado")+": "+nom,"Miryam");
+}
+window.guardarProd=guardarProd;
+async function elimProd(id){
+  const p=prods[id];if(!confirm("¿Eliminar \""+p?.nombre+"\"?"))return;
+  await db.ref(P+"/productos/"+id).remove();addH("ajuste","Eliminado: "+p?.nombre,"Miryam");
+}
+window.elimProd=elimProd;
+
+// CONTEOS ADMIN
+function rCon(){
+  const hoy=fHoy(),todos=Object.entries(conteos).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+  const lbs={"apertura-rest":"🍳 Apertura restaurante","empalme":"🔄 Empalme","cierre-family":"🍔 Cierre Family","base":"🎯 Conteo base"};
+  const mk=([,c])=>`<div class="sc"><div class="sch"><div class="scn">${lbs[c.tipo]||c.tipo}</div><span class="sce el">✓ Registrado</span></div><div class="scm">Por: ${c.encargado||"—"} · ${c.fecha} ${hTs(c.ts)}</div><div class="scm">${Object.keys(c.items||{}).length} productos</div></div>`;
+  const hoyA=todos.filter(([,c])=>c.fecha===hoy),antA=todos.filter(([,c])=>c.fecha!==hoy).slice(0,10);
+  $("con-hoy").innerHTML=hoyA.length?hoyA.map(mk).join(""):`<div class="emp"><div class="empt">Ningún conteo hoy</div></div>`;
+  $("con-ant").innerHTML=antA.length?antA.map(mk).join(""):`<div class="emp"><div class="empt">Sin conteos anteriores</div></div>`;
+}
+
+// TRASLADOS
+function rTra(){
+  const lista=Object.entries(traslados).sort((a,b)=>(b[1].ts||0)-(a[1].ts||0));
+  if(!lista.length){$("tra-lst").innerHTML=`<div class="emp"><div class="empt">Sin traslados</div></div>`;return;}
+  $("tra-lst").innerHTML=lista.map(([,t])=>`<div class="tri"><span style="font-size:20px;">🔄</span><div><div class="trd">${t.cantidad} ${t.unidad} de <strong>${t.producto}</strong></div><div class="trm">${lS(t.de)} → ${lS(t.para)} · Por: ${t.quien||"—"} · ${t.fecha} ${hTs(t.ts)}</div></div></div>`).join("");
+}
+function abrirTraslado(){
+  $("t-prod").innerHTML=Object.entries(prods).map(([id,p])=>`<option value="${id}">${p.nombre} (${lS(p.servicio)})</option>`).join("");
+  updUniTras();$("mod-tras").style.display="flex";
+}
+function updUniTras(){const pid=$("t-prod").value;$("t-uni").value=prods[pid]?.unidad||"";}
+window.abrirTraslado=abrirTraslado;window.updUniTras=updUniTras;
+async function guardarTraslado(){
+  const pid=$("t-prod").value,cant=parseFloat($("t-cant").value);
+  const de=$("t-de").value,pa=$("t-pa").value,qui=$("t-qui").value.trim();
+  if(!pid||!cant||cant<=0){alert("Completa cantidad y producto");return;}
+  if(de===pa){alert("Origen y destino deben ser distintos");return;}
+  const p=prods[pid];
+  await db.ref(P+"/traslados").push({producto:p.nombre,productoId:pid,cantidad:cant,unidad:p.unidad,de,para:pa,quien:qui,fecha:fHoy(),ts:Date.now()});
+  await db.ref(P+"/productos/"+pid).update({stock:Math.max(0,(p.stock||0)-cant)});
+  window.open("https://wa.me/"+WSP+"?text="+encodeURIComponent("🔄 *Traslado*\n"+cant+" "+p.unidad+" de *"+p.nombre+"*\nDe: "+lS(de)+" → Para: "+lS(pa)+"\nPor: "+(qui||"Sin nombre")+" · "+hAct()),"_blank");
+  addH("traslado",cant+" "+p.unidad+" de "+p.nombre+" · "+lS(de)+"→"+lS(pa)+" · "+qui,qui);
+  cerrar("mod-tras");
+}
+window.guardarTraslado=guardarTraslado;
+
+// CONTEO BASE
+function rBas(){
+  const sA=Object.entries(secciones),tL=sA.length>0&&sA.every(([,s])=>s.estado==="listo");
+  let est="";
+  if(baseOn)est=`<div class="tv">✅ Sistema activo — inventario base registrado.</div>`;
+  else if(!sA.length)est=`<div class="tg">Sin secciones. Agrega secciones para dividir el conteo.</div>`;
+  else if(tL)est=`<div class="tv">✅ Todas listas. Ya puedes activar el sistema.</div>`;
+  else{const f=sA.filter(([,s])=>s.estado!=="listo").length;est=`<div class="tg">Faltan <strong>${f} secciones</strong> por completar.</div>`;}
+  $("bas-est").innerHTML=est;
+  let h="";
+  sA.forEach(([sid,s])=>{
+    const pC=Object.values(prods).filter(p=>p.categoria===s.categoria);
+    h+=`<div class="sc"><div class="sch"><div class="scn">${s.nombre}</div><span class="sce ${s.estado==="listo"?"el":"ep"}">${s.estado==="listo"?"✓ Listo":"Pendiente"}</span></div><div class="scm">${pC.length} productos · ${s.categoria||"—"}${s.asignado?" · 👤 "+s.asignado:""}</div><div class="sbg"><div class="sbb" style="width:${s.estado==="listo"?100:0}%"></div></div><div class="scb"><button class="bmi bme" onclick="asigSec('${sid}')">👤 Asignar</button><button class="bmi bme" onclick="linkSec('${sid}')">📲 Enviar link</button><button class="bmi bmd" onclick="elimSec('${sid}')">🗑</button></div></div>`;
+  });
+  $("bas-secs").innerHTML=h;
+  $("bas-act").style.display=(tL&&!baseOn&&sA.length>0)?"block":"none";
+}
+function abrirNuevaSec(){$("s-nom").value="";$("s-cat").value="";$("mod-sec").style.display="flex";}
+window.abrirNuevaSec=abrirNuevaSec;
+async function guardarSec(){const n=$("s-nom").value.trim(),c=$("s-cat").value.trim();if(!n){alert("Escribe el nombre");return;}await db.ref(P+"/secciones").push({nombre:n,categoria:c,estado:"pendiente",ts:Date.now()});cerrar("mod-sec");}
+window.guardarSec=guardarSec;
+async function asigSec(sid){const n=prompt("¿A quién asignas esta sección?");if(!n)return;await db.ref(P+"/secciones/"+sid).update({asignado:n.trim()});}
+window.asigSec=asigSec;
+function linkSec(sid){const s=secciones[sid],url=location.origin+location.pathname+"?cb="+sid;window.open("https://wa.me/"+WSP+"?text="+encodeURIComponent("📋 *Conteo base Family*\n\nHola "+(s.asignado||"")+"! Toca el link:\n"+url+"\n\nSección: *"+s.nombre+"*"),"_blank");}
+window.linkSec=linkSec;
+async function elimSec(sid){if(!confirm("¿Eliminar sección?"))return;await db.ref(P+"/secciones/"+sid).remove();}
+window.elimSec=elimSec;
+async function activarBase(){if(!confirm("¿Activar el sistema con estos números?"))return;await db.ref(P+"/config").update({baseActiva:true,baseFecha:fHoy(),baseTs:Date.now()});addH("ajuste","Conteo base activado","Miryam");alert("✅ ¡Sistema activado!");}
+window.activarBase=activarBase;
+
+// HISTORIAL
+function rHis(){
+  db.ref(P+"/historial").orderByChild("ts").limitToLast(50).get().then(s=>{
+    const lista=s.val()?Object.values(s.val()).reverse():[];
+    if(!lista.length){$("his-lst").innerHTML=`<div class="emp"><div class="empt">Sin movimientos</div></div>`;return;}
+    $("his-lst").innerHTML=lista.map(m=>`<div class="hi"><span class="ht hta">${{ajuste:"Ajuste",traslado:"Traslado",conteo:"Conteo"}[m.tipo]||m.tipo}</span><div class="hd">${m.desc}<br><span style="font-size:11px;color:var(--g4);">Por: ${m.quien||"—"}</span></div><div class="hh">${m.fecha}<br>${hTs(m.ts)}</div></div>`).join("");
+  });
+}
+window.rHis=rHis;
+async function addH(tipo,desc,quien){await db.ref(P+"/historial").push({tipo,desc,quien,fecha:fHoy(),ts:Date.now()});}
+
+// CONTEO TURNO (encargadas)
+function loadConteo(tipo){
+  const tits={"apertura-rest":"🍳 Apertura Restaurante","empalme":"🔄 Empalme de turno","cierre-family":"🍔 Cierre Family"};
+  const srvs={"apertura-rest":["restaurante","ambos"],"empalme":["ambos"],"cierre-family":["family","ambos"]};
+  $("cnt-tit").textContent=tits[tipo]||"Conteo";
+  $("cnt-fec").textContent=fHoy()+" · "+hAct();
+  $("cnt-lst").innerHTML="<div class=\"lod\">Cargando productos...</div>";
+  $("cnt-btn").style.display="none";$("cnt-ok").style.display="none";
+  $("cnt-lst").style.display="";
+  db.ref(P+"/productos").get().then(s=>{
+    const todos=s.val()||{};
+    cProds=Object.entries(todos).filter(([,p])=>srvs[tipo].includes(p.servicio)).sort((a,b)=>(a[1].nombre||"").localeCompare(b[1].nombre||""));
+    if(!cProds.length){$("cnt-lst").innerHTML=`<div class="emp"><div class="empi">📦</div><div class="empt">Miryam debe agregar productos al catálogo primero.</div></div>`;return;}
+    $("cnt-lst").innerHTML=cProds.map(([id,p])=>`<div class="cpr"><div class="cpri"><div class="cpn">${p.nombre}</div><div class="cpu">${p.unidad} · <span class="tag ${tC(p.servicio)}">${lS(p.servicio)}</span></div></div><input class="cin" type="number" min="0" step="0.1" id="ci-${id}" placeholder="0" inputmode="decimal"></div>`).join("");
+    $("cnt-btn").style.display="block";
+  });
+}
+async function enviarConteo(){
+  const nom=$("cnt-nom").value.trim();if(!nom){alert("Escribe tu nombre");$("cnt-nom").focus();return;}
+  const items={};cProds.forEach(([id])=>{items[id]=parseFloat($("ci-"+id)?.value)||0;});
+  await db.ref(P+"/conteos").push({tipo:turno,encargado:nom,fecha:fHoy(),ts:Date.now(),items});
+  const upd={};Object.entries(items).forEach(([id,v])=>{upd[P+"/productos/"+id+"/stock"]=v;});
+  await db.ref().update(upd);
+
+  // Mensaje inteligente: solo alertas y críticos, no la lista completa
+  const lbs2={"apertura-rest":"🍳 Restaurante","empalme":"🔄 Empalme","cierre-family":"🍔 Family"};
+  const criticos=cProds.filter(([id,p])=>items[id]<=0);
+  const bajos=cProds.filter(([id,p])=>items[id]>0&&items[id]<=(p.minimo||0));
+  const total=cProds.length;
+
+  let msg=lbs2[turno]+" · "+fHoy()+" "+hAct()+"\nPor: "+nom+" · "+total+" productos contados\n";
+
+  if(criticos.length===0&&bajos.length===0){
+    msg+="\n✅ Todo en orden — sin alertas";
+  } else {
+    if(criticos.length>0){
+      msg+="\n🔴 *SIN STOCK ("+criticos.length+"):*\n";
+      msg+=criticos.map(([id,p])=>"  · "+p.nombre+" (0 "+p.unidad+")").join("\n");
+    }
+    if(bajos.length>0){
+      msg+="\n🟡 *BAJOS ("+bajos.length+"):*\n";
+      msg+=bajos.map(([id,p])=>"  · "+p.nombre+": "+items[id]+" "+p.unidad+" (mín:"+p.minimo+")").join("\n");
+    }
+  }
+  window.open("https://wa.me/"+WSP+"?text="+encodeURIComponent(msg),"_blank");
+  $("cnt-lst").style.display="none";$("cnt-btn").style.display="none";$("cnt-ok").style.display="block";
+}
+window.enviarConteo=enviarConteo;
+
+// CONTEO BASE EXTERNO (link WhatsApp ?cb=sid)
+function chkExterno(){
+  const sid=new URLSearchParams(location.search).get("cb");if(!sid)return false;
+  document.querySelectorAll(".pant").forEach(p=>p.classList.remove("on"));
+  const wrap=document.createElement("div");wrap.className="cw";document.body.appendChild(wrap);
+  Promise.all([db.ref(P+"/secciones/"+sid).get(),db.ref(P+"/productos").get()]).then(([sS,pS])=>{
+    const sec=sS.val(),allP=pS.val()||{};
+    if(!sec){wrap.innerHTML="<div class=\"lod\">Sección no encontrada.</div>";return;}
+    const pSec=Object.entries(allP).filter(([,p])=>p.categoria===sec.categoria).sort((a,b)=>(a[1].nombre||"").localeCompare(b[1].nombre||""));
+    wrap.innerHTML=`<div class="ch"><div class="cti">📋 Conteo Base</div><div class="cfe">Sección: ${sec.nombre}</div><input class="cni" id="ext-nom" placeholder="Tu nombre"></div>${pSec.map(([id,p])=>`<div class="cpr"><div class="cpri"><div class="cpn">${p.nombre}</div><div class="cpu">${p.unidad}</div></div><input class="cin" type="number" min="0" step="0.1" id="ex-${id}" placeholder="0" inputmode="decimal"></div>`).join("")}<div style="margin-top:14px;"><button class="btn bp" id="ext-btn">✅ Enviar mi conteo</button></div><div id="ext-ok" style="display:none;"><div class="cok"><div class="coki">✅</div><div class="cokt">¡Conteo enviado!</div></div></div>`;
+    $("ext-btn").onclick=async()=>{
+      const n=$("ext-nom").value.trim();if(!n){alert("Escribe tu nombre");return;}
+      const items={};pSec.forEach(([id])=>{items[id]=parseFloat($("ex-"+id)?.value)||0;});
+      await db.ref(P+"/secciones/"+sid).update({estado:"listo",encargado:n,items,tsC:Date.now()});
+      const upd={};Object.entries(items).forEach(([id,v])=>{upd[P+"/productos/"+id+"/stock"]=v;});
+      await db.ref().update(upd);
+      await db.ref(P+"/conteos").push({tipo:"base",seccion:sec.nombre,encargado:n,fecha:fHoy(),ts:Date.now(),items});
+      $("ext-btn").style.display="none";$("ext-ok").style.display="block";
+      window.open("https://wa.me/"+WSP+"?text="+encodeURIComponent("🎯 *Conteo base completado*\nSección: "+sec.nombre+"\nPor: "+n+"\n"+fHoy()+" "+hAct()),"_blank");
+    };
+  });
+  return true;
+}
+
+// MIGRACIÓN
+async function migrar(){
+  const ya=Object.keys(prods).length;
+  if(ya>0&&!confirm("Ya hay "+ya+" productos. ¿Agregar los 66 importados encima?"))return;
+  const btn=$("btn-mig");btn.textContent="⏳ Importando...";btn.disabled=true;
+  const lista=[
+    {nombre:"Lomo de cerdo",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:2,precio:13500},
+    {nombre:"Costilla de cerdo fresca",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:2,precio:12000},
+    {nombre:"Costilla ahumada",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:2,precio:12000},
+    {nombre:"Bola negra res",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:2,precio:18000},
+    {nombre:"Panceta",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:1,precio:12000},
+    {nombre:"Carne molida",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:2,precio:20000},
+    {nombre:"Pechuga de pollo",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:2,precio:9000},
+    {nombre:"Pollo blanco entero",unidad:"Unidad",categoria:"Carnes",servicio:"family",minimo:2,precio:20000},
+    {nombre:"Salchicha perro",unidad:"Paquete",categoria:"Carnes",servicio:"family",minimo:2,precio:21000},
+    {nombre:"Salchicha manguera",unidad:"Unidad",categoria:"Carnes",servicio:"family",minimo:3,precio:4500},
+    {nombre:"Jamón Rica",unidad:"Paquete",categoria:"Carnes",servicio:"family",minimo:2,precio:18000},
+    {nombre:"Tocineta ahumada",unidad:"Unidad",categoria:"Carnes",servicio:"family",minimo:1,precio:32000},
+    {nombre:"Chorizo paquete x5",unidad:"Paquete",categoria:"Carnes",servicio:"family",minimo:2,precio:13000},
+    {nombre:"Chicharrón",unidad:"Libra",categoria:"Carnes",servicio:"family",minimo:1,precio:0},
+    {nombre:"Queso tajado 2500g",unidad:"Unidad",categoria:"Carnes",servicio:"family",minimo:1,precio:68000},
+    {nombre:"Papas (bulto 50kg)",unidad:"Bulto",categoria:"Verduras",servicio:"family",minimo:1,precio:130000},
+    {nombre:"Plátano",unidad:"Unidad",categoria:"Verduras",servicio:"family",minimo:5,precio:3000},
+    {nombre:"Cebolla",unidad:"Libra",categoria:"Verduras",servicio:"family",minimo:2,precio:3000},
+    {nombre:"Tomate",unidad:"Libra",categoria:"Verduras",servicio:"family",minimo:2,precio:7000},
+    {nombre:"Ajo",unidad:"Libra",categoria:"Verduras",servicio:"family",minimo:1,precio:8000},
+    {nombre:"Repollo",unidad:"Unidad",categoria:"Verduras",servicio:"family",minimo:1,precio:7000},
+    {nombre:"Lechuga",unidad:"Unidad",categoria:"Verduras",servicio:"family",minimo:1,precio:4000},
+    {nombre:"Salsa tártara x4000g",unidad:"Unidad",categoria:"Salsas",servicio:"family",minimo:1,precio:50000},
+    {nombre:"Salsa de tomate x4000g",unidad:"Unidad",categoria:"Salsas",servicio:"family",minimo:1,precio:28000},
+    {nombre:"Mayonesa x4000g",unidad:"Unidad",categoria:"Salsas",servicio:"family",minimo:1,precio:48000},
+    {nombre:"Salsa BBQ x4000g",unidad:"Unidad",categoria:"Salsas",servicio:"family",minimo:1,precio:32000},
+    {nombre:"Pan hamburguesa",unidad:"Unidad",categoria:"Panes",servicio:"family",minimo:20,precio:0},
+    {nombre:"Pan perro caliente",unidad:"Unidad",categoria:"Panes",servicio:"family",minimo:20,precio:0},
+    {nombre:"Cajas pequeñas x200",unidad:"Paquete",categoria:"Empaques",servicio:"family",minimo:1,precio:41000},
+    {nombre:"Cajas grandes x200",unidad:"Paquete",categoria:"Empaques",servicio:"family",minimo:1,precio:75000},
+    {nombre:"Servilletas",unidad:"Paquete",categoria:"Empaques",servicio:"family",minimo:2,precio:3000},
+    {nombre:"Aceite galón 15L",unidad:"Galón",categoria:"Aceites y especias",servicio:"family",minimo:1,precio:115000},
+    {nombre:"Sal",unidad:"Paquete",categoria:"Aceites y especias",servicio:"family",minimo:1,precio:22000},
+    {nombre:"Jabón lava loza",unidad:"Unidad",categoria:"Aseo",servicio:"family",minimo:1,precio:28000},
+    {nombre:"Bolsas industriales x15",unidad:"Paquete",categoria:"Aseo",servicio:"family",minimo:1,precio:17000},
+    {nombre:"Jugo natural en agua",unidad:"Unidad",categoria:"Bebidas",servicio:"family",minimo:5,precio:10000},
+    {nombre:"Jugo natural en leche",unidad:"Unidad",categoria:"Bebidas",servicio:"family",minimo:5,precio:12000},
+    {nombre:"Frappette",unidad:"Unidad",categoria:"Bebidas",servicio:"family",minimo:5,precio:15000},
+    {nombre:"Malteada",unidad:"Unidad",categoria:"Bebidas",servicio:"family",minimo:5,precio:15000},
+    {nombre:"Limonada",unidad:"Unidad",categoria:"Bebidas",servicio:"family",minimo:5,precio:8000},
+    {nombre:"Pollo (presas/kg)",unidad:"kg",categoria:"Proteínas",servicio:"restaurante",minimo:5,precio:0},
+    {nombre:"Salchicha",unidad:"und",categoria:"Proteínas",servicio:"restaurante",minimo:20,precio:0},
+    {nombre:"Carne de res",unidad:"kg",categoria:"Proteínas",servicio:"restaurante",minimo:2,precio:0},
+    {nombre:"Huevos",unidad:"und",categoria:"Lácteos",servicio:"restaurante",minimo:24,precio:0},
+    {nombre:"Queso costeño",unidad:"kg",categoria:"Lácteos",servicio:"restaurante",minimo:1,precio:0},
+    {nombre:"Leche",unidad:"lt",categoria:"Lácteos",servicio:"restaurante",minimo:1,precio:0},
+    {nombre:"Tomate (rest.)",unidad:"kg",categoria:"Verduras restaurante",servicio:"restaurante",minimo:2,precio:0},
+    {nombre:"Cebolla larga",unidad:"atado",categoria:"Verduras restaurante",servicio:"restaurante",minimo:2,precio:0},
+    {nombre:"Zanahoria",unidad:"kg",categoria:"Verduras restaurante",servicio:"restaurante",minimo:1,precio:0},
+    {nombre:"Col/repollo",unidad:"und",categoria:"Verduras restaurante",servicio:"restaurante",minimo:1,precio:0},
+    {nombre:"Ajo (rest.)",unidad:"cabeza",categoria:"Verduras restaurante",servicio:"restaurante",minimo:3,precio:0},
+    {nombre:"Arroz",unidad:"kg",categoria:"Granos",servicio:"restaurante",minimo:5,precio:0},
+    {nombre:"Papa",unidad:"kg",categoria:"Granos",servicio:"restaurante",minimo:5,precio:0},
+    {nombre:"Plátano maduro",unidad:"und",categoria:"Granos",servicio:"restaurante",minimo:6,precio:0},
+    {nombre:"Arepa",unidad:"und",categoria:"Granos",servicio:"restaurante",minimo:20,precio:0},
+    {nombre:"Pan (rest.)",unidad:"und",categoria:"Granos",servicio:"restaurante",minimo:10,precio:0},
+    {nombre:"Harina de broaster",unidad:"kg",categoria:"Granos",servicio:"restaurante",minimo:2,precio:0},
+    {nombre:"Azúcar",unidad:"kg",categoria:"Granos",servicio:"restaurante",minimo:2,precio:0},
+    {nombre:"Pulpa de fruta",unidad:"bolsa",categoria:"Granos",servicio:"restaurante",minimo:5,precio:0},
+    {nombre:"Café molido",unidad:"libra",categoria:"Bebidas restaurante",servicio:"restaurante",minimo:1,precio:0},
+    {nombre:"Chocolate en pastilla",unidad:"pastilla",categoria:"Bebidas restaurante",servicio:"restaurante",minimo:2,precio:0},
+    {nombre:"Gaseosa",unidad:"und",categoria:"Bebidas restaurante",servicio:"restaurante",minimo:12,precio:0},
+    {nombre:"Aceite vegetal",unidad:"lt",categoria:"Condimentos",servicio:"ambos",minimo:3,precio:0},
+    {nombre:"Sal común",unidad:"kg",categoria:"Condimentos",servicio:"ambos",minimo:1,precio:0},
+    {nombre:"Comino",unidad:"und",categoria:"Condimentos",servicio:"ambos",minimo:2,precio:0},
+    {nombre:"Color/achiote",unidad:"und",categoria:"Condimentos",servicio:"ambos",minimo:1,precio:0}
+  ];
+  const ts=Date.now();
+  for(let i=0;i<lista.length;i++){await db.ref(P+"/productos").push({...lista[i],stock:0,updAt:ts+i});}
+  await addH("ajuste","Migración: "+lista.length+" productos importados","Miryam");
+  $("mig-wrap").innerHTML=`<div class="card" style="border:2px solid var(--v);"><div class="ctit" style="color:var(--v2);">✅ ${lista.length} productos importados</div><p class="tg">Ve al Catálogo para verlos y ajustar lo que necesites.</p></div>`;
+}
+window.migrar=migrar;
+
+// MODALES
+function cerrar(id){$(id).style.display="none";}
+function cerrarSF(e,id){if(e.target.id===id)cerrar(id);}
+window.cerrar=cerrar;window.cerrarSF=cerrarSF;
+
+// HELPERS
+function fHoy(){return new Date().toLocaleDateString("es-CO",{day:"2-digit",month:"2-digit",year:"numeric"});}
+function hAct(){return new Date().toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});}
+function hTs(ts){return ts?new Date(ts).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"}):"";} 
+function tC(s){return{family:"tf",restaurante:"tr",ambos:"ta"}[s]||"tf";}
+function lS(s){return{family:"🍔 Family",restaurante:"🍳 Restaurante",ambos:"🔗 Ambos"}[s]||s;}
+
+window.addEventListener("DOMContentLoaded",()=>{if(!chkExterno())sp("p-login");});
+</script>
+</body>
+</html>

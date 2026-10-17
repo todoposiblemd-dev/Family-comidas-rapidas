@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Family · Caja y domicilios (DEMO)</title>
+<style>
+:root{--cafe:#3D1F08;--nar:#C85A0A;--crema:#FDF6EC;--arena:#F0E4CC;--linea:#DDD0B8;--gris:#7A7060;--ok:#2E8A58;--okbg:#E8F5E9;--bajo:#B77900;--bajobg:#FFF3D6;--mal:#B82020;--malbg:#FFE9E9;--neg:#140C04}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--crema);color:var(--neg);padding-bottom:150px;font-size:16px}
+.demo{background:#FFF8E1;color:#5C3D00;font-size:12px;text-align:center;padding:6px 10px;border-bottom:1px solid #E8D28A}
+header{background:var(--cafe);color:var(--crema);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:20}
+header h1{font-size:17px;line-height:1.1}header small{display:block;font-size:12px;opacity:.65;font-weight:400;margin-top:2px}
+.who{background:rgba(255,255,255,.12);color:var(--crema);border:1px solid rgba(255,255,255,.25);padding:8px 12px;border-radius:20px;font-size:13px;font-weight:600}
+main{padding:12px 14px 20px;max-width:640px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--linea);display:flex;z-index:30}
+nav button{flex:1;padding:9px 4px 11px;border:0;background:none;font-size:12px;font-weight:700;color:var(--gris);display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+nav button span{font-size:21px}nav button.on{color:var(--nar)}
+.badge{position:absolute;top:3px;right:22%;background:var(--mal);color:#fff;border-radius:10px;font-size:11px;padding:1px 6px}
+.seg{display:flex;background:var(--arena);border-radius:12px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;border-radius:9px;padding:12px 4px;font-size:15px;font-weight:700;background:none;color:var(--cafe)}
+.seg button.on{background:var(--cafe);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--linea);background:#fff;border-radius:22px;padding:9px 13px;font-size:14px;font-weight:600;color:var(--cafe)}
+.chip.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:10px 0 4px}.cats .chip{white-space:nowrap}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tile{position:relative;background:#fff;border:1.5px solid var(--linea);border-radius:12px;padding:12px 8px;text-align:center;display:flex;flex-direction:column;gap:3px;align-items:center;min-height:92px;justify-content:center}
+.tile i{font-style:normal;font-size:26px}.tile b{font-size:14px;line-height:1.15}.tile small{color:var(--nar);font-weight:700}
+.tile em{position:absolute;top:6px;right:6px;background:var(--nar);color:#fff;font-style:normal;font-weight:800;font-size:13px;border-radius:12px;padding:2px 8px}
+.tile.has{border-color:var(--nar);background:#FFF4EA}
+.cartbar{position:fixed;left:0;right:0;bottom:62px;z-index:25;padding:0 14px}
+.cartbar button{width:100%;max-width:640px;display:flex;margin:0 auto;justify-content:space-between;align-items:center;border:0;border-radius:14px;background:var(--nar);color:#fff;padding:15px 18px;font-size:17px;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.card{background:#fff;border:1.5px solid var(--linea);border-radius:12px;padding:13px;margin-bottom:10px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mut{color:var(--gris);font-size:13px}.h2{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);font-weight:700;margin:16px 2px 8px}
+.btn{border:0;border-radius:10px;padding:13px 14px;font-size:15px;font-weight:700;background:var(--nar);color:#fff;flex:1}
+.btn.sec{background:var(--arena);color:var(--cafe)}.btn.red{background:var(--malbg);color:var(--mal)}.btn.ok{background:var(--ok)}.btn.wa{background:#25D366}
+.btn.big{width:100%;padding:16px;font-size:17px;display:block;margin-top:10px;text-align:center;text-decoration:none}.btn:disabled{opacity:.4}
+.btn.sm{flex:0;padding:9px 12px;font-size:13px;white-space:nowrap}
+label.l{display:block;font-size:12px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px}
+input.i{width:100%;padding:13px;font-size:17px;border:2px solid var(--linea);border-radius:10px;background:#fff;outline:none}input.i:focus{border-color:var(--nar)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px}
+.t-ok{background:var(--okbg);color:var(--ok)}.t-bajo{background:var(--bajobg);color:var(--bajo)}.t-mal{background:var(--malbg);color:var(--mal)}
+.warn{background:var(--bajobg);color:#6b4600;padding:10px 12px;border-radius:8px;font-size:13px;margin-top:8px}
+.bad{background:var(--malbg);color:var(--mal);padding:10px 12px;border-radius:8px;font-size:13px;margin-top:8px;font-weight:600}
+.tot{font-size:34px;font-weight:800;text-align:center;margin:8px 0}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat div{background:#fff;border:1.5px solid var(--linea);border-radius:12px;padding:12px;text-align:center}
+.stat b{font-size:21px;display:block}.stat span{font-size:11px;color:var(--gris)}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none;align-items:flex-end}#ov.on{display:flex}
+#sh{background:var(--crema);width:100%;max-width:640px;margin:0 auto;border-radius:18px 18px 0 0;padding:18px 16px 24px;max-height:92vh;overflow:auto}
+#sh h3{font-size:18px;margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:var(--cafe);color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;z-index:60;display:none;max-width:90%;text-align:center}
+.line{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--linea);gap:8px}
+.qb{display:flex;align-items:center;gap:8px}.qb button{width:36px;height:36px;border:0;border-radius:9px;background:var(--arena);font-size:20px;font-weight:700}
+.anul{opacity:.45;text-decoration:line-through}
+</style>
+</head>
+<body>
+<div class="demo">DEMO · para probar · no guarda datos reales (al recargar vuelve al inicio)</div>
+<header><h1>🌙 Family · Caja<small id="sub"></small></h1><button class="who" id="who" onclick="askName()"></button></header>
+<main id="main"></main>
+<div class="cartbar" id="cartbar"></div>
+<nav id="nav"></nav>
+<div id="ov" onclick="if(event.target===this)closeSheet()"><div id="sh"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATOS ============
+const MIN=60000;
+const products=[
+{n:'Salchipapa Personal',p:15000,i:'🍟',c:'Salchipapas'},{n:'Salchipapa',p:20000,i:'🍟',c:'Salchipapas'},{n:'Salchicostilla',p:28000,i:'🍟',c:'Salchipapas'},{n:'Salchiburguer',p:30000,i:'🍟',c:'Salchipapas'},{n:'Salchipapa Familiar',p:40000,i:'🍟',c:'Salchipapas'},
+{n:'Chori Papas',p:15000,i:'🌭',c:'Salchipapas'},
+{n:'Picada',p:20000,i:'🍖',c:'Carnes'},{n:'Carne Asada',p:20000,i:'🍖',c:'Carnes'},{n:'Carnes al Barril',p:20000,i:'🍖',c:'Carnes'},{n:'Costillas BBQ',p:25000,i:'🍖',c:'Carnes'},
+{n:'Perro Sencillo',p:15000,i:'🌭',c:'Perros'},{n:'Perro Americano',p:20000,i:'🌭',c:'Perros'},{n:'Perro Family',p:25000,i:'🌭',c:'Perros'},
+{n:'Hamburguesa Clásica',p:18000,i:'🍔',c:'Hamburguesas'},{n:'Hamburguesa con Tocineta',p:20000,i:'🍔',c:'Hamburguesas'},{n:'Hamburguesa Doble Carne',p:25000,i:'🍔',c:'Hamburguesas'},{n:'Hamburguesa de Camarón',p:32000,i:'🍔',c:'Hamburguesas'},
+{n:'Pollo Broaster',p:12000,i:'🍗',c:'Pollo'},{n:'Pechuga a la Plancha',p:20000,i:'🍗',c:'Pollo'},{n:'Alitas Pollo x4',p:20000,i:'🍗',c:'Pollo'},{n:'Alitas Pollo x6',p:26000,i:'🍗',c:'Pollo'},
+{n:'Agua x600ml',p:3000,i:'💧',c:'Bebidas'},{n:'Gaseosa 400ml',p:4000,i:'🥤',c:'Bebidas'},{n:'Jugo Hit',p:5000,i:'🧃',c:'Bebidas'},{n:'Cerveza',p:5000,i:'🍺',c:'Bebidas'},{n:'Gaseosa 1.5L',p:8000,i:'🥤',c:'Bebidas'},{n:'Pony Malta P',p:4000,i:'🍺',c:'Bebidas'},{n:'Limonada',p:8000,i:'🍋',c:'Bebidas'},{n:'Malteada',p:15000,i:'🥤',c:'Bebidas'},
+{n:'Colitas Cubanas',p:15000,i:'🥖',c:'Otros'},{n:'Tortillas Rellenas',p:15000,i:'🌮',c:'Otros'},{n:'Patacón con Todo',p:15000,i:'🍌',c:'Otros'},{n:'Sándwich Sencillo',p:13000,i:'🥪',c:'Otros'},{n:'Sándwich de Pollo',p:20000,i:'🥪',c:'Otros'},{n:'Combo Infantil',p:22000,i:'🍱',c:'Otros'},{n:'Brownie Helado',p:8000,i:'🍦',c:'Otros'}
+];
+const CATS=['Todo','Salchipapas','Carnes','Perros','Hamburguesas','Pollo','Bebidas','Otros'];
+const GASTOS=['Hielo','Transporte','Servicios','Personal','Otro'];
+const CANALES=['WhatsApp','Llamada','Mostrador','Redes'];
+let TARIFA=3000;
+let nombre='';try{nombre=localStorage.getItem('fam_nombre')||'';}catch(e){}
+let tab='vender',tipo='Mesa',cat='Todo',q='',cart={},sales=[],gastos=[],domis=[{n:'Domiciliario',tel:''}],clientes={},base=0,seq=0,cb={};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Math.round(n).toLocaleString('es-CO');
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600);}
+function openSheet(h){$('sh').innerHTML=h;$('ov').classList.add('on');}
+function closeSheet(){$('ov').classList.remove('on');}
+function hora(t){return new Date(t).toLocaleTimeString('es-CO',{hour:'numeric',minute:'2-digit'});}
+function mins(t){return Math.floor((Date.now()-t)/MIN);}
+function saveNombre(n){nombre=n;try{localStorage.setItem('fam_nombre',n);}catch(e){}}
+
+// semillas para ver la pantalla con vida
+function mk(o){o.id=++seq;return o;}
+nombre=nombre||'';
+const T0=Date.now();
+sales.push(mk({tipo:'Mesa',items:[{n:'Salchipapa',p:20000,q:2},{n:'Gaseosa 1.5L',p:8000,q:1}],sub:48000,tarifa:0,total:48000,pago:'efectivo',quien:'Ana',t:T0-95*MIN,estado:'pagada'}));
+sales.push(mk({tipo:'Llevar',items:[{n:'Picada',p:20000,q:1}],sub:20000,tarifa:0,total:20000,pago:'nequi',quien:'Ana',t:T0-70*MIN,estado:'pagada'}));
+sales.push(mk({tipo:'Domicilio',items:[{n:'Hamburguesa Clásica',p:18000,q:2}],sub:36000,tarifa:TARIFA,total:39000,pago:'nequi',quien:'Ana',t:T0-47*MIN,estado:'en_calle',domi:'Domiciliario',cli:'Marta',tel:'3101234567',dir:'Barrio Pueblo Nuevo, casa azul',canal:'WhatsApp'}));
+sales.push(mk({tipo:'Domicilio',items:[{n:'Salchicostilla',p:28000,q:1},{n:'Gaseosa 400ml',p:4000,q:2}],sub:36000,tarifa:TARIFA,total:39000,pago:'efectivo',quien:'Ana',t:T0-12*MIN,estado:'en_calle',domi:'Domiciliario',cli:'Luis',tel:'3209876543',dir:'Calle 5 #3-20',canal:'Llamada'}));
+gastos.push(mk({cat:'Hielo',desc:'',amt:6000,pago:'efectivo',quien:'Ana',t:T0-80*MIN}));
+gastos.push(mk({cat:'Compra',desc:'Granero Surtimax · Fact. #4471',amt:48000,pago:'efectivo',origen:'compra',quien:'Encargada',t:T0-45*MIN}));
+
+// ============ CÁLCULOS ============
+const valid=()=>sales.filter(s=>s.estado!=='anulada');
+function tot(){
+  const v=valid();
+  const vend=v.reduce((a,s)=>a+s.total,0);
+  const ef=v.reduce((a,s)=>a+((s.tipo!=='Domicilio'&&s.pago==='efectivo')?s.total:(s.tipo==='Domicilio'&&s.pago==='efectivo'&&s.estado==='entregada'?s.devuelto:0)),0);
+  const nq=v.filter(s=>s.pago==='nequi').reduce((a,s)=>a+s.total,0);
+  const gv=gastos.filter(g=>!g.anulado);
+  const gef=gv.filter(g=>g.pago==='efectivo').reduce((a,g)=>a+g.amt,0);
+  const gtot=gv.reduce((a,g)=>a+g.amt,0);
+  const calle=v.filter(s=>s.estado==='en_calle');
+  const porEntregar=calle.filter(s=>s.pago==='efectivo').reduce((a,s)=>a+s.total,0);
+  const esperado=base+ef-gef;
+  return{vend,ef,nq,gef,gtot,calle,porEntregar,esperado};
+}
+function deudaDomi(n){const v=sales.filter(s=>s.tipo==='Domicilio'&&s.domi===n&&s.estado==='entregada'&&!s.pagadoTarifa);return{n:v.length,monto:v.length*TARIFA,v};}
+
+// ============ NOMBRE ============
+function askName(cbk){
+  openSheet(`<h3>¿Quién está en caja?</h3><div class="mut">Tu nombre queda en cada venta, gasto y entrega.</div>
+  <input class="i" id="nm" placeholder="Tu nombre" value="${esc(nombre)}" style="margin:12px 0">
+  <button class="btn big" onclick="okName()">Listo</button>`);
+  window._nmcb=cbk||null;setTimeout(()=>{const e=$('nm');e&&e.focus();},60);
+}
+function okName(){const v=$('nm').value.trim();if(v.length<2){toast('Escribe tu nombre');return;}saveNombre(v);closeSheet();render();const f=window._nmcb;window._nmcb=null;if(f)f();}
+function needName(fn){if(nombre&&nombre.length>=2){fn();return;}askName(fn);}
+
+// ============ NAV ============
+function go(t){tab=t;render();window.scrollTo(0,0);}
+function render(){
+  $('who').textContent='👤 '+(nombre||'¿Quién eres?');
+  const t=tot();
+  $('sub').textContent=hora(Date.now())+' · vendido '+money(t.vend);
+  const tabs=[['vender','🛒','Vender'],['dom','🛵','Domicilios'],['gas','💸','Gastos'],['hoy','📊','Hoy']];
+  $('nav').innerHTML=tabs.map(x=>`<button class="${tab===x[0]?'on':''}" onclick="go('${x[0]}')"><span>${x[1]}</span>${x[2]}${x[0]==='dom'&&t.calle.length?`<i class="badge" style="font-style:normal">${t.calle.length}</i>`:''}</button>`).join('');
+  $('main').innerHTML={vender:vVender,dom:vDom,gas:vGas,hoy:vHoy}[tab]();
+  if(tab==='vender')updateGrid();
+  if(tab==='gas')chkG();
+  updateBar();
+}
+
+// ============ VENDER ============
+function vVender(){
+  return`<div class="seg">${['Mesa','Llevar','Domicilio'].map(t=>`<button class="${tipo===t?'on':''}" onclick="tipo='${t}';render()">${t==='Domicilio'?'🛵 ':t==='Mesa'?'🍽 ':'🥡 '}${t}</button>`).join('')}</div>
+  <input class="i" id="srch" placeholder="🔍 Buscar producto…" value="${esc(q)}" oninput="q=this.value;updateGrid()" style="margin-top:10px">
+  <div class="cats">${CATS.map(c=>`<button class="chip ${cat===c?'on':''}" onclick="cat='${c}';render()">${c}</button>`).join('')}</div>
+  <div class="grid" id="grid"></div>`;
+}
+function updateGrid(){
+  const g=$('grid');if(!g)return;
+  const nq=norm(q);
+  g.innerHTML=products.map((p,i)=>[p,i]).filter(([p])=>(cat==='Todo'||p.c===cat)&&(!nq||norm(p.n).includes(nq)))
+   .map(([p,i])=>`<button class="tile ${cart[i]?'has':''}" onclick="add(${i})">${cart[i]?`<em>${cart[i]}</em>`:''}<i>${p.i}</i><b>${esc(p.n)}</b><small>${money(p.p)}</small></button>`).join('')||'<div class="mut" style="grid-column:1/3;text-align:center;padding:20px">No hay productos con ese nombre</div>';
+}
+function add(i){cart[i]=(cart[i]||0)+1;updateGrid();updateBar();}
+function cartItems(){return Object.keys(cart).filter(i=>cart[i]>0).map(i=>({n:products[i].n,p:products[i].p,q:cart[i],i:+i}));}
+function cartSub(){return cartItems().reduce((a,x)=>a+x.p*x.q,0);}
+function updateBar(){
+  const b=$('cartbar');const n=cartItems().reduce((a,x)=>a+x.q,0);
+  b.innerHTML=(tab==='vender'&&n)?`<button onclick="openCart()"><span>🧾 ${n} producto${n>1?'s':''}</span><span>${money(cartSub())} →</span></button>`:'';
+}
+function openCart(){
+  const it=cartItems();
+  if(!it.length){closeSheet();return;}
+  openSheet(`<h3>Cuenta · ${tipo}</h3>`+it.map(x=>`<div class="line"><div><b>${esc(x.n)}</b><div class="mut">${money(x.p)} c/u</div></div><div class="qb"><button onclick="chg(${x.i},-1)">−</button><b>${x.q}</b><button onclick="chg(${x.i},1)">+</button></div></div>`).join('')+
+  `<div class="row" style="margin:14px 2px"><b>Total productos</b><b style="font-size:22px">${money(cartSub())}</b></div>
+  <button class="btn big" onclick="cobrar()">Cobrar</button><button class="btn big sec" onclick="closeSheet()">Seguir agregando</button>`);
+}
+function chg(i,d){cart[i]=Math.max(0,(cart[i]||0)+d);if(!cart[i])delete cart[i];updateGrid();updateBar();openCart();}
+
+// ============ COBRAR ============
+function cobrar(){
+  cb={pago:'',rec:0,canal:'',domi:domis.length===1?domis[0].n:'',tel:'',dir:'',cli:''};
+  sheetCobrar();
+}
+function totalVenta(){return cartSub()+(tipo==='Domicilio'?TARIFA:0);}
+function sheetCobrar(){
+  const dom=tipo==='Domicilio',T=totalVenta();
+  const pagos=dom?[['nequi','Ya pagó (Nequi)'],['efectivo','Paga en efectivo al recibir']]:[['efectivo','Efectivo'],['nequi','Nequi']];
+  let h=`<h3>Cobrar · ${tipo}</h3>
+  ${dom?`<div class="mut">Productos ${money(cartSub())} + domicilio ${money(TARIFA)}</div>`:''}
+  <div class="tot">${money(T)}</div>
+  <div class="chips">${pagos.map(([k,l])=>`<button class="chip ${cb.pago===k?'on':''}" onclick="cb.pago='${k}';sheetCobrar()">${l}</button>`).join('')}</div>`;
+  if(!dom&&cb.pago==='efectivo'){
+    h+=`<label class="l">¿Con cuánto paga?</label><div class="chips">${[['Justo',T],['$20.000',20000],['$50.000',50000],['$100.000',100000]].map(([l,v])=>`<button class="chip ${cb.rec===v?'on':''}" onclick="cb.rec=${v};sheetCobrar()">${l}</button>`).join('')}</div>
+    <input class="i" inputmode="numeric" placeholder="…u otro valor" style="margin-top:8px" oninput="cb.rec=parseFloat(this.value)||0;chkCb()">`;
+  }
+  if(dom){
+    h+=`<label class="l">¿Cómo llegó el pedido?</label><div class="chips">${CANALES.map(c=>`<button class="chip ${cb.canal===c?'on':''}" onclick="cb.canal='${c}';sheetCobrar()">${c}</button>`).join('')}</div>
+    <label class="l">Teléfono</label><input class="i" inputmode="tel" value="${esc(cb.tel)}" placeholder="3001234567" oninput="cb.tel=this.value;telAuto()">
+    <label class="l">Dirección o barrio</label><input class="i" value="${esc(cb.dir)}" placeholder="Barrio, calle, referencia" oninput="cb.dir=this.value;chkCb()">
+    <label class="l">Nombre del cliente (opcional)</label><input class="i" value="${esc(cb.cli)}" oninput="cb.cli=this.value">
+    <label class="l">Domiciliario</label><div class="chips">${domis.map(d=>`<button class="chip ${cb.domi===d.n?'on':''}" onclick="cb.domi='${esc(d.n).replace(/'/g,'')}';sheetCobrar()">${esc(d.n)}</button>`).join('')}<button class="chip" onclick="addDomi()">➕ Otro</button></div>`;
+  }
+  h+=`<div id="cbinfo"></div><button class="btn big ok" id="cbok" onclick="needName(confirmCobrar)" disabled>Confirmar venta</button><button class="btn big sec" onclick="openCart()">Volver a la cuenta</button>`;
+  openSheet(h);chkCb();
+}
+function telAuto(){
+  const t=cb.tel.replace(/\D/g,'');
+  if(t.length>=7&&clientes[t]&&!cb.dir){cb.dir=clientes[t].dir;cb.cli=clientes[t].cli;const v=cb.tel;sheetCobrar();const e=document.querySelector('input[inputmode=tel]');if(e){e.focus();e.setSelectionRange(v.length,v.length);}toast('Cliente conocido: datos completados');return;}
+  chkCb();
+}
+function chkCb(){
+  const dom=tipo==='Domicilio',T=totalVenta();let ok=!!cb.pago,info='';
+  if(!dom&&cb.pago==='efectivo'){
+    if(cb.rec&&cb.rec>=T)info=`<div class="auto" style="background:var(--arena);padding:10px;border-radius:8px;margin-top:10px;font-size:18px;text-align:center">Vueltas: <b>${money(cb.rec-T)}</b></div>`;
+    else{ok=false;if(cb.rec)info='<div class="bad">Falta plata: lo recibido es menor al total</div>';}
+  }
+  if(dom){ok=ok&&cb.canal&&cb.tel.replace(/\D/g,'').length>=7&&cb.dir.trim().length>=3&&!!cb.domi;}
+  const el=$('cbinfo');if(el)el.innerHTML=info;const bt=$('cbok');if(bt)bt.disabled=!ok;
+}
+function addDomi(){
+  openSheet(`<h3>Domiciliario nuevo</h3><label class="l">Nombre</label><input class="i" id="dn"><label class="l">Celular (para avisarle por WhatsApp)</label><input class="i" id="dt" inputmode="tel">
+  <button class="btn big" onclick="saveDomi()">Guardar</button>`);
+}
+function saveDomi(){const n=$('dn').value.trim();if(n.length<2){toast('Escribe el nombre');return;}if(domis.some(d=>norm(d.n)===norm(n))){toast('Ya existe ese domiciliario');return;}domis.push({n,tel:$('dt').value.replace(/\D/g,'')});cb.domi=n;sheetCobrar();}
+function confirmCobrar(){
+  const dom=tipo==='Domicilio';
+  const s=mk({tipo,items:cartItems().map(x=>({n:x.n,p:x.p,q:x.q})),sub:cartSub(),tarifa:dom?TARIFA:0,total:totalVenta(),pago:cb.pago,quien:nombre,t:Date.now(),estado:dom?'en_calle':'pagada'});
+  if(dom){Object.assign(s,{domi:cb.domi,cli:cb.cli.trim(),tel:cb.tel.replace(/\D/g,''),dir:cb.dir.trim(),canal:cb.canal});clientes[s.tel]={dir:s.dir,cli:s.cli};}
+  sales.push(s);cart={};
+  if(dom){
+    const d=domis.find(x=>x.n===s.domi);
+    const msg=`🛵 *PEDIDO #${s.id} – FAMILY*\n${s.items.map(i=>i.q+' x '+i.n).join('\n')}\n\n📍 ${s.dir}${s.cli?'\n👤 '+s.cli:''}\n📞 ${s.tel}\n${s.pago==='efectivo'?'💵 COBRAR EN EFECTIVO: '+money(s.total):'✅ YA PAGADO (Nequi) – no cobrar'}`;
+    openSheet(`<h3>Pedido #${s.id} registrado ✔</h3><div class="mut">Queda "En la calle" hasta que regrese.</div>
+    <a class="btn big wa" target="_blank" href="https://wa.me/${d&&d.tel?'57'+d.tel:''}?text=${encodeURIComponent(msg)}">📱 Avisar a ${esc(s.domi)} por WhatsApp</a>
+    <button class="btn big sec" onclick="closeSheet();render()">Listo</button>`);
+    render();
+  }else{
+    closeSheet();render();toast('Venta registrada ✔ '+money(s.total));
+  }
+}
+
+// ============ DOMICILIOS ============
+function vDom(){
+  const t=tot();
+  let h=`<div class="stat"><div><b>${t.calle.length}</b><span>En la calle</span></div><div><b>${money(t.porEntregar)}</b><span>Efectivo por recibir</span></div></div>`;
+  h+='<div class="h2">En la calle</div>';
+  h+=t.calle.map(s=>{const m=mins(s.t);return`<div class="card"><div class="row"><b>#${s.id} · ${esc(s.cli||s.dir)}</b><span class="tag ${m>40?'t-mal':m>25?'t-bajo':'t-ok'}">${m} min</span></div>
+  <div class="mut">${esc(s.dir)} · ${esc(s.domi)} · pidió por ${esc(s.canal)}</div>
+  <div class="mut">${s.items.map(i=>i.q+' '+esc(i.n)).join(', ')}</div>
+  <div class="row" style="margin-top:8px"><b>${money(s.total)}</b><span class="tag ${s.pago==='efectivo'?'t-bajo':'t-ok'}">${s.pago==='efectivo'?'Cobra en efectivo':'Ya pagó (Nequi)'}</span></div>
+  <div style="display:flex;gap:8px;margin-top:10px"><button class="btn ok" onclick="entrega(${s.id})">✔ Entregó</button><button class="btn red sm" onclick="anular('s',${s.id})">Anular</button></div></div>`;}).join('')||'<div class="card mut" style="text-align:center">Ningún domicilio en la calle 🎉</div>';
+  h+='<div class="h2">Cuenta con el domiciliario</div>';
+  h+=domis.map(d=>{const x=deudaDomi(d.n);const enc=t.calle.filter(s=>s.domi===d.n&&s.pago==='efectivo').reduce((a,s)=>a+s.total,0);
+   return`<div class="card"><b>${esc(d.n)}</b><div class="mut" style="margin-top:4px">Debe entregar (efectivo en la calle): <b>${money(enc)}</b></div>
+   <div class="mut">Viajes por pagarle: <b>${x.n}</b> × ${money(TARIFA)} = <b>${money(x.monto)}</b></div>
+   <button class="btn big sec" style="margin-top:8px" onclick="needName(()=>pagarDomi('${esc(d.n).replace(/'/g,'')}'))" ${x.n?'':'disabled'}>Pagarle ${money(x.monto)}</button></div>`;}).join('');
+  const ent=valid().filter(s=>s.tipo==='Domicilio'&&s.estado==='entregada');
+  if(ent.length)h+='<div class="h2">Entregados hoy</div>'+ent.map(s=>`<div class="card row"><div><b>#${s.id} · ${esc(s.cli||s.dir)}</b><div class="mut">${hora(s.tEntrega)} · recibió ${esc(s.recibio)}</div></div>${s.dif?`<span class="tag t-mal">Dif. ${money(s.dif)}</span>`:'<span class="tag t-ok">Exacto</span>'}</div>`).join('');
+  return h;
+}
+function entrega(id){
+  const s=sales.find(x=>x.id===id);
+  if(s.pago==='efectivo'){
+    openSheet(`<h3>#${s.id} · ¿Cuánta plata devolvió?</h3><div class="mut">Debía entregar ${money(s.total)}</div>
+    <input class="i big" id="dv" inputmode="numeric" value="${s.total}" oninput="difEnt(${s.total})" style="font-size:34px;text-align:center;margin:12px 0"><div id="dif"></div>
+    <button class="btn big ok" onclick="needName(()=>okEntrega(${id}))">Confirmar entrega</button><button class="btn big sec" onclick="closeSheet()">Cancelar</button>`);
+  }else{
+    openSheet(`<h3>#${s.id} · ¿Ya entregó el pedido?</h3><div class="mut">Ya estaba pagado por Nequi.</div>
+    <button class="btn big ok" onclick="needName(()=>okEntrega(${id}))">Sí, entregó</button><button class="btn big sec" onclick="closeSheet()">Cancelar</button>`);
+  }
+}
+function difEnt(esp){const v=parseFloat($('dv').value)||0,d=v-esp;$('dif').innerHTML=d===0?'<div class="warn" style="background:var(--okbg);color:var(--ok)">Cuadra exacto ✔</div>':`<div class="bad">${d<0?'Faltan':'Sobran'} ${money(Math.abs(d))}. Queda anotado y le llega a Miryam.</div>`;}
+function okEntrega(id){
+  const s=sales.find(x=>x.id===id);let dev=s.total;
+  if(s.pago==='efectivo'){dev=parseFloat($('dv').value);if(isNaN(dev)||dev<0){toast('Escribe un valor');return;}}
+  s.estado='entregada';s.tEntrega=Date.now();s.recibio=nombre;
+  if(s.pago==='efectivo'){s.devuelto=dev;s.dif=dev-s.total;}else{s.devuelto=0;s.dif=0;}
+  closeSheet();render();toast(s.dif?'Entrega con diferencia anotada':'Entrega confirmada ✔');
+}
+function pagarDomi(n){
+  const x=deudaDomi(n);if(!x.n)return;
+  x.v.forEach(s=>s.pagadoTarifa=true);
+  gastos.push(mk({cat:'Domiciliario',desc:'Pago de '+x.n+' viajes a '+n,amt:x.monto,pago:'efectivo',quien:nombre,t:Date.now()}));
+  render();toast('Pago registrado como gasto ✔');
+}
+
+// ============ GASTOS ============
+let gs={cat:'',amt:'',pago:'efectivo',desc:''};
+function vGas(){
+  const lista=gastos.filter(g=>true).slice().reverse();
+  return`<div class="h2" style="margin-top:4px">Registrar gasto</div>
+  <label class="l">Monto</label><input class="i" id="gm" inputmode="numeric" placeholder="$0" value="${esc(gs.amt)}" oninput="gs.amt=this.value;chkG()" style="font-size:28px;text-align:center">
+  <div class="warn" style="margin-top:12px">🧾 Las compras de mercancía (papa, carnes, gaseosas, gas, aceite…) se registran en <b>Comprar</b>, no aquí. Si se pagaron con efectivo de la caja, aparecen solas en esta lista.</div>
+  <label class="l">¿En qué fue?</label><div class="chips">${GASTOS.map(c=>`<button class="chip ${gs.cat===c?'on':''}" onclick="gs.cat='${c}';render()">${c}</button>`).join('')}</div>
+  ${gs.cat==='Otro'?`<input class="i" placeholder="¿Qué fue? (obligatorio)" value="${esc(gs.desc)}" style="margin-top:8px" oninput="gs.desc=this.value;chkG()">`:''}
+  <label class="l">Con qué se pagó</label><div class="chips">${['efectivo','nequi'].map(p=>`<button class="chip ${gs.pago===p?'on':''}" onclick="gs.pago='${p}';render()">${p==='efectivo'?'Efectivo':'Nequi'}</button>`).join('')}</div>
+  <button class="btn big" id="gok" onclick="needName(saveGasto)" disabled>Guardar gasto</button>
+  <div class="h2">Gastos de hoy</div>`+(lista.map(g=>`<div class="card row ${g.anulado?'anul':''}"><div><b>${esc(g.cat)}${g.desc?' · '+esc(g.desc):''}</b><div class="mut">${hora(g.t)} · ${esc(g.quien)} · ${g.pago}</div></div><div style="text-align:right"><b>${money(g.amt)}</b>${g.origen==='compra'?'<br><span class="tag t-ok">Desde Comprar</span>':g.anulado?'':`<br><button class="chip" style="padding:4px 10px;font-size:12px" onclick="anular('g',${g.id})">Anular</button>`}</div></div>`).join('')||'<div class="card mut">Sin gastos todavía.</div>');
+}
+function chkG(){const a=parseFloat(gs.amt);const ok=a>0&&gs.cat&&(gs.cat!=='Otro'||gs.desc.trim().length>=3);const b=$('gok');if(b)b.disabled=!ok;}
+function saveGasto(){
+  const a=parseFloat(gs.amt);
+  const dup=gastos.find(g=>g.origen==='compra'&&!g.anulado&&g.amt===a&&Math.abs(Date.now()-g.t)<3*3600000);
+  if(dup&&!window._okDup){
+    openSheet(`<h3>¿Ya está registrado?</h3><div class="mut">Hay una compra desde Comprar por el mismo valor (${money(a)}): <b>${esc(dup.desc)}</b>. Si es la misma, no la registres otra vez.</div>
+    <button class="btn big sec" onclick="closeSheet()">Es la misma: cancelar</button>
+    <button class="btn big" onclick="window._okDup=true;closeSheet();saveGasto()">No, es otro gasto</button>`);
+    return;
+  }
+  window._okDup=false;
+  gastos.push(mk({cat:gs.cat,desc:gs.cat==='Otro'?gs.desc.trim():'',amt:parseFloat(gs.amt),pago:gs.pago,quien:nombre,t:Date.now()}));
+  gs={cat:'',amt:'',pago:'efectivo',desc:''};render();toast('Gasto guardado ✔');
+}
+
+// ============ ANULAR ============
+function anular(k,id){
+  openSheet(`<h3>¿Anular?</h3><div class="mut">Queda anotado con tu nombre y el motivo. No se borra.</div>
+  <div class="chips" style="margin:12px 0">${['Error al digitar','Cliente canceló','Producto no disponible','Otro'].map(m=>`<button class="chip" onclick="needName(()=>okAnular('${k}',${id},'${m}'))">${m}</button>`).join('')}</div>
+  <button class="btn big sec" onclick="closeSheet()">No anular</button>`);
+}
+function okAnular(k,id,m){
+  if(k==='s'){const s=sales.find(x=>x.id===id);s.estado='anulada';s.motivo=m;s.anulo=nombre;}
+  else{const g=gastos.find(x=>x.id===id);g.anulado=true;g.motivo=m;g.anulo=nombre;}
+  closeSheet();render();toast('Anulado y anotado');
+}
+
+// ============ HOY ============
+function vHoy(){
+  const t=tot();
+  const hist=sales.slice().reverse();
+  let h=`<div class="stat"><div><b>${money(t.vend)}</b><span>Vendido</span></div><div><b>${money(t.gtot)}</b><span>Gastos</span></div>
+  <div><b>${money(t.ef)}</b><span>Entró en efectivo</span></div><div><b>${money(t.nq)}</b><span>Entró por Nequi</span></div></div>
+  <div class="card" style="margin-top:10px"><div class="row"><b>Efectivo que debe haber en caja</b><b style="font-size:22px">${money(t.esperado)}</b></div>
+  <div class="mut">Base ${money(base)} + efectivo ${money(t.ef)} − gastos en efectivo ${money(t.gef)} (incluye compras pagadas desde la caja)</div>
+  ${t.calle.length?`<div class="warn">🛵 ${t.calle.length} domicilio(s) siguen en la calle (${money(t.porEntregar)} por recibir). Esa plata aún no cuenta.</div>`:''}
+  <label class="l">Base con la que abrió</label><input class="i" inputmode="numeric" value="${base||''}" placeholder="$0" oninput="base=parseFloat(this.value)||0" onchange="render()">
+  <button class="btn big" onclick="render();needName(cerrar)">🌙 Terminé el día</button></div>
+  <div class="h2">Ventas de hoy</div>`;
+  h+=hist.map(s=>`<div class="card ${s.estado==='anulada'?'anul':''}"><div class="row"><div><b>#${s.id} · ${s.tipo}</b> <span class="mut">${hora(s.t)} · ${esc(s.quien)}</span><div class="mut">${s.items.map(i=>i.q+' '+esc(i.n)).join(', ')}</div></div>
+  <div style="text-align:right"><b>${money(s.total)}</b><div class="mut">${s.pago}</div>${s.estado==='anulada'?`<div class="tag t-mal">Anulada</div>`:s.estado==='pagada'||s.estado==='entregada'?`<button class="chip" style="padding:4px 10px;font-size:12px" onclick="anular('s',${s.id})">Anular</button>`:''}</div></div>${s.motivo?`<div class="mut">Motivo: ${esc(s.motivo)} · ${esc(s.anulo)}</div>`:''}</div>`).join('');
+  return h;
+}
+function cerrar(){
+  const t=tot();
+  openSheet(`<h3>Terminar el día</h3>${t.calle.length?`<div class="bad">Hay ${t.calle.length} domicilio(s) en la calle. Revísalos antes de cerrar.</div>`:''}
+  <div class="mut" style="margin-top:8px">Debe haber en caja: <b>${money(t.esperado)}</b></div>
+  <label class="l">Cuenta el efectivo que hay y escríbelo</label><input class="i" id="cnt" inputmode="numeric" placeholder="$0" style="font-size:30px;text-align:center" oninput="difC(${t.esperado})"><div id="difc"></div>
+  <a class="btn big wa" id="cwa" style="display:none" target="_blank">📱 Enviar resumen a Miryam</a>
+  <button class="btn big sec" onclick="closeSheet()">Volver</button>`);
+}
+function difC(esp){
+  const t=tot(),v=parseFloat($('cnt').value);
+  if(isNaN(v)){$('difc').innerHTML='';$('cwa').style.display='none';return;}
+  const d=v-esp;
+  $('difc').innerHTML=d===0?'<div class="warn" style="background:var(--okbg);color:var(--ok)">Cuadra exacto ✔</div>':`<div class="bad">${d<0?'Faltan':'Sobran'} ${money(Math.abs(d))}</div>`;
+  const deudas=domis.map(x=>{const q=deudaDomi(x.n);return q.n?`${x.n}: ${q.n} viajes (${money(q.monto)})`:''}).filter(Boolean).join('; ');
+  const anul=sales.filter(s=>s.estado==='anulada').length;
+  const m=`🌙 *CIERRE FAMILY* – ${new Date().toLocaleDateString('es-CO')}\n\n💰 Vendido: ${money(t.vend)}\n   • Efectivo: ${money(t.ef)}\n   • Nequi: ${money(t.nq)}\n💸 Gastos: ${money(t.gtot)}\n🛵 Domicilios en la calle: ${t.calle.length}${deudas?'\n🧾 Por pagar al domiciliario: '+deudas:''}${anul?'\n⚠️ Ventas anuladas: '+anul:''}\n\n🏦 Debía haber: ${money(esp)}\n🏦 Contado: ${money(v)}\n${d===0?'✅ Cuadra':'⚠️ Diferencia: '+money(d)}\n\n👤 Cerró: ${nombre}`;
+  const a=$('cwa');a.href='https://wa.me/?text='+encodeURIComponent(m);a.style.display='block';
+}
+render();
+if(!nombre)askName();
+</script>
+</body>
+</html>

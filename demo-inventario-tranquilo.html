@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Family · Inventario tranquilo (DEMO)</title>
+<style>
+:root{--cafe:#3D1F08;--cafe2:#6B3A1F;--nar:#C85A0A;--nar2:#E87030;--crema:#FDF6EC;--arena:#F0E4CC;--linea:#DDD0B8;--gris:#7A7060;--ok:#2E8A58;--okbg:#E8F5E9;--bajo:#B77900;--bajobg:#FFF3D6;--mal:#B82020;--malbg:#FFE9E9;--neg:#140C04}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--crema);color:var(--neg);padding-bottom:84px;font-size:16px}
+.demo{background:#FFF8E1;color:#5C3D00;font-size:12px;text-align:center;padding:6px 10px;border-bottom:1px solid #E8D28A}
+header{background:var(--cafe);color:var(--crema);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:20}
+header h1{font-size:18px;line-height:1.1}
+header small{display:block;font-size:12px;opacity:.65;font-weight:400;margin-top:2px}
+.rol{background:rgba(255,255,255,.12);color:var(--crema);border:1px solid rgba(255,255,255,.25);padding:8px 12px;border-radius:20px;font-size:13px;font-weight:600}
+main{padding:14px 14px 20px;max-width:640px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--linea);display:flex;z-index:20}
+nav button{flex:1;padding:10px 4px 12px;border:0;background:none;font-size:12px;font-weight:700;color:var(--gris);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:22px}
+nav button.on{color:var(--nar)}
+.h2{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gris);font-weight:700;margin:16px 2px 8px}
+.card{background:#fff;border:1.5px solid var(--linea);border-radius:12px;padding:14px;margin-bottom:10px}
+.prod{display:flex;gap:12px;align-items:center}
+.prod .info{flex:1;min-width:0}
+.prod .n{font-weight:700;font-size:16px}
+.prod .s{font-size:12px;color:var(--gris);margin-top:2px}
+.qty{text-align:center;min-width:76px}
+.qty b{font-size:26px;line-height:1;display:block}
+.qty i{font-style:normal;font-size:11px;color:var(--gris)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;margin-top:5px}
+.t-ok{background:var(--okbg);color:var(--ok)}.t-bajo{background:var(--bajobg);color:var(--bajo)}.t-mal{background:var(--malbg);color:var(--mal)}
+.old{color:var(--mal);font-weight:700}
+.acts{display:flex;gap:8px;margin-top:10px}
+.btn{border:0;border-radius:10px;padding:13px 14px;font-size:15px;font-weight:700;background:var(--nar);color:#fff;flex:1}
+.btn.sec{background:var(--arena);color:var(--cafe)}
+.btn.red{background:var(--malbg);color:var(--mal)}
+.btn.wa{background:#25D366}
+.btn.big{width:100%;padding:16px;font-size:17px;display:block;margin-top:8px}
+.btn:disabled{opacity:.4}
+label.l{display:block;font-size:12px;font-weight:700;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin:14px 0 6px}
+input.i{width:100%;padding:14px;font-size:17px;border:2px solid var(--linea);border-radius:10px;background:#fff;outline:none}
+input.i:focus{border-color:var(--nar)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:2px solid var(--linea);background:#fff;border-radius:22px;padding:10px 14px;font-size:15px;font-weight:600;color:var(--cafe)}
+.chip.on{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+.auto{font-size:13px;color:var(--gris);background:var(--arena);padding:8px 12px;border-radius:8px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mut{color:var(--gris);font-size:13px}
+.warn{background:var(--bajobg);color:#6b4600;padding:10px 12px;border-radius:8px;font-size:13px;margin-top:8px}
+.bad{background:var(--malbg);color:var(--mal);padding:10px 12px;border-radius:8px;font-size:13px;margin-top:8px;font-weight:600}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{background:#fff;border:1.5px solid var(--linea);border-radius:12px;padding:12px 6px;text-align:center}
+.stat b{font-size:26px;display:block}.stat span{font-size:11px;color:var(--gris)}
+#ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;display:none;align-items:flex-end}
+#ov.on{display:flex}
+#sh{background:var(--crema);width:100%;max-width:640px;margin:0 auto;border-radius:18px 18px 0 0;padding:18px 16px 24px;max-height:92vh;overflow:auto}
+#sh h3{font-size:18px;margin-bottom:4px}
+.big-in{font-size:40px;text-align:center;font-weight:800;padding:12px}
+.stepper{display:flex;gap:10px;align-items:center;margin:12px 0}
+.stepper button{width:64px;height:64px;font-size:32px;border:0;border-radius:14px;background:var(--arena);color:var(--cafe);font-weight:700}
+.list-i{display:flex;justify-content:space-between;gap:8px;padding:11px 12px;border:1.5px solid var(--linea);border-radius:10px;background:#fff;margin-bottom:6px;width:100%;text-align:left;font-size:15px}
+.prog{height:6px;background:var(--arena);border-radius:3px;margin:8px 0}.prog div{height:6px;background:var(--nar);border-radius:3px}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:var(--cafe);color:#fff;padding:12px 18px;border-radius:24px;font-size:14px;z-index:60;display:none;max-width:90%;text-align:center}
+</style>
+</head>
+<body>
+<div class="demo">DEMO · para probar · no guarda datos reales (al recargar vuelve al inicio)</div>
+<header>
+  <h1>🌙 Family · Inventario<small id="sub"></small></h1>
+  <button class="rol" id="rolBtn" onclick="toggleRol()"></button>
+</header>
+<main id="main"></main>
+<nav id="nav"></nav>
+<div id="ov" onclick="if(event.target===this)closeSheet()"><div id="sh"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ DATOS DE DEMO ============
+const H=3600000;
+const PROVS=['Casa Blanca','Granero Olivert','Granero Surtimax','Distribuidora Jaime Alberto','Depósito Chaila'];
+const SINP='Sin proveedor';
+const PAGOS=['Efectivo de la caja','Nequi','Plata de Miryam','Fiado'];
+
+// crit = producto crítico (se cuenta). t = cuándo se contó (ms atrás)
+let P=[
+ {id:1,n:'Papa',u:'Libra',pres:'',prov:'Casa Blanca',min:20,stock:35,precio:1800,crit:1,ago:2*H},
+ {id:2,n:'Salchicha manguera',u:'Libra',pres:'',prov:'Granero Olivert',min:10,stock:100,precio:4500,crit:1,ago:2*H},
+ {id:3,n:'Chorizo',u:'Unidad',pres:'',prov:SINP,min:20,stock:40,precio:0,crit:1,ago:2*H},
+ {id:4,n:'Carne de res',u:'Libra',pres:'',prov:SINP,min:10,stock:18,precio:0,crit:1,ago:5*H},
+ {id:5,n:'Carne de cerdo (lomo)',u:'Libra',pres:'',prov:SINP,min:5,stock:40,precio:13500,crit:1,ago:5*H},
+ {id:6,n:'Costilla ahumada',u:'Libra',pres:'',prov:SINP,min:2,stock:2,precio:12000,crit:1,ago:5*H},
+ {id:7,n:'Pollo',u:'Libra',pres:'',prov:SINP,min:10,stock:24,precio:0,crit:1,ago:5*H},
+ {id:8,n:'Queso tajado',u:'Unidad',pres:'2500 g',prov:'Distribuidora Jaime Alberto',min:2,stock:10,precio:68000,crit:1,ago:30*H},
+ {id:9,n:'Aceite',u:'Galón',pres:'5000 ml',prov:SINP,min:1,stock:2,precio:115000,crit:1,ago:30*H},
+ {id:10,n:'Gas pipa',u:'Unidad',pres:'100 lb',prov:SINP,min:1,stock:1,precio:0,crit:1,ago:30*H},
+ {id:11,n:'Cajas desechables pequeñas',u:'Unidad',pres:'',prov:'Granero Olivert',min:100,stock:590,precio:0,crit:1,ago:30*H},
+ {id:12,n:'Gaseosas pequeñas (todas las marcas)',u:'Unidad',pres:'400 ml',prov:'Depósito Chaila',min:30,stock:73,precio:0,crit:1,ago:30*H},
+ {id:13,n:'Gaseosas grandes (todas las marcas)',u:'Unidad',pres:'1.5 L',prov:'Depósito Chaila',min:10,stock:40,precio:0,crit:1,ago:30*H},
+ {id:14,n:'Cerveza (todas las marcas)',u:'Unidad',pres:'',prov:'Depósito Chaila',min:24,stock:107,precio:0,crit:1,ago:30*H},
+ // no críticos: se pueden comprar, no se cuentan cada día
+ {id:15,n:'Pan hamburguesa',u:'Unidad',pres:'',prov:'Granero Surtimax',min:20,stock:3,precio:1200},
+ {id:16,n:'Pan de perro',u:'Unidad',pres:'',prov:'Granero Surtimax',min:20,stock:24,precio:900},
+ {id:17,n:'Carne hamburguesa',u:'Paquete',pres:'',prov:'Granero Olivert',min:1,stock:1.3,precio:24000},
+ {id:18,n:'Tocineta ahumada',u:'Libra',pres:'',prov:'Granero Olivert',min:2,stock:10,precio:32000},
+ {id:19,n:'Mayonesa',u:'Unidad',pres:'4000 g',prov:'Distribuidora Jaime Alberto',min:1,stock:1,precio:48000},
+ {id:20,n:'Salsa de tomate',u:'Unidad',pres:'4000 g',prov:'Distribuidora Jaime Alberto',min:1,stock:6,precio:28000},
+ {id:21,n:'Queso tajado',u:'Unidad',pres:'pequeño',prov:'Distribuidora Jaime Alberto',min:1,stock:1,precio:0},
+ {id:22,n:'Jamón Rica',u:'Paquete',pres:'',prov:'Granero Olivert',min:1,stock:1,precio:18000},
+ {id:23,n:'Servilletas',u:'Caja',pres:'x30',prov:'Granero Olivert',min:1,stock:1,precio:0},
+ {id:24,n:'Papel aluminio',u:'Rollo',pres:'',prov:'Granero Olivert',min:1,stock:1,precio:0},
+];
+
+const now0=Date.now();
+P.forEach(p=>{p.t=now0-(p.ago||0);p.base=p.stock;p.desde=0;p.consumo=null;p.por=p.crit?(p.ago<24*H?'Encargada':'Miryam'):'';});
+let compras=[{prov:'Granero Surtimax',num:'4471',quien:'Encargada',pago:'Efectivo de la caja',t:now0-20*H,tot:48000,items:[{n:'Pan hamburguesa',q:40,v:48000}]}];
+let nombre='';try{nombre=localStorage.getItem('fam_nombre')||'';}catch(e){}
+function saveNombre(n){nombre=n;try{localStorage.setItem('fam_nombre',n);}catch(e){}}
+function nameField(){return `<label class="l">Tu nombre</label><input class="i" id="cnom" placeholder="Quién registra" value="${esc(nombre)}">`;}
+function takeName(){const e=$('cnom');const v=(e&&e.value||'').trim();if(v.length<2){toast('Escribe tu nombre');if(e)e.focus();return null;}saveNombre(v);return v;}
+let rol='op',tab='inv',nextId=100,draft=null;
+
+// ============ UTILIDADES ============
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Math.round(n).toLocaleString('es-CO');
+const num=x=>(Math.round(x*100)/100).toString().replace('.',',');
+const full=p=>p.n+(p.pres?' '+p.pres:'');
+function ago(ms){const h=(Date.now()-ms)/H;if(h<1)return'hace minutos';if(h<24)return'hace '+Math.floor(h)+' h';return'hace '+Math.floor(h/24)+' d';}
+function old(p){return(Date.now()-p.t)/H>=24;}
+function estado(p){if(p.stock<=0)return['t-mal','Agotado'];if(p.stock<=p.min)return['t-bajo','Bajo — comprar'];return['t-ok','Bien'];}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',2600);}
+function norm(s){return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();}
+function fechaHoy(){return new Date().toLocaleString('es-CO',{weekday:'short',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'});}
+function openSheet(h){$('sh').innerHTML=h;$('ov').classList.add('on');}
+function closeSheet(){$('ov').classList.remove('on');}
+
+// ============ NAVEGACIÓN ============
+function toggleRol(){rol=rol==='op'?'mir':'op';tab=rol==='op'?'inv':'res';render();}
+function go(t){tab=t;render();window.scrollTo(0,0);}
+function render(){
+  $('rolBtn').textContent=rol==='op'?'👁 Ver como Miryam':'↩ Volver a turno';
+  $('sub').textContent=rol==='op'?'Vista de turno':'Vista de Miryam · solo ver';
+  const tabs=rol==='op'?[['inv','📦','Inventario'],['com','🧾','Comprar'],['lis','🛒','Lista']]:[['res','📊','Resumen'],['inv','📦','Inventario'],['fac','🧾','Facturas']];
+  $('nav').innerHTML=tabs.map(t=>`<button class="${tab===t[0]?'on':''}" onclick="go('${t[0]}')"><span>${t[1]}</span>${t[2]}</button>`).join('');
+  $('main').innerHTML={inv:vInv,com:vCom,lis:vLis,res:vRes,fac:vFac}[tab]();
+}
+
+// ============ INVENTARIO ============
+function vInv(){
+  const cr=P.filter(p=>p.crit);
+  const sin=cr.filter(old).length;
+  let h='';
+  if(rol==='op'){
+    h+=`<button class="btn big" onclick="contarTodo()">✅ Contar todo ahora (${cr.length})</button>`;
+    h+=`<div class="mut" style="margin:8px 2px">Cuenta cuando quiera: no hay hora fija. Cada producto muestra hace cuánto se contó.</div>`;
+  }
+  if(sin)h+=`<div class="bad">⚠️ ${sin} producto${sin>1?'s':''} sin contar hace más de un día</div>`;
+  h+=`<button class="btn big sec" onclick="nuevoInv()">➕ Producto nuevo</button>`;
+  h+='<div class="h2">Productos críticos (se cuentan cada día)</div>';
+  h+=cr.map(p=>{
+    const[c,l]=estado(p);
+    return`<div class="card"><div class="prod"><div class="info"><div class="n">${esc(full(p))}</div>
+    <div class="s ${old(p)?'old':''}">Contado ${ago(p.t)}${p.por?' · '+esc(p.por):''}${old(p)?' · ¡contar!':''}</div>
+    <span class="tag ${c}">${l}</span></div>
+    <div class="qty"><b>${num(p.stock)}</b><i>${esc(p.u)}</i></div></div>
+    ${p.consumo!==null?`<div class="mut" style="margin-top:8px">Consumo desde el conteo anterior: <b>${num(p.consumo)} ${esc(p.u)}</b>${p.consumo<0?' (sobró: revisar)':''}</div>`:''}
+    ${rol==='op'?`<div class="acts"><button class="btn" onclick="contar(${p.id})">Contar</button><button class="btn red" onclick="agotado(${p.id})">Agotado</button></div>`:`<div class="acts"><button class="btn sec" onclick="setCrit(${p.id},0)">Quitar de críticos</button></div>`}</div>`;
+  }).join('');
+  const otros=P.filter(p=>!p.crit);
+  h+=`<div class="h2">Otros productos (solo se compran, no se cuentan cada día)</div>`;
+  h+=otros.map(p=>`<div class="card"><div class="row"><div><b>${esc(full(p))}</b><div class="mut">${esc(p.prov)} · ${num(p.stock)} ${esc(p.u)}</div></div>${rol==='mir'?`<button class="chip" onclick="setCrit(${p.id},1)">Hacer crítico</button>`:''}</div></div>`).join('')||'<div class="card mut">Ninguno.</div>';
+  return h;
+}
+function contar(id,cola){
+  const p=P.find(x=>x.id===id);
+  const pos=cola?`<div class="mut">Producto ${cola.i+1} de ${cola.ids.length}</div><div class="prog"><div style="width:${(cola.i+1)/cola.ids.length*100}%"></div></div>`:'';
+  openSheet(`${pos}<h3>${esc(full(p))}</h3>
+  <div class="mut">Antes: ${num(p.stock)} ${esc(p.u)} · ${ago(p.t)}</div>
+  <div class="stepper"><button onclick="stp(-1)">−</button><input class="i big-in" id="cn" inputmode="decimal" value="${p.stock}"><button onclick="stp(1)">+</button></div>
+  ${nameField()}
+  <button class="btn big" onclick="guardarConteo(${id},${cola?'true':'false'})">${cola&&cola.i<cola.ids.length-1?'Guardar y siguiente →':'Guardar'}</button>
+  <button class="btn big sec" onclick="${cola?'closeSheet();render()':'closeSheet()'}">${cola?'Terminar luego':'Cancelar'}</button>`);
+  window._cola=cola||null;
+  setTimeout(()=>{const e=$('cn');if(e){e.focus();e.select();}},60);
+}
+function stp(d){const e=$('cn');const v=parseFloat(String(e.value).replace(',','.'))||0;e.value=Math.max(0,v+d);}
+function aplicarConteo(p,v,who){
+  p.por=who||p.por||'';
+  p.consumo=p.base+p.desde-v;
+  p.stock=v;p.base=v;p.desde=0;p.t=Date.now();
+}
+function guardarConteo(id,enCola){
+  const v=parseFloat(String($('cn').value).replace(',','.'));
+  if(isNaN(v)||v<0){toast('Escribe un número');return;}
+  const who=takeName();if(!who)return;
+  aplicarConteo(P.find(x=>x.id===id),v,who);
+  if(enCola&&window._cola&&window._cola.i<window._cola.ids.length-1){
+    window._cola.i++;contar(window._cola.ids[window._cola.i],window._cola);return;
+  }
+  closeSheet();render();toast('Conteo guardado ✔');
+}
+function setCrit(id,v){const p=P.find(x=>x.id===id);if(v){p.crit=1;p.t=Date.now();p.base=p.stock;p.desde=0;}else delete p.crit;render();toast(v?'Ahora se cuenta cada día':'Ya no se cuenta cada día');}
+function nuevoInv(){
+  ctx='inv';
+  openSheet(`<h3>Producto nuevo</h3><div class="mut">Escribe el nombre y revisamos que no esté repetido.</div>
+  <input class="i" id="nip" placeholder="Ej: Salchicha ranchera" style="margin:12px 0" oninput="$('nipok').disabled=this.value.trim().length<3">
+  <button class="btn big" id="nipok" onclick="crearProd($('nip').value,'inv')" disabled>Seguir</button>`);
+  setTimeout(()=>{const e=$('nip');e&&e.focus();},60);
+}
+function contarTodo(){const ids=P.filter(p=>p.crit).map(p=>p.id);contar(ids[0],{ids,i:0});}
+function doAgotado(id){const who=takeName();if(!who)return;aplicarConteo(P.find(x=>x.id===id),0,who);closeSheet();render();toast('Marcado agotado');}
+function agotado(id){
+  const p=P.find(x=>x.id===id);
+  openSheet(`<h3>¿Se acabó ${esc(full(p))}?</h3><div class="mut">Queda en 0 y pasa a la lista de compras.</div>
+  ${nameField()}
+  <button class="btn big red" onclick="doAgotado(${id})">Sí, está agotado</button>
+  <button class="btn big sec" onclick="closeSheet()">No</button>`);
+}
+
+// ============ COMPRAR ============
+function newDraft(){return{num:'',prov:'',pago:'',quien:nombre,items:[]};}
+function vCom(){
+  if(!draft)draft=newDraft();
+  const d=draft;
+  const tot=d.items.reduce((a,i)=>a+i.v,0);
+  const dup=d.num&&d.prov&&compras.some(c=>c.num===d.num.trim()&&c.prov===d.prov);
+  const ok=d.num.trim()&&d.prov&&d.pago&&d.quien.trim().length>=2&&d.items.length&&!dup;
+  return`<div class="h2" style="margin-top:4px">Registrar factura</div>
+  <label class="l">N° de factura (obligatorio)</label>
+  <input class="i" id="fnum" inputmode="numeric" placeholder="Ej: 4471" value="${esc(d.num)}" oninput="draft.num=this.value;chk()">
+  <div id="dupmsg">${dup?'<div class="bad">⛔ Esa factura ya está registrada con este proveedor.</div>':''}</div>
+  <label class="l">Proveedor</label>
+  <div class="chips">${PROVS.map((p,k)=>`<button class="chip ${d.prov===p?'on':''}" onclick="setProv(${k})">${esc(p)}</button>`).join('')}<button class="chip" onclick="otroProv()">➕ Otro proveedor</button></div>
+  <label class="l">Tu nombre (obligatorio)</label>
+  <input class="i" id="fq" placeholder="Quién registra la factura" value="${esc(d.quien)}" oninput="draft.quien=this.value;saveNombre(this.value.trim());chk()">
+  <label class="l">¿Cómo se pagó? (obligatorio)</label>
+  <div class="chips">${PAGOS.map((p,k)=>`<button class="chip ${d.pago===p?'on':''}" onclick="draft.pago=PAGOS[${k}];render()">${p}</button>`).join('')}</div>
+  ${d.pago==='Efectivo de la caja'?'<div class="auto" style="margin-top:8px">Aparecerá sola en los gastos de la caja. No la registres allá otra vez.</div>':''}
+  ${d.pago==='Fiado'?'<div class="auto" style="margin-top:8px">Queda como deuda con el proveedor hasta que se pague.</div>':''}
+  <label class="l">Fecha</label><div class="auto">🗓 Automática: ${fechaHoy()}</div>
+  <div class="h2">Productos de la factura</div>
+  ${d.items.map((i,k)=>`<div class="card"><div class="row"><div><b>${esc(i.n)}</b><div class="mut">${num(i.q)} ${esc(i.u)} · ${money(i.v)} · ${money(i.v/i.q)} c/u</div></div><button class="chip" onclick="draft.items.splice(${k},1);render()">Quitar</button></div></div>`).join('')}
+  <button class="btn big sec" onclick="addItem()">+ Agregar producto</button>
+  <div class="row" style="margin:16px 2px"><b>Total factura</b><b style="font-size:22px">${money(tot)}</b></div>
+  <button class="btn big" id="sv" onclick="guardarFactura()" ${ok?'':'disabled'}>Guardar factura</button>`;
+}
+function chk(){
+  const d=draft;
+  const dup=d.num&&d.prov&&compras.some(c=>c.num===d.num.trim()&&c.prov===d.prov);
+  $('dupmsg').innerHTML=dup?'<div class="bad">⛔ Esa factura ya está registrada con este proveedor.</div>':'';
+  $('sv').disabled=!(d.num.trim()&&d.prov&&d.pago&&d.quien.trim().length>=2&&d.items.length&&!dup);
+}
+function setProv(k){draft.prov=PROVS[k];render();}
+function otroProv(){
+  openSheet(`<h3>Proveedor nuevo</h3><div class="mut">Escribe el nombre. Queda guardado para la próxima vez.</div>
+  <input class="i" id="pvn" placeholder="Ej: Tienda La Esquina" style="margin:12px 0" oninput="vpv()">
+  <button class="btn big" id="pvok" onclick="guardarProv()" disabled>Guardar proveedor</button>`);
+  setTimeout(()=>{const e=$('pvn');e&&e.focus();},60);
+}
+function vpv(){$('pvok').disabled=$('pvn').value.trim().length<3;}
+function guardarProv(){
+  const t=$('pvn').value.trim(),nn=norm(t);
+  const stem=w=>w.slice(0,4);const tok=nn.split(' ').filter(w=>w.length>=4).map(stem);
+  const par=PROVS.map((p,k)=>[p,k]).filter(([p])=>{const m=norm(p);return m===nn||m.includes(nn)||nn.includes(m)||m.split(' ').some(w=>w.length>=4&&tok.includes(stem(w)));});
+  if(par.length){
+    openSheet(`<h3>¿Es alguno de estos?</h3><div class="mut">Ya hay proveedores parecidos a «${esc(t)}».</div><div style="margin-top:10px">`+
+    par.map(([p,k])=>`<button class="list-i" onclick="draft.prov=PROVS[${k}];closeSheet();render()"><span>${esc(p)}</span><span class="mut">usar este</span></button>`).join('')+
+    `</div><button class="btn big sec" onclick="addProv(window._pv)">No, es otro proveedor distinto</button>`);
+    window._pv=t;return;
+  }
+  addProv(t);
+}
+function addProv(t){PROVS.push(t);draft.prov=t;closeSheet();render();toast('Proveedor guardado ✔');}
+function addItem(){
+  openSheet(`<h3>¿Qué producto?</h3><input class="i" id="bq" placeholder="Escribe para buscar… (ej: queso)" oninput="buscar()" style="margin:10px 0"><div id="bres"></div>`);
+  buscar();setTimeout(()=>{const e=$('bq');e&&e.focus();},60);
+}
+function buscar(){
+  const q=norm($('bq').value);
+  const r=P.filter(p=>!q||norm(full(p)).includes(q));
+  $('bres').innerHTML=r.map(p=>`<button class="list-i" onclick="itemQty(${p.id})"><span>${esc(full(p))}</span><span class="mut">${esc(p.u)}</span></button>`).join('')
+   +(q?`<button class="btn big" onclick="crearProd(document.getElementById('bq').value,'com')">➕ No está: crear «${esc($('bq').value.trim())}»</button>`:'');
+}
+function itemQty(id){
+  const p=P.find(x=>x.id===id);
+  openSheet(`<h3>${esc(full(p))}</h3><div class="mut">Proveedor habitual: ${esc(p.prov)}${p.precio?' · último precio '+money(p.precio)+' c/'+esc(p.u).toLowerCase():''}</div>
+  <label class="l">Cantidad (${esc(p.u)})</label><input class="i" id="iq" inputmode="decimal" oninput="calc(${id})" placeholder="0">
+  <label class="l">Valor total pagado</label><input class="i" id="iv" inputmode="numeric" oninput="calc(${id})" placeholder="$0">
+  <div id="calc"></div>
+  <button class="btn big" id="iadd" onclick="confirmItem(${id})" disabled>Agregar</button>`);
+  setTimeout(()=>{const e=$('iq');e&&e.focus();},60);
+}
+function calc(id){
+  const p=P.find(x=>x.id===id);
+  const q=parseFloat(String($('iq').value).replace(',','.')),v=parseFloat($('iv').value);
+  let h='';
+  if(q>0&&v>0){
+    const u=v/q;h=`<div class="auto" style="margin-top:10px">Precio por ${esc(p.u).toLowerCase()}: <b>${money(u)}</b></div>`;
+    if(p.precio&&Math.abs(u-p.precio)/p.precio>=0.15)h+=`<div class="warn">⚠️ Antes pagaba ${money(p.precio)}. ¿Está bien este valor?</div>`;
+  }
+  $('calc').innerHTML=h;$('iadd').disabled=!(q>0&&v>0);
+}
+function confirmItem(id){
+  const p=P.find(x=>x.id===id);
+  const q=parseFloat(String($('iq').value).replace(',','.')),v=parseFloat($('iv').value);
+  draft.items.push({id,n:full(p),u:p.u,q,v});
+  if(!draft.prov&&PROVS.includes(p.prov))draft.prov=p.prov; // se autorrellena el proveedor
+  closeSheet();render();
+}
+// Crear producto nuevo con control anti-duplicados
+let ctx='com';
+function crearProd(txt,c){
+  ctx=c||ctx;
+  txt=(txt||'').trim();if(!txt)return;
+  const nn=norm(txt);const stem=w=>w.slice(0,4);const tok=nn.split(' ').filter(w=>w.length>=4).map(stem);
+  const parecidos=P.filter(p=>{const m=norm(p.n);return m.includes(nn)||nn.includes(m)||m.split(' ').some(w=>w.length>=4&&tok.includes(stem(w)));});
+  const dedup=[...new Map(parecidos.map(p=>[p.n,p])).values()];
+  if(dedup.length){
+    openSheet(`<h3>¿Es alguno de estos?</h3><div class="mut">Antes de crear uno nuevo, revisa que no esté ya.</div><div style="margin-top:10px">`+
+      dedup.map(p=>`<button class="list-i" onclick="${ctx==='com'?`itemQty(${p.id})`:`closeSheet();toast('Ya existe: ${esc(full(p)).replace(/'/g,'')}')`}"><span>${esc(full(p))}</span><span class="mut">${ctx==='com'?'usar este':'ya existe'}</span></button>`).join('')+
+      `</div><button class="btn big sec" onclick="formNuevo('${esc(txt).replace(/'/g,"\\'")}')">No, es un producto nuevo</button>`);
+  }else formNuevo(txt);
+}
+let nuevo={};
+function formNuevo(txt){
+  nuevo={n:txt,u:'',pres:'',sinpres:false,min:1,crit:rol==='mir'?null:0};
+  const U=['Unidad','Libra','Kilo','Paquete','Caja','Galón','Litro','Rollo'];
+  const PR=['250 g','500 g','1 kg','400 ml','1.5 L','4000 g'];
+  openSheet(`<h3>Crear producto</h3><div class="mut">Todos los datos son obligatorios para evitar productos repetidos.</div>
+  <label class="l">Nombre</label><input class="i" id="nn" value="${esc(txt)}" oninput="nuevo.n=this.value;vn()">
+  <label class="l">Unidad de compra</label><div class="chips">${U.map(u=>`<button class="chip" id="u_${u}" onclick="nuevo.u='${u}';mk('u_','${u}',${JSON.stringify(U).replace(/"/g,"'")});vn()">${u}</button>`).join('')}</div>
+  <label class="l">Gramaje o tamaño</label><div class="chips">${PR.map(u=>`<button class="chip" id="p_${u}" onclick="nuevo.pres='${u}';nuevo.sinpres=false;mk('p_','${u}',${JSON.stringify(PR.concat(['__sin'])).replace(/"/g,"'")});vn()">${u}</button>`).join('')}
+  <button class="chip" id="p___sin" onclick="nuevo.pres='';nuevo.sinpres=true;mk('p_','__sin',${JSON.stringify(PR.concat(['__sin'])).replace(/"/g,"'")});vn()">Único (sin tamaño)</button></div>
+  <input class="i" id="np" placeholder="…u otro tamaño (ej: 750 g)" style="margin-top:8px" oninput="nuevo.pres=this.value;nuevo.sinpres=false;vn()">
+  <label class="l">Avisar cuando queden menos de</label><input class="i" id="nmin" inputmode="decimal" value="1" oninput="nuevo.min=parseFloat(String(this.value).replace(',','.'))||0;vn()">
+  ${rol==='mir'?`<label class="l">¿Se cuenta cada día?</label><div class="chips"><button class="chip" id="c_1" onclick="nuevo.crit=1;mk('c_','1',['1','0']);vn()">Sí, es crítico</button><button class="chip" id="c_0" onclick="nuevo.crit=0;mk('c_','0',['1','0']);vn()">No, solo se compra</button></div>`:`<div class="auto" style="margin-top:12px">Miryam decide después si se cuenta cada día.</div>`}
+  <button class="btn big" id="ncr" onclick="crearOK()" disabled>Crear y usar</button>`);
+}
+function mk(pre,val,all){all.forEach(a=>{const e=$(pre+a);if(e)e.classList.toggle('on',a===val);});}
+function vn(){$('ncr').disabled=!(nuevo.n.trim().length>=3&&nuevo.u&&(nuevo.pres.trim()||nuevo.sinpres)&&nuevo.min>0&&nuevo.crit!==null);}
+function crearOK(){
+  const p={id:nextId++,n:nuevo.n.trim(),u:nuevo.u,pres:nuevo.pres.trim(),prov:(ctx==='com'&&draft&&draft.prov)||SINP,min:nuevo.min,stock:0,precio:0,t:Date.now(),base:0,desde:0,consumo:null};
+  if(nuevo.crit)p.crit=1;
+  P.push(p);
+  if(ctx==='com'){itemQty(p.id);}else{closeSheet();render();toast(p.crit?'Producto creado y agregado a los críticos ✔':'Producto creado ✔');}
+}
+function guardarFactura(){
+  const d=draft;
+  d.items.forEach(i=>{const p=P.find(x=>x.id===i.id);if(p.prov===SINP)p.prov=d.prov;p.stock+=i.q;p.desde+=i.q;p.precio=i.v/i.q;});
+  compras.unshift({prov:d.prov,num:d.num.trim(),quien:d.quien.trim(),pago:d.pago,t:Date.now(),tot:d.items.reduce((a,i)=>a+i.v,0),items:d.items.map(i=>({n:i.n,q:i.q,v:i.v}))});
+  draft=null;toast('Factura guardada · inventario actualizado ✔');go('inv');
+}
+
+// ============ LISTA DE COMPRAS ============
+function faltantes(){return P.filter(p=>p.crit&&p.stock<=p.min);}
+function textoLista(){
+  const f=faltantes();if(!f.length)return'';
+  const g={};f.forEach(p=>(g[p.prov||SINP]=g[p.prov||SINP]||[]).push(p));
+  let t='🛒 *LISTA DE COMPRAS – FAMILY*\n';
+  Object.keys(g).forEach(k=>{t+='\n*'+k+'*\n';g[k].forEach(p=>t+='• '+full(p)+(p.stock<=0?' (AGOTADO)':' (quedan '+num(p.stock)+' '+p.u+')')+'\n');});
+  return t;
+}
+function vLis(){
+  const f=faltantes();
+  if(!f.length)return`<div class="card" style="text-align:center;padding:30px"><div style="font-size:40px">🎉</div><b>Nada por comprar</b><div class="mut">Todo lo crítico está por encima del mínimo.</div></div>`;
+  const g={};f.forEach(p=>(g[p.prov||SINP]=g[p.prov||SINP]||[]).push(p));
+  return Object.keys(g).map(k=>`<div class="h2">${esc(k)}</div>`+g[k].map(p=>{const[c,l]=estado(p);return`<div class="card"><div class="row"><div><b>${esc(full(p))}</b><div class="mut">Quedan ${num(p.stock)} ${esc(p.u)} · mínimo ${num(p.min)}</div></div><span class="tag ${c}">${l}</span></div></div>`;}).join('')).join('')
+  +`<a class="btn wa big" style="text-decoration:none;text-align:center" target="_blank" href="https://wa.me/?text=${encodeURIComponent(textoLista())}">📱 Enviar lista por WhatsApp</a>`;
+}
+
+// ============ VISTA MIRYAM ============
+function vRes(){
+  const cr=P.filter(p=>p.crit);
+  const ag=cr.filter(p=>p.stock<=0).length,ba=cr.filter(p=>p.stock>0&&p.stock<=p.min).length,sin=cr.filter(old).length;
+  const gastoHoy=compras.filter(c=>Date.now()-c.t<24*H).reduce((a,c)=>a+c.tot,0);
+  let h=`<div class="stat"><div><b style="color:var(--mal)">${ag}</b><span>Agotados</span></div><div><b style="color:var(--bajo)">${ba}</b><span>Por comprar</span></div><div><b style="color:${sin?'var(--mal)':'var(--ok)'}">${sin}</b><span>Sin contar +24 h</span></div></div>`;
+  h+=`<div class="h2">Compras últimas 24 h</div><div class="card"><b style="font-size:22px">${money(gastoHoy)}</b><div class="mut">${compras.filter(c=>Date.now()-c.t<24*H).length} factura(s)</div></div>`;
+  const fiado=compras.filter(c=>c.pago==='Fiado').reduce((a,c)=>a+c.tot,0);
+  const gp={};compras.filter(c=>Date.now()-c.t<24*H).forEach(c=>gp[c.pago||'—']=(gp[c.pago||'—']||0)+c.tot);
+  h+=`<div class="card">${Object.keys(gp).map(k=>`<div class="row"><span class="mut">${esc(k)}</span><b>${money(gp[k])}</b></div>`).join('')||'<div class="mut">Sin compras en 24 h</div>'}${fiado?`<div class="warn">🧾 Fiado pendiente de pagar: <b>${money(fiado)}</b></div>`:''}</div>`;
+  const cons=cr.filter(p=>p.consumo!==null);
+  h+=`<div class="h2">Lo que se gastó entre conteos</div>`;
+  h+=cons.length?cons.map(p=>`<div class="card row"><span>${esc(full(p))}</span><b>${num(p.consumo)} ${esc(p.u)}</b></div>`).join(''):`<div class="card mut">Aparece después del segundo conteo de cada producto (conteo anterior + compras − conteo actual).</div>`;
+  h+=`<div class="h2">Lista de compras</div>`+vLis();
+  return h;
+}
+function vFac(){
+  return compras.map(c=>`<div class="card"><div class="row"><b>${esc(c.prov)}</b><span class="mut">Fact. #${esc(c.num)}</span></div><div class="mut">${new Date(c.t).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit'})} · registró ${esc(c.quien)} · <b>${esc(c.pago||'')}</b></div>${c.items.map(i=>`<div style="font-size:14px;margin-top:4px">${num(i.q)} · ${esc(i.n)} · ${money(i.v)}</div>`).join('')}<div class="row" style="margin-top:8px"><span class="mut">Total</span><b>${money(c.tot)}</b></div></div>`).join('')||'<div class="card mut">Sin facturas.</div>';
+}
+render();
+</script>
+</body>
+</html>
